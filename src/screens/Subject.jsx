@@ -38,6 +38,10 @@ export default function Subject({ navigate, isNewUser }) {
     ? CHAPTERS.map(c => ({ ...c, state: 'unattempted', prog: undefined, res: undefined }))
     : CHAPTERS
 
+  const doneChapters = displayChapters.filter(c => c.state === 'completed').length
+  const totalChapters = displayChapters.length
+  const pctDone = totalChapters > 0 ? Math.round((doneChapters / totalChapters) * 100) : 0
+
   const visible = displayChapters.filter(c => {
     if (filter === 'all') return true
     if (filter === 'free') return c.id <= 2
@@ -156,12 +160,11 @@ export default function Subject({ navigate, isNewUser }) {
       <div style={{ padding: '9px 16px', background: PL, borderBottom: `1px solid ${PB}`, flexShrink: 0 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
           <span style={{ fontSize: 11, fontWeight: 600, color: PD }}>Toppers complete this in 10 days</span>
-          <span style={{ fontSize: 10, color: P }}>2/8 chapters</span>
+          <span style={{ fontSize: 10, color: P }}>{doneChapters}/{totalChapters} chapters</span>
         </div>
-        <div style={{ height: 5, background: PB, borderRadius: 3, marginBottom: 4 }}>
-          <div style={{ height: 5, width: '25%', background: P, borderRadius: 3 }} />
+        <div style={{ height: 5, background: PB, borderRadius: 3 }}>
+          <div style={{ height: 5, width: `${pctDone}%`, background: P, borderRadius: 3 }} />
         </div>
-        <div style={{ fontSize: 10, color: P }}>Complete 1 chapter/day to match topper pace</div>
       </div>
 
       <div style={{ padding: '8px 16px', borderBottom: `1px solid ${BD}`, flexShrink: 0 }}>

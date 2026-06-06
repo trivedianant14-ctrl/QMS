@@ -70,9 +70,6 @@ export default function PreTest({ navigate, startAttempt, mode, setMode }) {
                     <div style={{ fontSize: 12, fontWeight: 500, color: T1, marginBottom: 2 }}>{t.name}</div>
                     <div style={{ fontSize: 11, color: T3 }}>{t.qs} Qs{t.pyqs > 0 ? ` · ${t.pyqs} PYQ${t.pyqs > 1 ? 's' : ''}` : ''}</div>
                   </div>
-                  {t.pyqs > 0 && (
-                    <span style={{ background: '#FFF3E0', color: '#E65100', border: '1px solid #FFCC80', fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 20 }}>PYQ</span>
-                  )}
                 </div>
               ))}
             </div>
@@ -94,10 +91,9 @@ export default function PreTest({ navigate, startAttempt, mode, setMode }) {
         </div>
       </div>
 
-      {/* Action buttons */}
-      <div style={{ padding: '12px 16px', borderTop: `1px solid ${BD}`, display: 'flex', gap: 10, background: 'white' }}>
-        <button onClick={() => navigate('subject')} className="btn-outline" style={{ flex: 1 }}>Cancel</button>
-        <button onClick={handleAttempt} className="btn-primary" style={{ flex: 2 }}>Attempt</button>
+      {/* Action button */}
+      <div style={{ padding: '12px 16px', borderTop: `1px solid ${BD}`, background: 'white' }}>
+        <button onClick={handleAttempt} className="btn-primary" style={{ width: '100%' }}>Let's Begin</button>
       </div>
     </div>
   )

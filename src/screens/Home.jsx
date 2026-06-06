@@ -29,6 +29,7 @@ export default function Home({ navigate, savedQs, bannerDismissed, setBannerDism
   const overallAcc = isNewUser ? 0 : 71
   const isFirstTime = isNewUser
   const [continueDismissed, setContinueDismissed] = useState(false)
+  const [showSubjectIdx, setShowSubjectIdx] = useState(false)
 
   const displaySubjects = isNewUser
     ? SUBJECTS.map(s => ({ ...s, done: 0, accuracy: 0 }))
@@ -139,8 +140,8 @@ export default function Home({ navigate, savedQs, bannerDismissed, setBannerDism
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
             <span style={{ fontSize: 14, fontWeight: 700, color: T1 }}>Subjects</span>
             <span style={{ fontSize: 11, fontWeight: 600, color: P, background: PL, padding: '2px 8px', borderRadius: 20 }}>E5</span>
-            <button style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: T2, display: 'flex', alignItems: 'center', padding: 2 }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"/></svg>
+            <button onClick={() => setShowSubjectIdx(true)} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: T2, display: 'flex', alignItems: 'center', padding: 2 }}>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
             </button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -167,6 +168,38 @@ export default function Home({ navigate, savedQs, bannerDismissed, setBannerDism
         </div>
 
       </div>
+
+      {/* Subjects index sheet */}
+      {showSubjectIdx && (
+        <div className="overlay" onClick={() => setShowSubjectIdx(false)}>
+          <div className="sheet" style={{ maxHeight: '80%' }} onClick={e => e.stopPropagation()}>
+            <div className="sheet-handle" />
+            <div className="sheet-header">
+              <span style={{ fontSize: 15, fontWeight: 700, color: T1 }}>Subject Index</span>
+              <button onClick={() => setShowSubjectIdx(false)} style={{ background: 'none', border: 'none', fontSize: 22, color: T3, cursor: 'pointer', lineHeight: 1 }}>×</button>
+            </div>
+            <div style={{ overflowY: 'auto', flex: 1 }}>
+              {displaySubjects.map((s, i) => {
+                const pct = s.total > 0 ? Math.round((s.done / s.total) * 100) : 0
+                return (
+                  <button key={s.id} onClick={() => { setShowSubjectIdx(false); navigate('subject') }} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 14, padding: '14px 20px', borderBottom: `1px solid ${BD}`, background: 'none', border: 'none', borderBottom: `1px solid ${BD}`, cursor: 'pointer', textAlign: 'left' }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: T3, minWidth: 22 }}>{String(i + 1).padStart(2, '0')}</span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: T1, marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</div>
+                      <div style={{ fontSize: 11, color: T3 }}>{s.done > 0 ? `${s.done}/${s.total} Qs · ${s.accuracy}% accuracy` : `${s.total} Qs · not started`}</div>
+                    </div>
+                    {s.done > 0 && (
+                      <div style={{ width: 36, height: 36, borderRadius: '50%', background: PL, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: P }}>{pct}%</span>
+                      </div>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Sticky continue + nav — continue hidden for first-time users */}
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'white' }}>
