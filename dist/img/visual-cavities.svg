@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 280">
+  <rect width="480" height="280" fill="#F8F7FF"/>
+  <rect width="480" height="48" fill="#534AB7"/>
+  <text x="240" y="30" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" font-weight="bold" fill="white">Major Body Cavities</text>
+  <text x="240" y="43" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#C5C2F5">Applied Anatomy · Chapter 1 — Reference Chart</text>
+
+  <!-- Thoracic (correct) -->
+  <rect x="14" y="60" width="215" height="108" fill="#EEEDFE" rx="10"/>
+  <rect x="14" y="60" width="215" height="108" fill="none" stroke="#534AB7" stroke-width="2" rx="10"/>
+  <text x="28" y="81" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="#3C3489">Thoracic Cavity ✓</text>
+  <rect x="28" y="85" width="36" height="2" fill="#534AB7" rx="1"/>
+  <text x="28" y="103" font-family="Arial,sans-serif" font-size="11" fill="#534AB7">Contains: Heart + Lungs ✓</text>
+  <text x="28" y="119" font-family="Arial,sans-serif" font-size="10" fill="#5a5a78">+ trachea, esophagus</text>
+  <text x="28" y="134" font-family="Arial,sans-serif" font-size="10" fill="#5a5a78">+ major blood vessels</text>
+  <text x="28" y="150" font-family="Arial,sans-serif" font-size="10" fill="#5a5a78">Bounded by rib cage &amp; diaphragm</text>
+
+  <!-- Abdominal (wrong) -->
+  <rect x="251" y="60" width="215" height="108" fill="#FFF8F8" rx="10"/>
+  <rect x="251" y="60" width="215" height="108" fill="none" stroke="#F09595" stroke-width="1.5" rx="10"/>
+  <text x="265" y="81" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="#791F1F">Abdominal Cavity ✗</text>
+  <text x="265" y="103" font-family="Arial,sans-serif" font-size="11" fill="#A32D2D">Contains: Digestive organs</text>
+  <text x="265" y="119" font-family="Arial,sans-serif" font-size="10" fill="#5a5a78">Stomach, liver, spleen</text>
+  <text x="265" y="134" font-family="Arial,sans-serif" font-size="10" fill="#5a5a78">kidneys, intestines</text>
+  <text x="265" y="150" font-family="Arial,sans-serif" font-size="10" fill="#5a5a78">Below diaphragm — NOT heart/lungs</text>
+
+  <!-- Pelvic (wrong) -->
+  <rect x="14" y="180" width="215" height="88" fill="#FFF8F8" rx="10"/>
+  <rect x="14" y="180" width="215" height="88" fill="none" stroke="#F09595" stroke-width="1.5" rx="10"/>
+  <text x="28" y="201" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="#791F1F">Pelvic Cavity ✗</text>
+  <text x="28" y="220" font-family="Arial,sans-serif" font-size="11" fill="#A32D2D">Contains: Reproductive organs</text>
+  <text x="28" y="237" font-family="Arial,sans-serif" font-size="10" fill="#5a5a78">Bladder, rectum, uterus</text>
+  <text x="28" y="253" font-family="Arial,sans-serif" font-size="10" fill="#5a5a78">Lowest body cavity</text>
+
+  <!-- Cranial (wrong) -->
+  <rect x="251" y="180" width="215" height="88" fill="#FFF8F8" rx="10"/>
+  <rect x="251" y="180" width="215" height="88" fill="none" stroke="#F09595" stroke-width="1.5" rx="10"/>
+  <text x="265" y="201" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="#791F1F">Cranial Cavity ✗</text>
+  <text x="265" y="220" font-family="Arial,sans-serif" font-size="11" fill="#A32D2D">Contains: Brain only</text>
+  <text x="265" y="237" font-family="Arial,sans-serif" font-size="10" fill="#5a5a78">Within the skull</text>
+  <text x="265" y="253" font-family="Arial,sans-serif" font-size="10" fill="#5a5a78">Part of dorsal body cavity</text>
+</svg>

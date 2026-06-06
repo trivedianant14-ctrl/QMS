@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 280">
+  <rect width="480" height="280" fill="#F8F7FF"/>
+  <rect width="480" height="48" fill="#534AB7"/>
+  <text x="240" y="30" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" font-weight="bold" fill="white">Body Movement Terminology</text>
+  <text x="240" y="43" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#C5C2F5">Applied Anatomy · Chapter 1 — Reference Chart</text>
+
+  <!-- Abduction (correct) -->
+  <rect x="14" y="60" width="215" height="100" fill="#EEEDFE" rx="10"/>
+  <rect x="14" y="60" width="215" height="100" fill="none" stroke="#534AB7" stroke-width="2" rx="10"/>
+  <text x="28" y="81" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="#3C3489">Abduction ✓</text>
+  <rect x="28" y="85" width="36" height="2" fill="#534AB7" rx="1"/>
+  <text x="28" y="103" font-family="Arial,sans-serif" font-size="11" fill="#534AB7">Movement AWAY from midline</text>
+  <text x="28" y="120" font-family="Arial,sans-serif" font-size="10" fill="#5a5a78">Prefix: ab- (Latin: away)</text>
+  <text x="28" y="135" font-family="Arial,sans-serif" font-size="10" fill="#5a5a78">e.g. raising arms sideways</text>
+  <text x="204" y="140" text-anchor="end" font-family="Arial,sans-serif" font-size="26" fill="#534AB7">↙↘</text>
+
+  <!-- Adduction (wrong) -->
+  <rect x="251" y="60" width="215" height="100" fill="#FFF8F8" rx="10"/>
+  <rect x="251" y="60" width="215" height="100" fill="none" stroke="#F09595" stroke-width="1.5" rx="10"/>
+  <text x="265" y="81" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="#791F1F">Adduction ✗</text>
+  <text x="265" y="103" font-family="Arial,sans-serif" font-size="11" fill="#A32D2D">Movement TOWARD midline</text>
+  <text x="265" y="120" font-family="Arial,sans-serif" font-size="10" fill="#5a5a78">Prefix: ad- (Latin: toward)</text>
+  <text x="265" y="135" font-family="Arial,sans-serif" font-size="10" fill="#5a5a78">e.g. bringing arms to body</text>
+  <text x="456" y="140" text-anchor="end" font-family="Arial,sans-serif" font-size="26" fill="#F09595">↘↙</text>
+
+  <!-- Flexion (wrong) -->
+  <rect x="14" y="172" width="215" height="96" fill="#FFF8F8" rx="10"/>
+  <rect x="14" y="172" width="215" height="96" fill="none" stroke="#F09595" stroke-width="1.5" rx="10"/>
+  <text x="28" y="193" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="#791F1F">Flexion ✗</text>
+  <text x="28" y="213" font-family="Arial,sans-serif" font-size="11" fill="#A32D2D">DECREASES angle at a joint</text>
+  <text x="28" y="230" font-family="Arial,sans-serif" font-size="10" fill="#5a5a78">Bending movement</text>
+  <text x="28" y="246" font-family="Arial,sans-serif" font-size="10" fill="#5a5a78">e.g. bending elbow / knee</text>
+  <text x="204" y="258" text-anchor="end" font-family="Arial,sans-serif" font-size="20" fill="#F09595">∠↓</text>
+
+  <!-- Extension (wrong) -->
+  <rect x="251" y="172" width="215" height="96" fill="#FFF8F8" rx="10"/>
+  <rect x="251" y="172" width="215" height="96" fill="none" stroke="#F09595" stroke-width="1.5" rx="10"/>
+  <text x="265" y="193" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="#791F1F">Extension ✗</text>
+  <text x="265" y="213" font-family="Arial,sans-serif" font-size="11" fill="#A32D2D">INCREASES angle at a joint</text>
+  <text x="265" y="230" font-family="Arial,sans-serif" font-size="10" fill="#5a5a78">Straightening movement</text>
+  <text x="265" y="246" font-family="Arial,sans-serif" font-size="10" fill="#5a5a78">e.g. straightening elbow / knee</text>
+  <text x="456" y="258" text-anchor="end" font-family="Arial,sans-serif" font-size="20" fill="#F09595">∠↑</text>
+</svg>
