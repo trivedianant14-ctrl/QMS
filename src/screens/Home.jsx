@@ -160,19 +160,6 @@ export default function Home({ navigate, savedQs, bannerDismissed, setBannerDism
           </div>
         </div>
 
-        {/* Rapid Revision 2.0 */}
-        <div style={{ padding: '10px 16px 16px' }}>
-          <button style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', background: 'white', border: `1px solid ${BD}`, borderRadius: 14, cursor: 'pointer', textAlign: 'left' }}>
-            <div style={{ width: 38, height: 38, borderRadius: 10, background: `linear-gradient(135deg, ${P}, #8B82E0)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
-            </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: T1 }}>Rapid Revision 2.0</div>
-              <div style={{ fontSize: 11, color: T3, marginTop: 2 }}>Quick revision notes for all chapters</div>
-            </div>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T3} strokeWidth="2.5"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-        </div>
       </div>
 
       {/* Sticky continue + nav */}
