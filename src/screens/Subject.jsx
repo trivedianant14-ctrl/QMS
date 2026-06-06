@@ -76,7 +76,7 @@ export default function Subject({ navigate }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           {toggleBtn}
           <div style={{ display: 'flex', gap: 6 }}>
-            <button className="btn-sm-outline">Reattempt</button>
+            <button className="btn-sm-outline" onClick={() => navigate('pretest')}>Reattempt</button>
             <button className="btn-sm-primary" onClick={() => navigate('result')}>View Analysis →</button>
           </div>
         </div>

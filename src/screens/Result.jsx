@@ -9,7 +9,7 @@ function PieChart({ correct, incorrect, unattempted }) {
   const r = 54, cx = 70, cy = 70, circumference = 2 * Math.PI * r
   const cPct = correct / total, iPct = incorrect / total
   const cDash = cPct * circumference, iDash = iPct * circumference, uDash = (unattempted / total) * circumference
-  const cOffset = 0, iOffset = -cDash, uOffset = -(cDash + iDash)
+  const cOffset = 0, iOffset = circumference - cDash, uOffset = circumference - cDash - iDash
   return (
     <svg width="140" height="140" viewBox="0 0 140 140">
       {[

@@ -20,6 +20,7 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
   const [reportSub, setReportSub] = useState('')
   const [saveTag, setSaveTag] = useState('')
   const [reportSubmitted, setReportSubmitted] = useState(false)
+  const [saveSuccess, setSaveSuccess] = useState(false)
   const [timeLeft, setTimeLeft] = useState(timerPerQ)
   const [timedOut, setTimedOut] = useState(false)
   const [expandedSection, setExpandedSection] = useState('explanation')
@@ -31,7 +32,7 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
   const isCorrect = answered && selected === q?.correct
   const alreadySaved = savedQs.find(s => s.qId === q?.id)
 
-  // Timer
+  // Timer — restarts on new question or when timer setting changes; stops once answered
   useEffect(() => {
     if (isReviewMode || answered || !q) return
     setTimeLeft(timerPerQ)
@@ -48,7 +49,7 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
       })
     }, 1000)
     return () => clearInterval(interval)
-  }, [currentQ, q?.id])
+  }, [currentQ, answered, timerPerQ, isReviewMode])
 
   const handleAnswer = (optId) => {
     if (answered || timedOut || isReviewMode) return
@@ -76,7 +77,13 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
   }
 
   const handleSubmit = () => { setShowSubmitConfirm(false); submitTest() }
-  const handleSave = () => { if (saveTag) { saveQuestion(q.id, saveTag); setShowSaveModal(false); setSaveTag('') } }
+  const handleSave = () => {
+    if (saveTag) {
+      saveQuestion(q.id, saveTag)
+      setSaveSuccess(true)
+      setTimeout(() => { setShowSaveModal(false); setSaveTag(''); setSaveSuccess(false) }, 700)
+    }
+  }
 
   const unattempted = QUESTIONS.filter(q => !answers[q.id]).length
 
@@ -200,7 +207,7 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'white', borderTop: `1px solid ${BD}`, padding: '12px 16px', display: 'flex', gap: 10 }}>
         <button onClick={() => currentQ > 0 && setCurrentQ(c => c - 1)} className="btn-outline" style={{ flex: 1 }} disabled={currentQ === 0}>Previous</button>
         {isLastQ
-          ? <button onClick={() => !isReviewMode && setShowSubmitConfirm(true)} className="btn-primary" style={{ flex: 2 }}>{isReviewMode ? 'Done' : 'Submit'}</button>
+          ? <button onClick={() => isReviewMode ? navigate('result') : setShowSubmitConfirm(true)} className="btn-primary" style={{ flex: 2 }}>{isReviewMode ? 'Done' : 'Submit'}</button>
           : <button onClick={() => setCurrentQ(c => c + 1)} className="btn-primary" style={{ flex: 2 }}>Next →</button>
         }
       </div>
@@ -300,23 +307,30 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
 
       {/* Save question modal */}
       {showSaveModal && (
-        <div className="overlay" onClick={() => setShowSaveModal(false)}>
+        <div className="overlay" onClick={() => { setShowSaveModal(false); setSaveTag(''); setSaveSuccess(false) }}>
           <div className="sheet" onClick={e => e.stopPropagation()}>
             <div className="sheet-handle" />
             <div className="sheet-header">
               <span style={{ fontSize: 15, fontWeight: 700, color: T1 }}>Save Question</span>
-              <button onClick={() => setShowSaveModal(false)} style={{ background: 'none', border: 'none', fontSize: 22, color: T3, cursor: 'pointer' }}>×</button>
+              <button onClick={() => { setShowSaveModal(false); setSaveTag(''); setSaveSuccess(false) }} style={{ background: 'none', border: 'none', fontSize: 22, color: T3, cursor: 'pointer' }}>×</button>
             </div>
-            <div style={{ padding: '12px 20px 30px' }}>
-              <div style={{ fontSize: 12, color: T2, marginBottom: 14 }}>Why are you saving this question?</div>
-              {SAVE_TAGS.map(tag => (
-                <label key={tag.id} onClick={() => setSaveTag(tag.id)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 14px', borderRadius: 10, border: `2px solid ${saveTag === tag.id ? tag.border : BD}`, background: saveTag === tag.id ? tag.bg : 'white', cursor: 'pointer', marginBottom: 8 }}>
-                  <input type="radio" name="savetag" checked={saveTag === tag.id} onChange={() => setSaveTag(tag.id)} style={{ width: 16, height: 16, accentColor: tag.color }} />
-                  <span style={{ fontSize: 13, fontWeight: 600, color: saveTag === tag.id ? tag.color : T1 }}>{tag.label}</span>
-                </label>
-              ))}
-              <button onClick={handleSave} className="btn-primary" style={{ width: '100%', marginTop: 8, opacity: saveTag ? 1 : 0.5 }}>Save Question</button>
-            </div>
+            {saveSuccess ? (
+              <div style={{ padding: '30px 20px 40px', textAlign: 'center' }}>
+                <div style={{ width: 56, height: 56, borderRadius: '50%', background: PL, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px', fontSize: 24 }}>✓</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: T1 }}>Question saved!</div>
+              </div>
+            ) : (
+              <div style={{ padding: '12px 20px 30px' }}>
+                <div style={{ fontSize: 12, color: T2, marginBottom: 14 }}>Why are you saving this question?</div>
+                {SAVE_TAGS.map(tag => (
+                  <label key={tag.id} onClick={() => setSaveTag(tag.id)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 14px', borderRadius: 10, border: `2px solid ${saveTag === tag.id ? tag.border : BD}`, background: saveTag === tag.id ? tag.bg : 'white', cursor: 'pointer', marginBottom: 8 }}>
+                    <input type="radio" name="savetag" checked={saveTag === tag.id} onChange={() => setSaveTag(tag.id)} style={{ width: 16, height: 16, accentColor: tag.color }} />
+                    <span style={{ fontSize: 13, fontWeight: 600, color: saveTag === tag.id ? tag.color : T1 }}>{tag.label}</span>
+                  </label>
+                ))}
+                <button onClick={handleSave} className="btn-primary" style={{ width: '100%', marginTop: 8, opacity: saveTag ? 1 : 0.5 }}>Save Question</button>
+              </div>
+            )}
           </div>
         </div>
       )}
