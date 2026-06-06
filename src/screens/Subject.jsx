@@ -67,22 +67,12 @@ export default function Subject({ navigate }) {
           </div>
           <span style={{ background: '#EAF3DE', color: '#27500A', fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 20 }}>✓ Done</span>
         </div>
-        <div style={{ fontSize: 11, color: T2, marginBottom: 7 }}>{c.res.correct}/{c.res.total} correct</div>
-        <div style={{ background: '#EAF3DE', borderRadius: 10, padding: '10px 12px', marginBottom: open ? 7 : 9 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-            <span style={{ fontSize: 10, fontWeight: 600, color: '#3B6D11', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Your Rank</span>
-            <span style={{ fontSize: 13, fontWeight: 800, color: '#1F4A07' }}>{c.res.pct}th percentile</span>
-          </div>
-          <div style={{ height: 5, background: 'rgba(0,0,0,0.1)', borderRadius: 3, marginBottom: 5 }}>
-            <div style={{ height: 5, width: `${c.res.pct}%`, background: '#3B6D11', borderRadius: 3 }} />
-          </div>
-          <div style={{ fontSize: 10, color: '#3B6D11' }}>Top <strong>{100 - c.res.pct}%</strong> of students who attempted this chapter</div>
-        </div>
+        <div style={{ fontSize: 11, color: T2, marginBottom: open ? 7 : 9 }}>{c.res.correct}/{c.res.total} correct · {c.res.pct}th percentile</div>
         {diffPill}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           {toggleBtn}
           <div style={{ display: 'flex', gap: 6 }}>
-            <button className="btn-sm-outline" onClick={() => navigate('pretest')}>Reattempt</button>
+            <button className="btn-sm-outline" onClick={() => navigate('pretest')}>Re-attempt</button>
             <button className="btn-sm-primary" onClick={() => navigate('result')}>View Analysis →</button>
           </div>
         </div>
@@ -90,7 +80,6 @@ export default function Subject({ navigate }) {
     )
 
     if (c.state === 'paused') {
-      const pct = Math.round(c.prog.done / c.prog.total * 100)
       return (
         <div key={c.id} style={{ border: `1px solid #FAC775`, borderRadius: 14, padding: 13, marginBottom: 10, background: 'white' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
@@ -100,15 +89,7 @@ export default function Subject({ navigate }) {
             </div>
             <span style={{ background: '#FAEEDA', color: '#633806', fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 20 }}>Paused</span>
           </div>
-          <div style={{ marginBottom: open ? 7 : 9 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-              <span style={{ fontSize: 11, color: T2 }}>{c.prog.done}/{c.prog.total} Qs done</span>
-              <span style={{ fontSize: 11, color: '#854F0B', fontWeight: 600 }}>{pct}%</span>
-            </div>
-            <div style={{ height: 5, background: BG2, borderRadius: 3 }}>
-              <div style={{ height: 5, width: `${pct}%`, background: '#EF9F27', borderRadius: 3 }} />
-            </div>
-          </div>
+          <div style={{ fontSize: 11, color: T2, marginBottom: open ? 7 : 9 }}>{c.prog.total} Ques @ {c.marks} Marks</div>
           {diffPill}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             {toggleBtn}
@@ -127,7 +108,7 @@ export default function Subject({ navigate }) {
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T3} strokeWidth="2" strokeLinecap="round" opacity={0.5}><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
           <span style={{ fontSize: 13, fontWeight: 600, color: T1 }}>{c.name}</span>
         </div>
-        <div style={{ fontSize: 11, color: T3, marginBottom: open ? 7 : 9 }}>{c.topics} topics · {c.qs} Qs · {c.marks} marks</div>
+        <div style={{ fontSize: 11, color: T3, marginBottom: open ? 7 : 9 }}>{c.qs} Ques @ {c.marks} Marks</div>
         {diffPill}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           {toggleBtn}
@@ -136,7 +117,7 @@ export default function Subject({ navigate }) {
               ? <button className="btn-sm-purple-outline">Learn</button>
               : <button className="btn-sm-outline" disabled style={{ opacity: 0.4 }}>No video</button>
             }
-            <button className="btn-sm-primary" onClick={() => navigate('pretest')}>Attempt Now →</button>
+            <button className="btn-sm-primary" onClick={() => navigate('pretest')}>Attempt Now</button>
           </div>
         </div>
       </div>

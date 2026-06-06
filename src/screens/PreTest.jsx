@@ -38,8 +38,8 @@ export default function PreTest({ navigate, startAttempt, mode, setMode }) {
             <div style={{ fontSize: 12, fontWeight: 600, color: T2, marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Select Mode</div>
             <div style={{ display: 'flex', gap: 10 }}>
               {[
-                { id: 'guide', label: 'Guide Mode', desc: 'Solution shown immediately after each question', icon: '📖' },
-                { id: 'exam', label: 'Exam Mode', desc: 'Solution shown only after completing all questions', icon: '⏱' },
+                { id: 'guide', label: 'Guide Mode', desc: 'Solution will be visible immediately after you attempt the question.' },
+                { id: 'exam', label: 'Exam Mode', desc: 'Solution will be visible after you attempt all the question.' },
               ].map(m => (
                 <button key={m.id} onClick={() => setLocalMode(m.id)} style={{ flex: 1, padding: '12px 10px', borderRadius: 12, border: `2px solid ${localMode === m.id ? P : BD}`, background: localMode === m.id ? PL : 'white', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}>
                   <div style={{ fontSize: 13, fontWeight: 700, color: localMode === m.id ? PD : T1, marginBottom: 5 }}>{m.label}</div>
@@ -52,14 +52,9 @@ export default function PreTest({ navigate, startAttempt, mode, setMode }) {
 
           {/* Chapter info */}
           <div style={{ background: BG2, borderRadius: 12, padding: '12px 14px', marginBottom: 18 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-              {[['Subject', 'Applied Anatomy'], ['Chapter', 'Anatomical Terms'], ['Questions', '21 Qs']].map(([k, v]) => (
-                <div key={k}>
-                  <div style={{ fontSize: 10, color: T3, fontWeight: 500, marginBottom: 2 }}>{k}</div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: T1 }}>{v}</div>
-                </div>
-              ))}
-            </div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: P, marginBottom: 2 }}>Applied Anatomy</div>
+            <div style={{ fontSize: 13, fontWeight: 500, color: T1, marginBottom: 4 }}>Anatomical Terms</div>
+            <div style={{ fontSize: 12, color: T3 }}>21 Ques</div>
           </div>
 
           {/* Topics list */}
@@ -90,7 +85,7 @@ export default function PreTest({ navigate, startAttempt, mode, setMode }) {
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="#E65100"><polygon points="5,3 19,12 5,21"/></svg>
               </div>
               <div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#5D4037' }}>Still unsure? Watch the reference video</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#5D4037' }}>Want to revise before attempting? Watch the chapter video first.</div>
                 <div style={{ fontSize: 11, color: '#8D6E63' }}>Chapter overview · 12 min</div>
               </div>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E65100" strokeWidth="2.5" style={{ marginLeft: 'auto' }}><path d="M9 18l6-6-6-6"/></svg>
@@ -102,7 +97,7 @@ export default function PreTest({ navigate, startAttempt, mode, setMode }) {
       {/* Action buttons */}
       <div style={{ padding: '12px 16px', borderTop: `1px solid ${BD}`, display: 'flex', gap: 10, background: 'white' }}>
         <button onClick={() => navigate('subject')} className="btn-outline" style={{ flex: 1 }}>Cancel</button>
-        <button onClick={handleAttempt} className="btn-primary" style={{ flex: 2 }}>Attempt →</button>
+        <button onClick={handleAttempt} className="btn-primary" style={{ flex: 2 }}>Attempt</button>
       </div>
     </div>
   )

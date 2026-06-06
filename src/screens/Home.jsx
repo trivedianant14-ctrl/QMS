@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { SUBJECTS, SAVE_TAGS, TOPPER } from '../data'
+import { SUBJECTS } from '../data'
 
 const P = '#534AB7', PL = '#EEEDFE', PB = '#AFA9EC', PD = '#3C3489'
 const T1 = '#1a1a2e', T2 = '#5a5a78', T3 = '#9898b0', BD = '#e8e8f2', BG2 = '#f5f5fb'
@@ -28,13 +28,6 @@ export default function Home({ navigate, savedQs, bannerDismissed, setBannerDism
   const todayQs = 12, overallAcc = 71
   const [continueDismissed, setContinueDismissed] = useState(false)
 
-  const recentSaves = savedQs.slice(-3).reverse()
-
-  const tagStyle = (tag) => {
-    const map = { wrong: { bg: '#FCEBEB', c: '#791F1F' }, important: { bg: PL, c: PD }, revision: { bg: '#FAEEDA', c: '#633806' }, tricky: { bg: '#EAF3DE', c: '#3B6D11' } }
-    return map[tag] || map.important
-  }
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Status bar */}
@@ -60,15 +53,15 @@ export default function Home({ navigate, savedQs, bannerDismissed, setBannerDism
         </div>
       </div>
 
-      {/* Today's Questions — sticky strip */}
+      {/* Daily Progress — sticky strip */}
       <div style={{ flexShrink: 0, padding: '10px 16px', borderBottom: `1px solid ${BD}`, background: 'white' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white', border: `1px solid ${BD}`, borderRadius: 14, padding: 14 }}>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 11, color: T3, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 500 }}>Today's Questions</div>
+            <div style={{ fontSize: 11, color: T3, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 500 }}>Daily Progress</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
               <span style={{ fontSize: 26, fontWeight: 700, color: T1 }}>{todayQs}</span>
-              <span style={{ fontSize: 13, color: T2 }}>solved today</span>
             </div>
+            <div style={{ fontSize: 11, color: T3, marginTop: 2 }}>Question Attempted</div>
           </div>
           <div style={{ marginLeft: 14, textAlign: 'center', background: BG2, borderRadius: 10, padding: '8px 14px' }}>
             <div style={{ fontSize: 11, color: T3, marginBottom: 2 }}>Overall Accuracy</div>
@@ -82,53 +75,27 @@ export default function Home({ navigate, savedQs, bannerDismissed, setBannerDism
 
         {/* AIR Banner */}
         {!bannerDismissed && (
-          <div style={{ margin: '14px 16px 0', background: `linear-gradient(135deg, #3730A3 0%, #534AB7 50%, #7C73E6 100%)`, borderRadius: 16, padding: '16px', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ margin: '14px 16px 0', background: `linear-gradient(135deg, #3730A3 0%, #534AB7 50%, #7C73E6 100%)`, borderRadius: 16, padding: '16px', position: 'relative', overflow: 'hidden', cursor: 'pointer' }}>
             <div style={{ position: 'absolute', top: -20, right: -20, width: 100, height: 100, borderRadius: '50%', background: 'rgba(255,255,255,0.06)' }} />
             <div style={{ position: 'absolute', bottom: -30, left: 40, width: 140, height: 140, borderRadius: '50%', background: 'rgba(255,255,255,0.04)' }} />
             <button onClick={() => setBannerDismissed(true)} style={{ position: 'absolute', top: 10, right: 10, background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '50%', width: 24, height: 24, color: 'white', fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>×</button>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-              <span style={{ background: 'rgba(255,255,255,0.2)', color: 'white', fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 20 }}>★ {TOPPER.rank} · {TOPPER.exam}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+              <span style={{ background: 'rgba(255,255,255,0.2)', color: 'white', fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 20 }}>★ AIR 15</span>
             </div>
-            <p style={{ color: 'rgba(255,255,255,0.95)', fontSize: 13, fontWeight: 500, lineHeight: 1.5, marginBottom: 12 }}>"{TOPPER.quote}"</p>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11 }}>— {TOPPER.name}</span>
-              <button style={{ background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: 20, padding: '5px 12px', color: 'white', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>Read strategy →</button>
+            <p style={{ color: 'rgba(255,255,255,0.95)', fontSize: 14, fontWeight: 600, lineHeight: 1.5, marginBottom: 12 }}>How Qbank helped AIR 15 in their journey</p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button style={{ background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: 20, padding: '5px 12px', color: 'white', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>Read More →</button>
             </div>
           </div>
         )}
 
-        {/* Saved Questions Card */}
-        <div style={{ margin: '10px 16px 0', background: 'white', border: `1px solid ${BD}`, borderRadius: 14, padding: 14 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 28, height: 28, borderRadius: 8, background: PL, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={P} strokeWidth="2.2" strokeLinecap="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
-              </div>
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: T1 }}>Saved Questions</div>
-                <div style={{ fontSize: 11, color: T3 }}>{savedQs.length > 0 ? `${savedQs.length} saved` : 'None saved yet'}</div>
-              </div>
-            </div>
-            <button onClick={() => navigate('saved')} style={{ fontSize: 11, color: P, fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}>View all →</button>
-          </div>
-          {savedQs.length === 0 ? (
-            <div style={{ background: BG2, borderRadius: 10, padding: '12px', textAlign: 'center' }}>
-              <p style={{ fontSize: 12, color: T3, lineHeight: 1.5 }}>Save questions while practising to review them here. Tap the bookmark icon after answering a question.</p>
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {recentSaves.map(s => {
-                const ts = tagStyle(s.tag)
-                const tag = SAVE_TAGS.find(t => t.id === s.tag)
-                return (
-                  <div key={s.qId} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 10px', background: BG2, borderRadius: 8 }}>
-                    <span style={{ fontSize: 12, color: T2, flex: 1 }}>Q{s.qId} — Anatomical Terms</span>
-                    <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 20, background: ts.bg, color: ts.c }}>{tag?.label}</span>
-                  </div>
-                )
-              })}
-            </div>
-          )}
+        {/* Saved Questions Link */}
+        <div style={{ margin: '10px 16px 0' }}>
+          <button onClick={() => navigate('saved')} style={{ width: '100%', background: PL, border: `1px solid ${PB}`, borderRadius: 12, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', textAlign: 'left' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={P} strokeWidth="2.2" strokeLinecap="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+            <span style={{ fontSize: 13, fontWeight: 600, color: PD, flex: 1 }}>Click Here to view your saved questions</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={P} strokeWidth="2.5"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
         </div>
 
         {/* Subjects */}
@@ -136,6 +103,9 @@ export default function Home({ navigate, savedQs, bannerDismissed, setBannerDism
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
             <span style={{ fontSize: 14, fontWeight: 700, color: T1 }}>Subjects</span>
             <span style={{ fontSize: 11, fontWeight: 600, color: P, background: PL, padding: '2px 8px', borderRadius: 20 }}>E5</span>
+            <button style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: T2, display: 'flex', alignItems: 'center', padding: 2 }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"/></svg>
+            </button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {SUBJECTS.map(s => {
