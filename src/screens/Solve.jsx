@@ -197,13 +197,29 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
           ))}
         </div>
 
-        {/* Feedback banner */}
+        {/* Feedback banner + inline quick-save */}
         {selected === 'timeout' && (
           <div style={{ background: '#FFF3E0', border: '1px solid #FFB74D', borderRadius: 10, padding: '10px 14px', marginBottom: 12, fontSize: 13, fontWeight: 600, color: '#E65100', textAlign: 'center' }}>Oops you ran out of time.</div>
         )}
         {answered && selected !== 'timeout' && (
-          <div style={{ background: isCorrect ? '#EAF3DE' : '#FCEBEB', border: `1px solid ${isCorrect ? '#97C459' : '#F09595'}`, borderRadius: 10, padding: '10px 14px', marginBottom: 16, fontSize: 13, fontWeight: 600, color: isCorrect ? '#27500A' : '#791F1F', textAlign: 'center' }}>
-            {isCorrect ? 'Wonderful, you got this question right.' : 'Sorry this time it was not correct. Check explanation to learn more.'}
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ background: isCorrect ? '#EAF3DE' : '#FCEBEB', border: `1px solid ${isCorrect ? '#97C459' : '#F09595'}`, borderRadius: 10, padding: '10px 14px', marginBottom: 8, fontSize: 13, fontWeight: 600, color: isCorrect ? '#27500A' : '#791F1F', textAlign: 'center' }}>
+              {isCorrect ? 'Wonderful, you got this question right.' : 'Sorry this time it was not correct. Check explanation to learn more.'}
+            </div>
+            {/* Inline bookmark — one tap to save, no modal */}
+            {!isReviewMode && (
+              alreadySaved
+                ? <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '7px 12px', background: PL, borderRadius: 8, border: `1px solid ${PB}` }}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill={P} stroke={P} strokeWidth="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: PD }}>Saved</span>
+                    <span style={{ fontSize: 11, color: P, marginLeft: 2 }}>· {SAVE_TAGS.find(t => t.id === alreadySaved.tag)?.label}</span>
+                    <button onClick={() => { setSaveTag(alreadySaved.tag); setShowSaveModal(true) }} style={{ marginLeft: 4, background: 'none', border: 'none', fontSize: 11, color: P, cursor: 'pointer', textDecoration: 'underline', padding: 0 }}>Change</button>
+                  </div>
+                : <button onClick={() => { saveQuestion(q.id, isCorrect ? 'important' : 'wrong') }} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, padding: '8px 12px', background: 'white', border: `1px solid ${BD}`, borderRadius: 8, cursor: 'pointer', fontSize: 12, fontWeight: 600, color: T2 }}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+                    Save this question
+                  </button>
+            )}
           </div>
         )}
 
@@ -282,6 +298,20 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
                 </div>
               </div>
             )}
+
+            {/* Learn video CTA */}
+            <div style={{ background: '#FFF8E7', border: '1px solid #FFE082', borderRadius: 12, padding: '12px 14px', marginBottom: 8, cursor: 'pointer' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 32, height: 32, borderRadius: 8, background: '#FFE082', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="#E65100"><polygon points="5,3 19,12 5,21"/></svg>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#5D4037' }}>Want to learn more? Watch the chapter video.</div>
+                  <div style={{ fontSize: 11, color: '#8D6E63', marginTop: 2 }}>{q?.learnTopic} · Chapter overview · 12 min</div>
+                </div>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E65100" strokeWidth="2.5"><path d="M9 18l6-6-6-6"/></svg>
+              </div>
+            </div>
 
           </div>
         )}
