@@ -372,31 +372,90 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
         </div>
       )}
 
-      {/* Question grid overlay */}
-      {showGrid && (
-        <div className="popup-overlay" onClick={() => setShowGrid(false)}>
-          <div className="popup" onClick={e => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <span style={{ fontSize: 15, fontWeight: 700, color: T1 }}>Question Overview</span>
-              <button onClick={() => setShowGrid(false)} style={{ background: 'none', border: 'none', fontSize: 22, color: T3, cursor: 'pointer' }}>×</button>
+      {/* Question grid — full-screen overlay */}
+      {showGrid && (() => {
+        const gridCorrect = QUESTIONS.filter(q => answers[q.id] && answers[q.id] === q.correct).length
+        const gridIncorrect = QUESTIONS.filter(q => answers[q.id] && answers[q.id] !== q.correct && answers[q.id] !== 'timeout').length
+        const gridMissed = QUESTIONS.filter(q => answers[q.id] === 'timeout').length
+        const gridAttempted = QUESTIONS.filter(q => !!answers[q.id]).length
+        const gridUnattempted = QUESTIONS.length - gridAttempted
+        const gridAccuracy = gridAttempted > 0 ? Math.round((gridCorrect / gridAttempted) * 100) : 0
+        return (
+          <div style={{ position: 'absolute', inset: 0, zIndex: 50, background: 'white', display: 'flex', flexDirection: 'column' }}>
+
+            {/* Top bar */}
+            <div style={{ padding: '14px 20px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: `1px solid ${BD}`, flexShrink: 0 }}>
+              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: T2, display: 'flex' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+              </button>
+              <div style={{ width: 40, height: 4, background: BD, borderRadius: 2 }} />
+              <button onClick={() => setShowSettings(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T2, display: 'flex' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+              </button>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 8, marginBottom: 16 }}>
-              {QUESTIONS.map((_, i) => {
-                const dc = getDotColor(i)
-                return <button key={i} onClick={() => { setCurrentQ(i); setShowGrid(false) }} style={{ aspectRatio: '1', borderRadius: 8, border: `1.5px solid ${dc.border}`, background: dc.bg, color: dc.c, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>{i + 1}</button>
-              })}
+
+            {/* Chapter name */}
+            <div style={{ padding: '16px 20px 0', flexShrink: 0 }}>
+              <div style={{ fontSize: 20, fontWeight: 800, color: T1, lineHeight: 1.3 }}>Anatomical Terms</div>
             </div>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {[{ bg: '#EAF3DE', c: '#27500A', b: '#97C459', l: 'Correct' }, { bg: '#FCEBEB', c: '#791F1F', b: '#F09595', l: 'Wrong' }, { bg: '#FFF3E0', c: '#E65100', b: '#FFB74D', l: 'Timed out' }, { bg: BG2, c: T3, b: BD, l: 'Not attempted' }].map(item => (
-                <div key={item.l} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                  <div style={{ width: 12, height: 12, borderRadius: 3, background: item.bg, border: `1px solid ${item.b}` }} />
-                  <span style={{ fontSize: 11, color: T2 }}>{item.l}</span>
+
+            {/* Scrollable body */}
+            <div className="scroll" style={{ flex: 1, overflowY: 'auto', padding: '16px 20px 100px' }}>
+
+              {/* Stats card */}
+              <div style={{ border: `1px solid ${BD}`, borderRadius: 16, padding: '16px', marginBottom: 22 }}>
+                <div style={{ display: 'flex', alignItems: 'stretch' }}>
+                  {/* Left: 2×2 stats */}
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <div style={{ display: 'flex', gap: 28 }}>
+                      <div><span style={{ fontSize: 18, fontWeight: 800, color: '#27500A' }}>{String(gridCorrect).padStart(2,'0')}</span> <span style={{ fontSize: 13, color: T3 }}>Correct</span></div>
+                      <div><span style={{ fontSize: 18, fontWeight: 800, color: '#791F1F' }}>{String(gridIncorrect).padStart(2,'0')}</span> <span style={{ fontSize: 13, color: T3 }}>Incorrect</span></div>
+                    </div>
+                    <div style={{ display: 'flex', gap: 28 }}>
+                      <div><span style={{ fontSize: 18, fontWeight: 800, color: '#E65100' }}>{String(gridMissed).padStart(2,'0')}</span> <span style={{ fontSize: 13, color: T3 }}>Missed</span></div>
+                      <div><span style={{ fontSize: 18, fontWeight: 800, color: T1 }}>{gridUnattempted}</span> <span style={{ fontSize: 13, color: T3 }}>Unattempted</span></div>
+                    </div>
+                  </div>
+                  {/* Right: accuracy % */}
+                  <div style={{ paddingLeft: 20, borderLeft: `1px solid ${BD}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minWidth: 72 }}>
+                    <div style={{ fontSize: 30, fontWeight: 900, color: T1, lineHeight: 1 }}>{gridAccuracy}%</div>
+                    <div style={{ fontSize: 12, color: T3, marginTop: 3 }}>correct</div>
+                  </div>
                 </div>
-              ))}
+                {/* Progress bar */}
+                <div style={{ marginTop: 14, height: 6, background: BG2, borderRadius: 3 }}>
+                  <div style={{ height: 6, width: `${gridAccuracy}%`, background: gridAccuracy >= 70 ? '#3B6D11' : gridAccuracy >= 50 ? P : BD, borderRadius: 3, transition: 'width 0.3s' }} />
+                </div>
+              </div>
+
+              {/* Summary header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                <span style={{ fontSize: 16, fontWeight: 700, color: T1 }}>Summary</span>
+                <span style={{ fontSize: 12, color: T3 }}>{gridAttempted} / {QUESTIONS.length} attempted</span>
+              </div>
+
+              {/* 4-column question grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+                {QUESTIONS.map((_, i) => {
+                  const dc = getDotColor(i)
+                  const isCurrent = i === currentQ
+                  return (
+                    <button key={i} onClick={() => { setCurrentQ(i); setShowGrid(false) }} style={{ padding: '16px 0', borderRadius: 12, border: `2px solid ${isCurrent ? P : dc.border}`, background: dc.bg, color: dc.c, fontSize: 16, fontWeight: 700, cursor: 'pointer', boxShadow: isCurrent ? `0 0 0 3px ${PL}` : 'none' }}>
+                      {String(i + 1).padStart(2, '0')}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Bottom buttons */}
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '12px 20px', background: 'white', borderTop: `1px solid ${BD}`, display: 'flex', gap: 10 }}>
+              <button onClick={() => { setShowGrid(false); setShowExitConfirm(true) }} className="btn-outline" style={{ flex: 1 }}>Quit</button>
+              <button onClick={() => setShowGrid(false)} className="btn-primary" style={{ flex: 2 }}>Resume</button>
             </div>
           </div>
-        </div>
-      )}
+        )
+      })()}
 
       {/* Submit confirm popup */}
       {showSubmitConfirm && (
