@@ -49,6 +49,7 @@ export const QUESTIONS = [
     approach: 'Focus on the Latin prefix: "ab-" = away from (abnormal, absent, abduct). "ad-" = toward (add, adjacent, adduct). When you see any anatomical movement term, split it into prefix + root. This works for abduction, adduction, abductor muscles, and more.',
     referenceBook: { name: "Gray's Anatomy", edition: '41st Edition', page: 84 },
     visual: '/img/visual-movements.svg',
+    clinical: 'Range-of-motion (ROM) exercises are a core nursing intervention for immobilised patients. Correctly documenting "shoulder abduction to 90°" vs "adduction contracture" guides physiotherapy and helps assess recovery after stroke or hip arthroplasty. Nurses must distinguish these terms precisely in care plans.',
     glossary: {
       'Abduction': 'Movement of a limb AWAY from the midline. From Latin "ab-" (away from). Example: raising your arms sideways out from the body.',
       'adduction': 'Movement of a limb TOWARD the midline. The direct opposite of abduction. From Latin "ad-" (toward). Example: bringing arms back to your sides.',
@@ -80,6 +81,7 @@ export const QUESTIONS = [
     approach: 'Match the plane to its axis of cut: Sagittal = front-to-back cut → Left/Right. Coronal = side-to-side cut → Anterior/Posterior. Transverse = horizontal cut → Superior/Inferior. Memory trick: "Sagittal Splits Left and Right."',
     referenceBook: { name: 'Clinical Anatomy by Regions', edition: '9th Edition', page: 12 },
     visual: '/img/visual-planes.svg',
+    clinical: 'CT and MRI reports describe anatomy using these planes daily. When a physician requests "a sagittal MRI of the lumbar spine," understanding the plane helps you position the patient correctly, interpret the report, and relay findings accurately to the care team.',
     glossary: {
       'sagittal plane': 'A vertical plane running front-to-back that divides the body into left and right sections. The midsagittal plane creates equal halves.',
       'midsagittal': 'A sagittal plane running exactly through the midline, dividing the body into two perfectly equal left and right halves.',
@@ -111,6 +113,7 @@ export const QUESTIONS = [
     approach: 'First identify the type of directional relationship: vertical (superior/inferior), front-back (anterior/posterior), or side (medial/lateral). Here, the heart is in the CHEST and the stomach is in the ABDOMEN. Chest is above the abdomen — so the correct directional term is superior.',
     referenceBook: { name: "Moore's Clinically Oriented Anatomy", edition: '8th Edition', page: 28 },
     visual: '/img/visual-planes.svg',
+    clinical: 'Precise directional language prevents errors in clinical documentation. Describing a wound as "3 cm superior to the umbilicus" is unambiguous across all clinicians. This matters in wound care charting, IV site documentation, surgical referrals, and handover communication.',
     glossary: {
       'superior': 'A directional term meaning above or closer to the head end of the body. Opposite of inferior (below). Example: the heart is superior to the stomach.',
       'thoracic cavity': 'The chest cavity bounded by the rib cage, sternum, and diaphragm. Contains the heart, lungs, trachea, esophagus, and major blood vessels.',
@@ -142,6 +145,7 @@ export const QUESTIONS = [
     approach: 'Memorize the standard anatomical position as a fixed mental image: standing upright, facing forward, feet together, arms at sides with PALMS FORWARD (supinated). Every directional term in anatomy is defined relative to this position. When in doubt, return to this mental picture.',
     referenceBook: { name: "Gray's Anatomy", edition: '41st Edition', page: 3 },
     visual: '/img/visual-movements.svg',
+    clinical: 'All physical assessment documentation assumes standard anatomical position. When a nurse writes "tenderness 4 cm inferior to the right clavicle," both the recording nurse and any reviewing clinician must share the same reference frame. Deviations from this convention cause dangerous miscommunication.',
     glossary: {
       'anatomical position': 'The standard body reference position: standing erect, facing forward, feet together, arms at sides with palms facing anteriorly. All directional terms are defined relative to this position.',
       'anteriorly': 'Toward the front of the body. In anatomical position, palms face anteriorly (forward). Synonymous with "ventrally".',
@@ -173,6 +177,7 @@ export const QUESTIONS = [
     approach: 'Learn directional terms in pairs: Anterior/Ventral (front) ↔ Posterior/Dorsal (back). Superior (head end) ↔ Inferior (feet end). Medial (toward midline) ↔ Lateral (away from midline). Recognising these pairs makes elimination much faster in exams.',
     referenceBook: { name: 'Principles of Anatomy and Physiology', edition: '15th Edition', page: 17 },
     visual: '/img/visual-planes.svg',
+    clinical: 'The anterior cruciate ligament (ACL) is among the most common sports injuries managed in orthopedic nursing. Knowing "anterior" refers to the front of the knee lets you understand injury mechanics, accurately explain anatomy to patients, and correctly implement post-op rehabilitation and weight-bearing protocols.',
     glossary: {
       'anterior': 'The front surface of the body. Synonymous with ventral. Opposite of posterior (back). Example: the anterior surface of the hand is the palm side.',
       'ventral': 'Relating to the front or belly side of the body. Synonymous with anterior. Opposite of dorsal (back).',
@@ -204,6 +209,7 @@ export const QUESTIONS = [
     approach: 'Divide the body into two major cavity groups: Dorsal (cranial + spinal) and Ventral (thoracic + abdominopelvic). The diaphragm separates thoracic from abdominal. When asked which cavity holds the heart AND lungs together — always thoracic.',
     referenceBook: { name: "Gray's Anatomy", edition: '41st Edition', page: 52 },
     visual: '/img/visual-cavities.svg',
+    clinical: 'Critical care procedures directly target thoracic cavity structures: chest tube insertion drains the pleural space, pericardiocentesis removes pericardial fluid, and intubation navigates the thoracic airway. Knowing the exact boundaries and contents of this cavity prevents procedural errors and helps anticipate complications.',
     glossary: {
       'thoracic cavity': 'The chest cavity bounded by the rib cage, sternum, thoracic vertebrae, and diaphragm. Contains the heart and both lungs.',
       'pericardial cavity': 'The fluid-filled space surrounding the heart, enclosed within the pericardium (a double-walled protective sac).',

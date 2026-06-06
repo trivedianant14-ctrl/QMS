@@ -56,6 +56,7 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
   const [touchStartScale, setTouchStartScale] = useState(1)
   const [glossaryTerm, setGlossaryTerm] = useState(null)
   const [audioPlaying, setAudioPlaying] = useState(false)
+  const [clinicalOpen, setClinicalOpen] = useState(false)
 
   const q = QUESTIONS[currentQ]
   const answered = answers[q?.id] !== undefined
@@ -126,6 +127,7 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
   useEffect(() => {
     setAudioPlaying(false)
     setGlossaryTerm(null)
+    setClinicalOpen(false)
   }, [currentQ])
 
   const renderExplanationText = (text, glossary) => {
@@ -148,7 +150,7 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
       parts.push(
         <span key={k++}
           onClick={(e) => { e.stopPropagation(); setGlossaryTerm({ term: matchedTerm, def: glossary[matchedTerm] }) }}
-          style={{ color: P, fontWeight: 700, background: PL, borderRadius: 3, padding: '0 2px', cursor: 'pointer', textDecoration: 'underline', textDecorationStyle: 'dotted' }}>
+          style={{ color: P, fontWeight: 700, background: PL, borderRadius: 3, padding: '0 2px', cursor: 'pointer' }}>
           {matched}
         </span>
       )
@@ -167,7 +169,7 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
         <div style={{ padding: '4px 16px 10px', display: 'flex', alignItems: 'center', gap: 10 }}>
           <button onClick={() => isReviewMode ? navigate('result') : setShowExitConfirm(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T1, fontSize: 20, lineHeight: 1, display: 'flex', alignItems: 'center', fontWeight: 700 }}>✕</button>
           <div style={{ flex: 1, textAlign: 'center' }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: T1 }}>E5</div>
+            <div style={{ fontSize: 13, fontWeight: 900, color: 'white', background: P, borderRadius: 7, padding: '3px 11px', letterSpacing: '0.08em' }}>E5</div>
           </div>
           <button onClick={() => setShowSettings(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T2 }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
@@ -274,6 +276,26 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
                 {renderExplanationText(q?.explanation, q?.glossary)}
               </div>
             </div>
+
+            {/* Clinical relevance — collapsed dropdown */}
+            {q?.clinical && (
+              <div style={{ marginBottom: 18, border: `1px solid ${BD}`, borderRadius: 12, overflow: 'hidden' }}>
+                <button onClick={() => setClinicalOpen(o => !o)} style={{ width: '100%', padding: '13px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: clinicalOpen ? '#FFF8E7' : 'white', border: 'none', cursor: 'pointer' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ width: 22, height: 22, borderRadius: 6, background: '#FFE082', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#E65100" strokeWidth="2.5" strokeLinecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                    </div>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: T1 }}>Clinical Relevance</span>
+                  </div>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T3} strokeWidth="2.5">
+                    {clinicalOpen ? <path d="M18 15l-6-6-6 6"/> : <path d="M6 9l6 6 6-6"/>}
+                  </svg>
+                </button>
+                {clinicalOpen && (
+                  <div style={{ padding: '12px 14px 14px', fontSize: 13, color: T2, lineHeight: 1.65, borderTop: '1px solid #FFE082', background: '#FFFDF0' }}>{q.clinical}</div>
+                )}
+              </div>
+            )}
 
             {/* Why other options were wrong */}
             {q?.distractors?.length > 0 && (
@@ -504,7 +526,7 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
         </div>
       )}
 
-      {/* Question grid — full-screen overlay */}
+      {/* Question grid — half-sheet */}
       {showGrid && (() => {
         const gridCorrect = QUESTIONS.filter(q => answers[q.id] && answers[q.id] === q.correct).length
         const gridIncorrect = QUESTIONS.filter(q => answers[q.id] && answers[q.id] !== q.correct && answers[q.id] !== 'timeout').length
@@ -512,78 +534,75 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
         const gridAttempted = QUESTIONS.filter(q => !!answers[q.id]).length
         const gridUnattempted = QUESTIONS.length - gridAttempted
         const gridAccuracy = gridAttempted > 0 ? Math.round((gridCorrect / gridAttempted) * 100) : 0
+        const gridAttemptedPct = Math.round((gridAttempted / QUESTIONS.length) * 100)
         return (
-          <div style={{ position: 'absolute', inset: 0, zIndex: 50, background: 'white', display: 'flex', flexDirection: 'column' }}>
+          <div className="overlay" onClick={() => setShowGrid(false)}>
+            <div className="sheet" style={{ maxHeight: '64%' }} onClick={e => e.stopPropagation()}>
+              <div className="sheet-handle" />
 
-            {/* Top bar */}
-            <div style={{ padding: '14px 20px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: `1px solid ${BD}`, flexShrink: 0 }}>
-              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: T2, display: 'flex' }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-              </button>
-              <div style={{ width: 40, height: 4, background: BD, borderRadius: 2 }} />
-              <button onClick={() => setShowSettings(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T2, display: 'flex' }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-              </button>
-            </div>
+              {/* Header */}
+              <div style={{ padding: '10px 20px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: `1px solid ${BD}`, flexShrink: 0 }}>
+                <div style={{ fontSize: 15, fontWeight: 800, color: T1 }}>Anatomical Terms</div>
+                <button onClick={() => { setShowGrid(false); setShowSettings(true) }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T2, display: 'flex' }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                </button>
+              </div>
 
-            {/* Chapter name */}
-            <div style={{ padding: '16px 20px 0', flexShrink: 0 }}>
-              <div style={{ fontSize: 20, fontWeight: 800, color: T1, lineHeight: 1.3 }}>Anatomical Terms</div>
-            </div>
+              {/* Scrollable body */}
+              <div className="scroll" style={{ overflowY: 'auto', padding: '14px 20px 16px' }}>
 
-            {/* Scrollable body */}
-            <div className="scroll" style={{ flex: 1, overflowY: 'auto', padding: '16px 20px 100px' }}>
-
-              {/* Stats card */}
-              <div style={{ border: `1px solid ${BD}`, borderRadius: 16, padding: '16px', marginBottom: 22 }}>
-                <div style={{ display: 'flex', alignItems: 'stretch' }}>
-                  {/* Left: 2×2 stats */}
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    <div style={{ display: 'flex', gap: 28 }}>
-                      <div><span style={{ fontSize: 18, fontWeight: 800, color: '#27500A' }}>{String(gridCorrect).padStart(2,'0')}</span> <span style={{ fontSize: 13, color: T3 }}>Correct</span></div>
-                      <div><span style={{ fontSize: 18, fontWeight: 800, color: '#791F1F' }}>{String(gridIncorrect).padStart(2,'0')}</span> <span style={{ fontSize: 13, color: T3 }}>Incorrect</span></div>
+                {/* Stats card */}
+                <div style={{ border: `1px solid ${BD}`, borderRadius: 14, padding: '13px 14px', marginBottom: 16 }}>
+                  <div style={{ display: 'flex', alignItems: 'stretch' }}>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      <div style={{ display: 'flex', gap: 22 }}>
+                        <div><span style={{ fontSize: 17, fontWeight: 800, color: '#27500A' }}>{String(gridCorrect).padStart(2,'0')}</span> <span style={{ fontSize: 11, color: T3 }}>Correct</span></div>
+                        <div><span style={{ fontSize: 17, fontWeight: 800, color: '#791F1F' }}>{String(gridIncorrect).padStart(2,'0')}</span> <span style={{ fontSize: 11, color: T3 }}>Incorrect</span></div>
+                      </div>
+                      <div style={{ display: 'flex', gap: 22 }}>
+                        <div><span style={{ fontSize: 17, fontWeight: 800, color: '#E65100' }}>{String(gridMissed).padStart(2,'0')}</span> <span style={{ fontSize: 11, color: T3 }}>Missed</span></div>
+                        <div><span style={{ fontSize: 17, fontWeight: 800, color: T1 }}>{gridUnattempted}</span> <span style={{ fontSize: 11, color: T3 }}>Unattempted</span></div>
+                      </div>
                     </div>
-                    <div style={{ display: 'flex', gap: 28 }}>
-                      <div><span style={{ fontSize: 18, fontWeight: 800, color: '#E65100' }}>{String(gridMissed).padStart(2,'0')}</span> <span style={{ fontSize: 13, color: T3 }}>Missed</span></div>
-                      <div><span style={{ fontSize: 18, fontWeight: 800, color: T1 }}>{gridUnattempted}</span> <span style={{ fontSize: 13, color: T3 }}>Unattempted</span></div>
+                    <div style={{ paddingLeft: 16, borderLeft: `1px solid ${BD}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minWidth: 64 }}>
+                      <div style={{ fontSize: 26, fontWeight: 900, color: T1, lineHeight: 1 }}>{gridAccuracy}%</div>
+                      <div style={{ fontSize: 10, color: T3, marginTop: 2 }}>accuracy</div>
                     </div>
                   </div>
-                  {/* Right: accuracy % */}
-                  <div style={{ paddingLeft: 20, borderLeft: `1px solid ${BD}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minWidth: 72 }}>
-                    <div style={{ fontSize: 30, fontWeight: 900, color: T1, lineHeight: 1 }}>{gridAccuracy}%</div>
-                    <div style={{ fontSize: 12, color: T3, marginTop: 3 }}>correct</div>
+                  {/* Progress bar — questions attempted */}
+                  <div style={{ marginTop: 10 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                      <span style={{ fontSize: 10, color: T3 }}>Questions attempted</span>
+                      <span style={{ fontSize: 10, fontWeight: 600, color: T2 }}>{gridAttempted} / {QUESTIONS.length}</span>
+                    </div>
+                    <div style={{ height: 5, background: BG2, borderRadius: 3 }}>
+                      <div style={{ height: 5, width: `${gridAttemptedPct}%`, background: P, borderRadius: 3, transition: 'width 0.3s' }} />
+                    </div>
                   </div>
                 </div>
-                {/* Progress bar */}
-                <div style={{ marginTop: 14, height: 6, background: BG2, borderRadius: 3 }}>
-                  <div style={{ height: 6, width: `${gridAccuracy}%`, background: gridAccuracy >= 70 ? '#3B6D11' : gridAccuracy >= 50 ? P : BD, borderRadius: 3, transition: 'width 0.3s' }} />
+
+                {/* Summary + grid */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: T1 }}>Summary</span>
+                  <span style={{ fontSize: 11, color: T3 }}>{gridAttempted} / {QUESTIONS.length} attempted</span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+                  {QUESTIONS.map((_, i) => {
+                    const dc = getDotColor(i)
+                    const isCurrent = i === currentQ
+                    return (
+                      <button key={i} onClick={() => { setCurrentQ(i); setShowGrid(false) }} style={{ padding: '13px 0', borderRadius: 10, border: `2px solid ${isCurrent ? P : dc.border}`, background: dc.bg, color: dc.c, fontSize: 15, fontWeight: 700, cursor: 'pointer', boxShadow: isCurrent ? `0 0 0 3px ${PL}` : 'none' }}>
+                        {String(i + 1).padStart(2, '0')}
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
 
-              {/* Summary header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                <span style={{ fontSize: 16, fontWeight: 700, color: T1 }}>Summary</span>
-                <span style={{ fontSize: 12, color: T3 }}>{gridAttempted} / {QUESTIONS.length} attempted</span>
+              {/* Resume only */}
+              <div style={{ padding: '12px 20px 20px', borderTop: `1px solid ${BD}`, flexShrink: 0 }}>
+                <button onClick={() => setShowGrid(false)} className="btn-primary" style={{ width: '100%' }}>Resume</button>
               </div>
-
-              {/* 4-column question grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
-                {QUESTIONS.map((_, i) => {
-                  const dc = getDotColor(i)
-                  const isCurrent = i === currentQ
-                  return (
-                    <button key={i} onClick={() => { setCurrentQ(i); setShowGrid(false) }} style={{ padding: '16px 0', borderRadius: 12, border: `2px solid ${isCurrent ? P : dc.border}`, background: dc.bg, color: dc.c, fontSize: 16, fontWeight: 700, cursor: 'pointer', boxShadow: isCurrent ? `0 0 0 3px ${PL}` : 'none' }}>
-                      {String(i + 1).padStart(2, '0')}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-
-            {/* Bottom buttons */}
-            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '12px 20px', background: 'white', borderTop: `1px solid ${BD}`, display: 'flex', gap: 10 }}>
-              <button onClick={() => { setShowGrid(false); setShowExitConfirm(true) }} className="btn-outline" style={{ flex: 1 }}>Quit</button>
-              <button onClick={() => setShowGrid(false)} className="btn-primary" style={{ flex: 2 }}>Resume</button>
             </div>
           </div>
         )
@@ -621,7 +640,7 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
         </div>
       )}
 
-      {/* Visual lightbox */}
+      {/* Visual lightbox — scroll to pan, pinch/buttons to zoom */}
       {showVisual && q?.visual && (
         <div style={{ position: 'absolute', inset: 0, zIndex: 100, background: 'rgba(0,0,0,0.93)', display: 'flex', flexDirection: 'column' }}>
           <div style={{ padding: '14px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
@@ -632,16 +651,15 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
               <button onClick={() => setVisualScale(s => Math.min(5, parseFloat((s + 0.5).toFixed(1))))} style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(255,255,255,0.18)', border: 'none', cursor: 'pointer', color: 'white', fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>+</button>
             </div>
           </div>
+          {/* Scrollable pan container */}
           <div
-            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}
+            style={{ flex: 1, overflow: 'auto', display: 'flex', alignItems: visualScale <= 1 ? 'center' : 'flex-start', justifyContent: visualScale <= 1 ? 'center' : 'flex-start' }}
             onWheel={(e) => { e.stopPropagation(); setVisualScale(s => Math.max(1, Math.min(5, s - e.deltaY * 0.005))) }}
-            onClick={() => { setShowVisual(false); setVisualScale(1) }}
           >
             <img
               src={q.visual}
               alt="Anatomy reference"
-              onClick={e => e.stopPropagation()}
-              style={{ maxWidth: '100%', transform: `scale(${visualScale})`, transformOrigin: 'center center', transition: visualScale === 1 ? 'transform 0.2s' : 'none', userSelect: 'none', touchAction: 'none', cursor: visualScale > 1 ? 'grab' : 'zoom-in' }}
+              style={{ display: 'block', width: `${100 * visualScale}%`, minWidth: `${100 * visualScale}%`, userSelect: 'none', touchAction: 'pan-x pan-y pinch-zoom' }}
               onTouchStart={(e) => {
                 if (e.touches.length === 2) {
                   const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY)
@@ -657,7 +675,7 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
               }}
             />
           </div>
-          <div style={{ padding: '12px', textAlign: 'center', color: 'rgba(255,255,255,0.4)', fontSize: 11, flexShrink: 0 }}>Scroll or +/− to zoom · Pinch on mobile · Tap outside to close</div>
+          <div style={{ padding: '10px', textAlign: 'center', color: 'rgba(255,255,255,0.4)', fontSize: 10, flexShrink: 0 }}>Scroll to pan · Pinch or +/− to zoom</div>
         </div>
       )}
 
