@@ -3,7 +3,7 @@ import { QUESTIONS, TOPICS } from '../data'
 
 const P='#534AB7',PL='#EEEDFE',PD='#3C3489'
 const T1='#1a1a2e',T2='#5a5a78',T3='#9898b0',BD='#e8e8f2',BG2='#f5f5fb'
-const GREEN='#3B6D11',GREENBG='#EAF3DE',RED='#A32D2D',REDBG='#FCEBEB'
+const GREEN='#3B6D11',RED='#A32D2D'
 
 export default function Result({ navigate, answers, mode, viewSolution, setShowReattemptConfirm, showReattemptConfirm, handleReattempt }) {
   const [showAllWrong, setShowAllWrong] = useState(false)
@@ -72,29 +72,18 @@ export default function Result({ navigate, answers, mode, viewSolution, setShowR
       <div className="scroll" style={{ flex: 1, overflowY: 'auto', padding: '16px 16px 100px' }}>
 
         {/* Score header */}
-        <div style={{
-          background: accuracy >= 70 ? GREENBG : accuracy >= 50 ? PL : REDBG,
-          border: `1px solid ${accuracy >= 70 ? '#BFD9A5' : accuracy >= 50 ? '#C5C2F5' : '#F5BEBE'}`,
-          borderRadius: 16, padding: '18px 16px', marginBottom: 12
-        }}>
+        <div style={{ background: 'white', border: `1px solid ${BD}`, borderLeft: `4px solid ${accuracy >= 70 ? GREEN : accuracy >= 50 ? P : RED}`, borderRadius: 14, padding: '16px', marginBottom: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <div style={{ textAlign: 'center', flexShrink: 0 }}>
+            <div style={{ textAlign: 'center', flexShrink: 0, minWidth: 64 }}>
               <div style={{ fontSize: 44, fontWeight: 900, lineHeight: 1, color: accuracy >= 70 ? GREEN : accuracy >= 50 ? P : RED }}>{accuracy}%</div>
               <div style={{ fontSize: 10, color: T3, marginTop: 3, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>accuracy</div>
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: T1, lineHeight: 1.5, marginBottom: 10 }}>{motivationalMsg}</div>
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                {[
-                  { val: correct, label: 'correct', color: GREEN, bg: '#C8E6A8' },
-                  { val: incorrect, label: 'wrong', color: RED, bg: '#F5CECE' },
-                  { val: unattempted, label: 'skipped', color: T3, bg: BD },
-                ].map(item => (
-                  <div key={item.label} style={{ background: item.bg, borderRadius: 20, padding: '3px 9px', display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <span style={{ fontSize: 13, fontWeight: 800, color: item.color }}>{item.val}</span>
-                    <span style={{ fontSize: 11, color: item.color, fontWeight: 500 }}>{item.label}</span>
-                  </div>
-                ))}
+              <div style={{ fontSize: 13, fontWeight: 600, color: T1, lineHeight: 1.5, marginBottom: 8 }}>{motivationalMsg}</div>
+              <div style={{ fontSize: 12, color: T2 }}>
+                <span style={{ fontWeight: 700, color: GREEN }}>{correct}</span> correct &nbsp;·&nbsp;
+                <span style={{ fontWeight: 700, color: RED }}>{incorrect}</span> wrong &nbsp;·&nbsp;
+                <span style={{ fontWeight: 700, color: T3 }}>{unattempted}</span> skipped
               </div>
             </div>
           </div>
@@ -106,14 +95,13 @@ export default function Result({ navigate, answers, mode, viewSolution, setShowR
           <div style={{ display: 'flex', gap: 7, overflowX: 'auto', paddingBottom: 4 }}>
             {QUESTIONS.map((q, i) => {
               const status = qStatuses[i]
-              const bg = status === 'correct' ? GREENBG : status === 'wrong' ? REDBG : BG2
-              const border = status === 'correct' ? '#8DC45A' : status === 'wrong' ? '#E8A0A0' : BD
-              const color = status === 'correct' ? GREEN : status === 'wrong' ? RED : T3
+              const borderColor = status === 'correct' ? GREEN : status === 'wrong' ? RED : BD
+              const iconColor = status === 'correct' ? GREEN : status === 'wrong' ? RED : T3
               const icon = status === 'correct' ? '✓' : status === 'wrong' ? '✗' : '—'
               return (
-                <button key={q.id} onClick={viewSolution} style={{ flexShrink: 0, width: 44, height: 52, borderRadius: 10, border: `2px solid ${border}`, background: bg, cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+                <button key={q.id} onClick={viewSolution} style={{ flexShrink: 0, width: 44, height: 52, borderRadius: 10, border: `2px solid ${borderColor}`, background: 'white', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
                   <span style={{ fontSize: 10, fontWeight: 600, color: T2 }}>Q{i + 1}</span>
-                  <span style={{ fontSize: 15, fontWeight: 700, color }}>{icon}</span>
+                  <span style={{ fontSize: 15, fontWeight: 700, color: iconColor }}>{icon}</span>
                 </button>
               )
             })}
@@ -130,24 +118,16 @@ export default function Result({ navigate, answers, mode, viewSolution, setShowR
 
         {/* PYQ missed alert */}
         {missedPYQs.length > 0 && (
-          <div style={{ background: '#FFF8E7', border: '1px solid #FFE082', borderRadius: 14, padding: '13px 14px', marginBottom: 12 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-              <div style={{ width: 22, height: 22, borderRadius: 6, background: '#FFE082', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#E65100" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-                  <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-                </svg>
-              </div>
-              <span style={{ fontSize: 13, fontWeight: 700, color: '#5D4037' }}>
-                {missedPYQs.length} Previous Year Question{missedPYQs.length > 1 ? 's' : ''} Missed
-              </span>
+          <div style={{ background: 'white', border: `1px solid ${BD}`, borderLeft: '3px solid #E6A817', borderRadius: 14, padding: '13px 14px', marginBottom: 12 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: T1, marginBottom: 4 }}>
+              {missedPYQs.length} Previous Year Question{missedPYQs.length > 1 ? 's' : ''} Missed
             </div>
-            <div style={{ fontSize: 12, color: '#8D6E63', lineHeight: 1.5, marginBottom: 8 }}>
+            <div style={{ fontSize: 12, color: T3, lineHeight: 1.5, marginBottom: 10 }}>
               These appeared in real exams — prioritise reviewing them.
             </div>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
               {missedPYQs.map(q => (
-                <button key={q.id} onClick={viewSolution} style={{ background: '#FFE082', border: 'none', borderRadius: 8, padding: '4px 10px', fontSize: 11, fontWeight: 700, color: '#5D4037', cursor: 'pointer' }}>
+                <button key={q.id} onClick={viewSolution} style={{ background: BG2, border: `1px solid ${BD}`, borderRadius: 8, padding: '4px 10px', fontSize: 11, fontWeight: 600, color: T2, cursor: 'pointer' }}>
                   Q{QUESTIONS.indexOf(q) + 1} · {q.pyqExam} {q.pyqYear}
                 </button>
               ))}
@@ -161,34 +141,30 @@ export default function Result({ navigate, answers, mode, viewSolution, setShowR
             <div style={{ fontSize: 13, fontWeight: 700, color: T1, marginBottom: 3 }}>Study Focus</div>
             <div style={{ fontSize: 12, color: T3, marginBottom: 10 }}>Topics where you need more practice</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {weakTopics.map(t => {
-                const urgent = t.wrong > 0
-                const accColor = t.acc >= 70 ? GREEN : t.acc >= 50 ? P : urgent ? RED : T3
-                return (
-                  <div key={t.id} style={{ background: urgent ? REDBG : BG2, border: `1px solid ${urgent ? '#F5BEBE' : BD}`, borderRadius: 10, padding: '10px 12px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 7 }}>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 12, fontWeight: 700, color: T1 }}>{t.name}</div>
-                        <div style={{ fontSize: 11, color: T3, marginTop: 2 }}>
-                          {t.wrong > 0 && `${t.wrong} wrong`}
-                          {t.wrong > 0 && t.skipped > 0 && ' · '}
-                          {t.skipped > 0 && `${t.skipped} skipped`}
-                          {t.pyqCount > 0 && ` · ${t.pyqCount} PYQ`}
-                        </div>
+              {weakTopics.map(t => (
+                <div key={t.id} style={{ background: BG2, border: `1px solid ${BD}`, borderRadius: 10, padding: '10px 12px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 7 }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: T1 }}>{t.name}</div>
+                      <div style={{ fontSize: 11, color: T3, marginTop: 2 }}>
+                        {t.wrong > 0 && `${t.wrong} wrong`}
+                        {t.wrong > 0 && t.skipped > 0 && ' · '}
+                        {t.skipped > 0 && `${t.skipped} skipped`}
+                        {t.pyqCount > 0 && ` · ${t.pyqCount} PYQ`}
                       </div>
-                      <button onClick={viewSolution} style={{ background: urgent ? RED : P, border: 'none', borderRadius: 8, padding: '5px 12px', fontSize: 11, fontWeight: 700, color: 'white', cursor: 'pointer', flexShrink: 0, marginLeft: 10 }}>
-                        Review
-                      </button>
                     </div>
-                    <div style={{ height: 4, background: urgent ? '#F5D5D5' : BD, borderRadius: 2 }}>
-                      <div style={{ height: 4, width: `${t.attempted > 0 ? t.acc : 0}%`, background: accColor, borderRadius: 2, transition: 'width 0.4s ease' }} />
-                    </div>
-                    <div style={{ fontSize: 10, color: T3, marginTop: 4 }}>
-                      {t.attempted > 0 ? `${t.acc}% accuracy · ${t.correct}/${t.total} correct` : 'Not attempted'}
-                    </div>
+                    <button onClick={viewSolution} style={{ background: 'white', border: `1.5px solid ${P}`, borderRadius: 8, padding: '5px 12px', fontSize: 11, fontWeight: 700, color: P, cursor: 'pointer', flexShrink: 0, marginLeft: 10 }}>
+                      Review
+                    </button>
                   </div>
-                )
-              })}
+                  <div style={{ height: 3, background: BD, borderRadius: 2 }}>
+                    <div style={{ height: 3, width: `${t.attempted > 0 ? t.acc : 0}%`, background: P, borderRadius: 2, transition: 'width 0.4s ease' }} />
+                  </div>
+                  <div style={{ fontSize: 10, color: T3, marginTop: 4 }}>
+                    {t.attempted > 0 ? `${t.acc}% accuracy · ${t.correct}/${t.total} correct` : 'Not attempted'}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -209,12 +185,12 @@ export default function Result({ navigate, answers, mode, viewSolution, setShowR
                   <button key={q.id} onClick={viewSolution} style={{ background: BG2, border: `1px solid ${BD}`, borderRadius: 10, padding: '10px 12px', cursor: 'pointer', textAlign: 'left', display: 'block', width: '100%' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <div style={{ width: 20, height: 20, borderRadius: '50%', background: isSkipped ? BD : REDBG, border: `2px solid ${isSkipped ? T3 : RED}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <span style={{ fontSize: 9, fontWeight: 800, color: isSkipped ? T3 : RED }}>{qIdx + 1}</span>
+                        <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'white', border: `1.5px solid ${BD}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <span style={{ fontSize: 9, fontWeight: 700, color: T2 }}>{qIdx + 1}</span>
                         </div>
-                        <span style={{ fontSize: 10, fontWeight: 600, color: isSkipped ? T3 : RED }}>{isSkipped ? 'Skipped' : 'Wrong answer'}</span>
+                        <span style={{ fontSize: 10, fontWeight: 600, color: T2 }}>{isSkipped ? 'Skipped' : 'Wrong answer'}</span>
                         {q.isPYQ && (
-                          <span style={{ fontSize: 9, background: '#FFE082', color: '#5D4037', borderRadius: 4, padding: '1px 5px', fontWeight: 700 }}>PYQ</span>
+                          <span style={{ fontSize: 9, background: 'white', border: `1px solid ${BD}`, color: T3, borderRadius: 4, padding: '1px 5px', fontWeight: 600 }}>PYQ</span>
                         )}
                       </div>
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={T3} strokeWidth="2.5" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>
