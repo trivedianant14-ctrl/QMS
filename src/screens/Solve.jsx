@@ -237,9 +237,40 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
         )}
         {answered && selected !== 'timeout' && (
           <div style={{ marginBottom: 16 }}>
-            <div style={{ background: isCorrect ? '#EAF3DE' : '#FCEBEB', border: `1px solid ${isCorrect ? '#97C459' : '#F09595'}`, borderRadius: 10, padding: '10px 14px', marginBottom: 8, fontSize: 13, fontWeight: 600, color: isCorrect ? '#27500A' : '#791F1F', textAlign: 'center' }}>
-              {isCorrect ? 'Wonderful, you got this question right.' : 'Sorry this time it was not correct. Check explanation to learn more.'}
+            {/* Result line */}
+            <div style={{ background: isCorrect ? '#EAF3DE' : '#FCEBEB', border: `1px solid ${isCorrect ? '#97C459' : '#F09595'}`, borderRadius: 10, padding: '10px 14px', marginBottom: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', marginBottom: isCorrect ? 0 : 4 }}>
+                <div style={{ width: 18, height: 18, borderRadius: '50%', background: isCorrect ? '#27500A' : '#791F1F', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <span style={{ fontSize: 10, fontWeight: 800, color: 'white' }}>{isCorrect ? '✓' : '✗'}</span>
+                </div>
+                <span style={{ fontSize: 13, fontWeight: 700, color: isCorrect ? '#27500A' : '#791F1F' }}>
+                  {isCorrect ? 'Correct' : 'Not quite'}
+                </span>
+                {!isCorrect && (
+                  <span style={{ fontSize: 12, color: '#791F1F', fontWeight: 500 }}>
+                    · You picked {selected?.toUpperCase()} · Correct: {q?.correct?.toUpperCase()}
+                  </span>
+                )}
+              </div>
+              {isCorrect && (
+                <div style={{ fontSize: 12, color: '#3B6D11', textAlign: 'center' }}>Wonderful, you got this one right.</div>
+              )}
             </div>
+
+            {/* "Why it felt tempting" — shown only for wrong answers with a matching distractor */}
+            {!isCorrect && (() => {
+              const myDistractor = q?.distractors?.find(d => d.optId === selected)
+              if (!myDistractor) return null
+              return (
+                <div style={{ background: '#FFFAF0', border: `1px solid ${BD}`, borderLeft: '3px solid #E6A817', borderRadius: 10, padding: '12px 14px', marginBottom: 8 }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: '#B07800', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
+                    Why option {selected?.toUpperCase()} felt right
+                  </div>
+                  <div style={{ fontSize: 12, color: T1, lineHeight: 1.6 }}>{myDistractor.reason}</div>
+                </div>
+              )
+            })()}
+
             {/* Inline bookmark — one tap to save, no modal */}
             {!isReviewMode && (
               alreadySaved

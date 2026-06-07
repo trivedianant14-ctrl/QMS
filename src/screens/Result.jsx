@@ -15,12 +15,6 @@ export default function Result({ navigate, answers, mode, viewSolution, setShowR
   const total = QUESTIONS.length
   const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0
 
-  const qStatuses = QUESTIONS.map(q => {
-    const a = answers[q.id]
-    if (!a || a === 'timeout') return 'skip'
-    return a === q.correct ? 'correct' : 'wrong'
-  })
-
   const wrongQs = QUESTIONS.filter(q => {
     const a = answers[q.id]
     return !a || a === 'timeout' || (a && a !== q.correct)
@@ -80,39 +74,22 @@ export default function Result({ navigate, answers, mode, viewSolution, setShowR
             </div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: T1, lineHeight: 1.5, marginBottom: 8 }}>{motivationalMsg}</div>
-              <div style={{ fontSize: 12, color: T2 }}>
+              <div style={{ fontSize: 12, color: T2, marginBottom: 8 }}>
                 <span style={{ fontWeight: 700, color: GREEN }}>{correct}</span> correct &nbsp;·&nbsp;
                 <span style={{ fontWeight: 700, color: RED }}>{incorrect}</span> wrong &nbsp;·&nbsp;
                 <span style={{ fontWeight: 700, color: T3 }}>{unattempted}</span> skipped
               </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Question-by-question strip */}
-        <div style={{ border: `1px solid ${BD}`, borderRadius: 14, padding: '13px 14px', marginBottom: 12 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: T1, marginBottom: 10 }}>Your Answers</div>
-          <div style={{ display: 'flex', gap: 7, overflowX: 'auto', paddingBottom: 4 }}>
-            {QUESTIONS.map((q, i) => {
-              const status = qStatuses[i]
-              const borderColor = status === 'correct' ? GREEN : status === 'wrong' ? RED : BD
-              const iconColor = status === 'correct' ? GREEN : status === 'wrong' ? RED : T3
-              const icon = status === 'correct' ? '✓' : status === 'wrong' ? '✗' : '—'
-              return (
-                <button key={q.id} onClick={viewSolution} style={{ flexShrink: 0, width: 44, height: 52, borderRadius: 10, border: `2px solid ${borderColor}`, background: 'white', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-                  <span style={{ fontSize: 10, fontWeight: 600, color: T2 }}>Q{i + 1}</span>
-                  <span style={{ fontSize: 15, fontWeight: 700, color: iconColor }}>{icon}</span>
-                </button>
-              )
-            })}
-          </div>
-          <div style={{ display: 'flex', gap: 14, marginTop: 8 }}>
-            {[{ icon: '✓', label: 'Correct', color: GREEN }, { icon: '✗', label: 'Wrong', color: RED }, { icon: '—', label: 'Skipped', color: T3 }].map(l => (
-              <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ fontSize: 12, color: l.color, fontWeight: 700 }}>{l.icon}</span>
-                <span style={{ fontSize: 11, color: T3 }}>{l.label}</span>
+              <div style={{ display: 'flex', gap: 10, paddingTop: 8, borderTop: `1px solid ${BD}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={T3} strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+                  <span style={{ fontSize: 11, color: T3 }}>{avgTime}s avg / question</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={T3} strokeWidth="2" strokeLinecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  <span style={{ fontSize: 11, color: T3 }}>Total: {totalTime}</span>
+                </div>
               </div>
-            ))}
+            </div>
           </div>
         </div>
 
@@ -216,15 +193,6 @@ export default function Result({ navigate, answers, mode, viewSolution, setShowR
           </div>
         )}
 
-        {/* Time stats */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
-          {[['Avg per question', `${avgTime}s`], ['Total time', totalTime]].map(([k, v]) => (
-            <div key={k} style={{ border: `1px solid ${BD}`, borderRadius: 12, padding: '12px 14px' }}>
-              <div style={{ fontSize: 10, color: T3, marginBottom: 3 }}>{k}</div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: T1 }}>{v}</div>
-            </div>
-          ))}
-        </div>
 
       </div>
 
