@@ -127,6 +127,30 @@ input { font-family: inherit; }
 .tag-amber { background: var(--amber-light); color: var(--amber); border-color: var(--amber-border); }
 .tag-red { background: var(--red-light); color: var(--red); border-color: var(--red-border); }
 
+/* ── Screen transitions ── */
+.screen-trans {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+@keyframes slideUp {
+  from { transform: translateY(56px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+.screen-forward  { animation: slideInRight 0.26s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
+.screen-backward { animation: slideInLeft  0.26s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
+.screen-up       { animation: slideUp      0.34s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
 .popup-overlay {
   position: absolute; inset: 0; z-index: 60;
   background: rgba(0,0,0,0.5);

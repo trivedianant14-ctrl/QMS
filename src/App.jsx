@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Home from './screens/Home'
 import Subject from './screens/Subject'
 import PreTest from './screens/PreTest'
@@ -10,6 +10,14 @@ import Videos from './screens/Videos'
 import VideoSubject from './screens/VideoSubject'
 import VideoPlayer from './screens/VideoPlayer'
 import { QUESTIONS } from './data'
+
+const SCREEN_DEPTH = {
+  home: 0,
+  subject: 1, videos: 1, saved: 1,
+  pretest: 2, videosubject: 2,
+  solve: 3, videoplayer: 3,
+  summary: 4, result: 4,
+}
 
 const EXISTING_USER_SAVES = [
   { qId: 1, tag: 'wrong' },
@@ -34,6 +42,22 @@ export default function App() {
   const [sessions, setSessions] = useState([])
   const [isReattempt, setIsReattempt] = useState(false)
   const [attemptCount, setAttemptCount] = useState(0)
+  const animDirRef = useRef('forward')
+
+  const goTo = (next) => {
+    const currDepth = SCREEN_DEPTH[screen] ?? 0
+    const nextDepth = SCREEN_DEPTH[next] ?? 0
+    if (next === 'result' || next === 'summary') {
+      animDirRef.current = 'up'
+    } else if (next === 'solve') {
+      animDirRef.current = 'forward'
+    } else if (nextDepth >= currDepth) {
+      animDirRef.current = 'forward'
+    } else {
+      animDirRef.current = 'backward'
+    }
+    setScreen(next)
+  }
 
   const toggleUserMode = () => {
     const switchingToExisting = isNewUser
@@ -42,7 +66,7 @@ export default function App() {
     setBannerDismissed(false)
   }
 
-  const navigate = (s) => setScreen(s)
+  const navigate = goTo
 
   const startAttempt = (selectedMode) => {
     setMode(selectedMode)
@@ -50,7 +74,7 @@ export default function App() {
     setAnswers({})
     setIsReviewMode(false)
     setAttemptCount(c => c + 1)
-    setScreen('solve')
+    goTo('solve')
   }
 
   const saveQuestion = (qId, tag) => {
@@ -87,14 +111,14 @@ export default function App() {
     } else {
       setIsReattempt(true)
     }
-    setScreen('result')
+    goTo('result')
   }
 
   const viewAnalysis = () => {
     const firstSession = sessions.find(s => s.chapterId === 1)
     if (firstSession) setAnswers(firstSession.answers)
     setIsReattempt(false)
-    setScreen('result')
+    goTo('result')
   }
 
   const handleReattempt = () => {
@@ -103,13 +127,13 @@ export default function App() {
     setAnswers({})
     setIsReviewMode(false)
     setAttemptCount(c => c + 1)
-    setScreen('solve')
+    goTo('solve')
   }
 
   const viewSolution = () => {
     setIsReviewMode(true)
     setCurrentQ(0)
-    setScreen('solve')
+    goTo('solve')
   }
 
   // Derived stats from real sessions
@@ -142,16 +166,18 @@ export default function App() {
 
   return (
     <div className="phone">
-      {screen === 'home' && <Home {...sharedProps} />}
-      {screen === 'subject' && <Subject {...sharedProps} />}
-      {screen === 'pretest' && <PreTest {...sharedProps} />}
-      {screen === 'solve' && <Solve {...sharedProps} />}
-      {screen === 'summary' && <Summary {...sharedProps} />}
-      {screen === 'result' && <Result {...sharedProps} />}
-      {screen === 'saved' && <Saved {...sharedProps} />}
-      {screen === 'videos' && <Videos navigate={navigate} isNewUser={isNewUser} toggleUserMode={toggleUserMode} />}
-      {screen === 'videosubject' && <VideoSubject navigate={navigate} setCurrentVideo={setCurrentVideo} />}
-      {screen === 'videoplayer' && <VideoPlayer navigate={navigate} currentVideo={currentVideo} />}
+      <div key={screen} className={`screen-trans screen-${animDirRef.current}`}>
+        {screen === 'home' && <Home {...sharedProps} />}
+        {screen === 'subject' && <Subject {...sharedProps} />}
+        {screen === 'pretest' && <PreTest {...sharedProps} />}
+        {screen === 'solve' && <Solve {...sharedProps} />}
+        {screen === 'summary' && <Summary {...sharedProps} />}
+        {screen === 'result' && <Result {...sharedProps} />}
+        {screen === 'saved' && <Saved {...sharedProps} />}
+        {screen === 'videos' && <Videos navigate={navigate} isNewUser={isNewUser} toggleUserMode={toggleUserMode} />}
+        {screen === 'videosubject' && <VideoSubject navigate={navigate} setCurrentVideo={setCurrentVideo} />}
+        {screen === 'videoplayer' && <VideoPlayer navigate={navigate} currentVideo={currentVideo} />}
+      </div>
     </div>
   )
 }
