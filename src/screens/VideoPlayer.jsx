@@ -89,6 +89,7 @@ export default function VideoPlayer({ navigate, currentVideo }) {
   const [darkMode, setDarkMode] = useState(false)
   const [inQueue, setInQueue] = useState(true)
   const [queueExpanded, setQueueExpanded] = useState(true)
+  const [showControls, setShowControls] = useState(true)
   const [showTimestamp, setShowTimestamp] = useState(false)
   const [timestampNote, setTimestampNote] = useState('')
 
@@ -105,48 +106,67 @@ export default function VideoPlayer({ navigate, currentVideo }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'white', position: 'relative' }}>
 
-      {/* ── VIDEO AREA ── */}
-      <div style={{ background: '#0d0d1a', flexShrink: 0 }}>
-        {/* Top bar inside player */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 14px 6px' }}>
-          <button onClick={() => navigate('videosubject')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'white', display: 'flex' }}>
+      {/* ── VIDEO AREA — full 16:9 YouTube-style ── */}
+      <div
+        onClick={() => setShowControls(c => !c)}
+        style={{ background: '#0d0d1a', flexShrink: 0, position: 'relative', width: '100%', aspectRatio: '16/9', cursor: 'pointer', overflow: 'hidden' }}
+      >
+        {/* Top gradient */}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '38%', background: 'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%)', pointerEvents: 'none', opacity: showControls ? 1 : 0, transition: 'opacity 0.22s ease' }} />
+        {/* Bottom gradient */}
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '42%', background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%)', pointerEvents: 'none' }} />
+
+        {/* Top bar */}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', opacity: showControls ? 1 : 0, transition: 'opacity 0.22s ease', pointerEvents: showControls ? 'auto' : 'none' }}>
+          <button onClick={e => { e.stopPropagation(); navigate('videosubject') }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'white', display: 'flex', padding: 4 }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><polyline points="15,18 9,12 15,6"/></svg>
           </button>
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-            <button style={{ fontSize: 11, fontWeight: 700, padding: '3px 7px', borderRadius: 5, border: '1.5px solid rgba(255,255,255,0.45)', background: 'none', color: 'rgba(255,255,255,0.85)', cursor: 'pointer', letterSpacing: '0.03em' }}>CC</button>
-            <button onClick={() => setShowSettings(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.75)', display: 'flex' }}>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <button onClick={e => e.stopPropagation()} style={{ fontSize: 11, fontWeight: 700, padding: '3px 7px', borderRadius: 5, border: '1.5px solid rgba(255,255,255,0.5)', background: 'none', color: 'rgba(255,255,255,0.9)', cursor: 'pointer' }}>CC</button>
+            <button onClick={e => { e.stopPropagation(); setShowSettings(true) }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.8)', display: 'flex' }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
             </button>
           </div>
         </div>
 
-        {/* Playback controls */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 32, padding: '10px 0 14px' }}>
-          <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.7)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
-            <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
-            <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)' }}>10</span>
+        {/* Centre playback controls */}
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', display: 'flex', alignItems: 'center', gap: 36, opacity: showControls ? 1 : 0, transition: 'opacity 0.22s ease', pointerEvents: showControls ? 'auto' : 'none' }}>
+          <button onClick={e => e.stopPropagation()} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.85)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+            <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)', fontWeight: 600 }}>10</span>
           </button>
-          <button onClick={() => setIsPlaying(p => !p)} style={{ width: 54, height: 54, borderRadius: '50%', background: 'rgba(255,255,255,0.14)', border: '1.5px solid rgba(255,255,255,0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+          <button onClick={e => { e.stopPropagation(); setIsPlaying(p => !p) }} style={{ width: 62, height: 62, borderRadius: '50%', background: 'rgba(255,255,255,0.18)', border: '2px solid rgba(255,255,255,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
             {isPlaying
-              ? <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
-              : <svg width="20" height="20" viewBox="0 0 24 24" fill="white" style={{ marginLeft: 3 }}><polygon points="5,3 19,12 5,21"/></svg>}
+              ? <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+              : <svg width="22" height="22" viewBox="0 0 24 24" fill="white" style={{ marginLeft: 3 }}><polygon points="5,3 19,12 5,21"/></svg>}
           </button>
-          <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.7)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
-            <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
-            <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)' }}>10</span>
-          </button>
-        </div>
-
-        {/* PiP */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '0 12px 6px' }}>
-          <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.45)', display: 'flex' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="3" width="20" height="14" rx="2"/><rect x="12" y="10" width="9" height="6" rx="1" fill="rgba(255,255,255,0.18)" stroke="currentColor"/></svg>
+          <button onClick={e => e.stopPropagation()} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.85)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+            <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)', fontWeight: 600 }}>10</span>
           </button>
         </div>
 
-        {/* Progress bar */}
-        <div style={{ height: 3, background: 'rgba(255,255,255,0.15)' }}>
-          <div style={{ height: 3, width: '30%', background: P }} />
+        {/* Bottom bar: time + scrubber + PiP */}
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '0 12px 10px' }}>
+          {/* Time row */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, opacity: showControls ? 1 : 0, transition: 'opacity 0.22s ease', pointerEvents: showControls ? 'auto' : 'none' }}>
+            <span style={{ fontSize: 11, fontWeight: 500, color: 'rgba(255,255,255,0.85)' }}>3:36</span>
+            <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)' }}>{duration}</span>
+              <button onClick={e => e.stopPropagation()} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.65)', display: 'flex' }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="3" width="20" height="14" rx="2"/><rect x="12" y="10" width="9" height="6" rx="1" fill="rgba(255,255,255,0.15)" stroke="currentColor"/></svg>
+              </button>
+            </div>
+          </div>
+          {/* Progress bar + scrubber */}
+          <div style={{ position: 'relative', height: 14, display: 'flex', alignItems: 'center' }}>
+            <div style={{ position: 'absolute', left: 0, right: 0, height: showControls ? 3 : 2, background: 'rgba(255,255,255,0.25)', borderRadius: 2, transition: 'height 0.15s' }}>
+              <div style={{ height: '100%', width: '30%', background: P, borderRadius: 2 }} />
+            </div>
+            {showControls && (
+              <div style={{ position: 'absolute', left: 'calc(30% - 6px)', width: 12, height: 12, borderRadius: '50%', background: 'white', boxShadow: '0 1px 4px rgba(0,0,0,0.5)', transition: 'opacity 0.22s ease', pointerEvents: 'none' }} />
+            )}
+          </div>
         </div>
       </div>
 
