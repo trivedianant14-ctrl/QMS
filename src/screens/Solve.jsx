@@ -253,6 +253,13 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
         </div>
 
         {/* Feedback banner + inline quick-save */}
+        {isReviewMode && !answered && (
+          <div style={{ marginBottom: 12, textAlign: 'center' }}>
+            <button onClick={() => setShowSkipSurvey(true)} style={{ background: 'none', border: 'none', fontSize: 12, color: T3, cursor: 'pointer', padding: '2px 0' }}>
+              Why did you leave this unattempted? →
+            </button>
+          </div>
+        )}
         {selected === 'timeout' && (
           <div style={{ marginBottom: 12 }}>
             <div style={{ background: '#FFF3E0', border: '1px solid #FFB74D', borderRadius: 10, padding: '10px 14px', marginBottom: 6, fontSize: 13, fontWeight: 600, color: '#E65100', textAlign: 'center' }}>Oops you ran out of time.</div>
@@ -448,13 +455,6 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
 
       {/* Bottom navigation */}
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'white', borderTop: `1px solid ${BD}`, padding: '12px 16px' }}>
-        {mode === 'exam' && !answered && !timedOut && !isReviewMode && (
-          <div style={{ textAlign: 'center', marginBottom: 8 }}>
-            <button onClick={() => setShowSkipSurvey(true)} style={{ background: 'none', border: 'none', fontSize: 12, color: T3, cursor: 'pointer', padding: '2px 0' }}>
-              Why did you leave this unattempted? →
-            </button>
-          </div>
-        )}
         <div style={{ display: 'flex', gap: 10 }}>
           {currentQ > 0 && (
             <button onClick={() => setCurrentQ(c => c - 1)} className="btn-outline" style={{ flex: 1 }}>Previous</button>
