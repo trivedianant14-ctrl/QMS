@@ -66,39 +66,25 @@ export default function Videos({ navigate }) {
         </div>
       </div>
 
-      <div className="scroll" style={{ flex: 1, overflowY: 'auto', paddingBottom: 70 }}>
-
-        {/* Continue Watching */}
-        <div style={{ padding: '14px 16px 0' }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: T2, marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Continue Watching</div>
-          <div onClick={() => navigate('videosubject')} style={{ background: 'white', border: `1px solid ${BD}`, borderRadius: 12, overflow: 'hidden', cursor: 'pointer' }}>
-            <div style={{ background: '#1a1a2e', height: 110, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.5))', borderRadius: 0 }} />
-              <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
-              </div>
-              <div style={{ position: 'absolute', bottom: 8, left: 12, zIndex: 1 }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: 'white' }}>Body Planes & Directional Terms</div>
-                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)' }}>00:00 / 14:30</div>
-              </div>
-            </div>
-            <div style={{ padding: '10px 12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <div style={{ width: 30, height: 30, borderRadius: '50%', background: PL, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: P }}>A</span>
-                </div>
-                <div>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: T1 }}>Applied Anatomy · Ch 1</div>
-                  <div style={{ fontSize: 11, color: T3 }}>Aman Singhal · Lecture 2/2</div>
-                </div>
-              </div>
-              <div style={{ height: 4, background: BG2, borderRadius: 2, marginBottom: 10 }}>
-                <div style={{ height: 4, width: '50%', background: P, borderRadius: 2 }} />
-              </div>
-              <button className="btn-primary" style={{ width: '100%', padding: '9px', fontSize: 13 }}>Resume Lecture</button>
+      {/* Continue Watching — sticky */}
+      <div style={{ flexShrink: 0, background: 'white', borderBottom: `1px solid ${BD}`, padding: '12px 16px' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, color: T2, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Continue Watching</div>
+        <div onClick={() => navigate('videosubject')} style={{ background: BG2, border: `1px solid ${BD}`, borderRadius: 10, overflow: 'hidden', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px' }}>
+          <div style={{ width: 52, height: 40, background: '#1a1a2e', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative' }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="white" style={{ marginLeft: 2 }}><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: T1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Body Planes & Directional Terms</div>
+            <div style={{ fontSize: 11, color: T3, marginBottom: 4 }}>Aman Singhal · Applied Anatomy Ch 1</div>
+            <div style={{ height: 3, background: BD, borderRadius: 2 }}>
+              <div style={{ height: 3, width: '50%', background: P, borderRadius: 2 }} />
             </div>
           </div>
+          <button className="btn-primary" style={{ padding: '6px 12px', fontSize: 11, whiteSpace: 'nowrap', flexShrink: 0 }}>Resume</button>
         </div>
+      </div>
+
+      <div className="scroll" style={{ flex: 1, overflowY: 'auto', paddingBottom: 70 }}>
 
         {/* Rapid Revision banner */}
         <div style={{ margin: '12px 16px 0', background: '#FFF8E7', border: '1px solid #FFE082', borderRadius: 12, padding: '12px 14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}>
