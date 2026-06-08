@@ -11,11 +11,9 @@ const REPORT_OPTIONS = {
 
 const SKIP_REASONS = [
   { id: 'time',      label: 'Ran out of time' },
-  { id: 'strategic', label: 'Strategic skip — protecting score' },
+  { id: 'strategic', label: 'Strategic skip' },
   { id: 'blank',     label: 'Mind went blank' },
   { id: 'confusing', label: 'Confusing wording' },
-  { id: 'fatigue',   label: 'Tired or distracted' },
-  { id: 'habit',     label: 'I usually skip these' },
   { id: 'exploring', label: 'Just exploring' },
   { id: 'unknown',   label: "Don't know this topic" },
 ]
