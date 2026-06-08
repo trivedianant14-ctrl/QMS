@@ -7,6 +7,7 @@ const GREEN='#3B6D11', GREENBG='#EAF3DE'
 
 export default function VideoSubject({ navigate, setCurrentVideo }) {
   const [expandedChapter, setExpandedChapter] = useState(null)
+  const [showTutorModal, setShowTutorModal] = useState(false)
   const [playingVideo, setPlayingVideo] = useState(VIDEO_CHAPTERS[0]?.videos[0] || null)
   const [playingChapter, setPlayingChapter] = useState(VIDEO_CHAPTERS[0] || null)
 
@@ -20,7 +21,7 @@ export default function VideoSubject({ navigate, setCurrentVideo }) {
   const watchedCount = (ch) => ch.videos.filter(v => v.watched).length
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', position: 'relative' }}>
 
       {/* Status bar */}
       <div style={{ padding: '12px 20px 4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
@@ -93,16 +94,20 @@ export default function VideoSubject({ navigate, setCurrentVideo }) {
           </button>
         </div>
 
-        {/* Instructor */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
-          <div style={{ width: 30, height: 30, borderRadius: '50%', background: PL, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: P }}>A</span>
+        {/* Instructor card */}
+        <button onClick={() => setShowTutorModal(true)} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', background: PL, border: `1px solid ${P}22`, borderRadius: 12, padding: '10px 12px', marginTop: 10, cursor: 'pointer', textAlign: 'left' }}>
+          <div style={{ width: 38, height: 38, borderRadius: '50%', background: P, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <span style={{ fontSize: 15, fontWeight: 800, color: 'white' }}>A</span>
           </div>
-          <div>
-            <span style={{ fontSize: 12, fontWeight: 600, color: T1 }}>Aman Singhal</span>
-            <span style={{ fontSize: 11, color: P, marginLeft: 8, cursor: 'pointer' }}>[About]</span>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: T1 }}>Aman Singhal</div>
+            <div style={{ fontSize: 11, color: T2, marginTop: 1 }}>Faculty · Applied Anatomy</div>
           </div>
-        </div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: P, display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
+            About
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={P} strokeWidth="2.5" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+        </button>
       </div>
 
       {/* Chapters list */}
@@ -166,6 +171,49 @@ export default function VideoSubject({ navigate, setCurrentVideo }) {
           )
         })}
       </div>
+      {/* Tutor modal */}
+      {showTutorModal && (
+        <div onClick={() => setShowTutorModal(false)} style={{ position: 'absolute', inset: 0, background: 'rgba(10,10,30,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, padding: '0 20px' }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: 'white', borderRadius: 22, padding: '24px 20px 20px', width: '100%', position: 'relative' }}>
+
+            {/* Close */}
+            <button onClick={() => setShowTutorModal(false)} style={{ position: 'absolute', top: 14, right: 14, width: 28, height: 28, borderRadius: '50%', background: BG2, border: `1px solid ${BD}`, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={T2} strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+
+            {/* Avatar */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 14 }}>
+              <div style={{ width: 64, height: 64, borderRadius: '50%', background: `linear-gradient(135deg, ${P}, #8B82E0)`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10, boxShadow: `0 4px 16px rgba(83,74,183,0.25)` }}>
+                <span style={{ fontSize: 26, fontWeight: 800, color: 'white' }}>A</span>
+              </div>
+              <div style={{ fontSize: 17, fontWeight: 800, color: T1 }}>Aman Singhal</div>
+              <div style={{ fontSize: 12, color: T3, marginTop: 3 }}>MBBS · Faculty, Applied Anatomy</div>
+            </div>
+
+            {/* Stats row */}
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 16 }}>
+              {[['5', 'Subjects'], ['25', 'Lectures'], ['12K', 'Students']].map(([val, label]) => (
+                <div key={label} style={{ flex: 1, background: BG2, border: `1px solid ${BD}`, borderRadius: 12, padding: '10px 8px', textAlign: 'center' }}>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: PD }}>{val}</div>
+                  <div style={{ fontSize: 10, color: T3, marginTop: 2 }}>{label}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Bio */}
+            <div style={{ fontSize: 12, color: T2, lineHeight: 1.65, marginBottom: 16, background: BG2, borderRadius: 12, padding: '12px 14px' }}>
+              8+ years of teaching experience in Applied Anatomy for nursing and paramedical students. Known for simplifying complex concepts with clinical correlations and high-yield exam strategies.
+            </div>
+
+            {/* CTA */}
+            <button onClick={() => setShowTutorModal(false)} className="btn-primary" style={{ width: '100%', fontSize: 13 }}>
+              Got it
+            </button>
+
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }
