@@ -66,21 +66,28 @@ export default function Videos({ navigate }) {
         </div>
       </div>
 
-      {/* Continue Watching — sticky */}
-      <div style={{ flexShrink: 0, background: 'white', borderBottom: `1px solid ${BD}`, padding: '12px 16px' }}>
+      {/* Continue Watching — sticky, ~1/5 screen */}
+      <div style={{ flexShrink: 0, background: 'white', borderBottom: `1px solid ${BD}`, padding: '10px 16px 12px' }}>
         <div style={{ fontSize: 11, fontWeight: 600, color: T2, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Continue Watching</div>
-        <div onClick={() => navigate('videosubject')} style={{ background: BG2, border: `1px solid ${BD}`, borderRadius: 10, overflow: 'hidden', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px' }}>
-          <div style={{ width: 52, height: 40, background: '#1a1a2e', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative' }}>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="white" style={{ marginLeft: 2 }}><polygon points="5,3 19,12 5,21"/></svg>
-          </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: T1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Body Planes & Directional Terms</div>
-            <div style={{ fontSize: 11, color: T3, marginBottom: 4 }}>Aman Singhal · Applied Anatomy Ch 1</div>
-            <div style={{ height: 3, background: BD, borderRadius: 2 }}>
-              <div style={{ height: 3, width: '50%', background: P, borderRadius: 2 }} />
+        <div onClick={() => navigate('videosubject')} style={{ height: 160, border: `1px solid ${BD}`, borderRadius: 12, overflow: 'hidden', cursor: 'pointer', display: 'flex', flexDirection: 'column' }}>
+          {/* Thumbnail */}
+          <div style={{ flex: 1, background: '#1a1a2e', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', border: '1.5px solid rgba(255,255,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="white" style={{ marginLeft: 2 }}><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+            <div style={{ position: 'absolute', bottom: 8, right: 10, background: 'rgba(0,0,0,0.55)', borderRadius: 4, padding: '2px 6px', fontSize: 10, color: 'white', fontWeight: 600 }}>12:34</div>
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 3, background: 'rgba(255,255,255,0.15)' }}>
+              <div style={{ height: 3, width: '50%', background: P }} />
             </div>
           </div>
-          <button className="btn-primary" style={{ padding: '6px 12px', fontSize: 11, whiteSpace: 'nowrap', flexShrink: 0 }}>Resume</button>
+          {/* Info bar */}
+          <div style={{ padding: '9px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: BG2, gap: 10 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: T1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Body Planes & Directional Terms</div>
+              <div style={{ fontSize: 11, color: T3, marginTop: 1 }}>Aman Singhal · Applied Anatomy Ch 1</div>
+            </div>
+            <button className="btn-primary" style={{ padding: '6px 14px', fontSize: 11, whiteSpace: 'nowrap', flexShrink: 0 }}>Resume</button>
+          </div>
         </div>
       </div>
 
