@@ -78,6 +78,38 @@ export default function Videos({ navigate, isNewUser, toggleUserMode }) {
         </div>
       </div>
 
+      {/* New user — start here card */}
+      {isNewUser && (
+        <div style={{ flexShrink: 0, padding: '12px 16px', borderBottom: `1px solid ${BD}` }}>
+          <div onClick={() => navigate('videosubject')} style={{ borderRadius: 16, overflow: 'hidden', cursor: 'pointer', border: `1px solid ${BD}` }}>
+            {/* Top gradient band */}
+            <div style={{ background: `linear-gradient(135deg, ${PD} 0%, ${P} 60%, #8B82E0 100%)`, padding: '16px 16px 14px', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(255,255,255,0.18)', border: '1.5px solid rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white" style={{ marginLeft: 2 }}><polygon points="5,3 19,12 5,21"/></svg>
+              </div>
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 3 }}>Recommended for you</div>
+                <div style={{ fontSize: 14, fontWeight: 800, color: 'white', lineHeight: 1.3 }}>Start your first lecture</div>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', marginTop: 3 }}>Fundamentals of Nursing · 6 lectures</div>
+              </div>
+            </div>
+            {/* Bottom info row */}
+            <div style={{ background: BG2, padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ width: 26, height: 26, borderRadius: '50%', background: PL, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: P }}>P</span>
+                </div>
+                <span style={{ fontSize: 12, color: T2, fontWeight: 500 }}>Priya Sharma</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: P, borderRadius: 20, padding: '5px 12px' }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: 'white' }}>Begin</span>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Continue Watching — hidden for new users */}
       {!isNewUser && <div style={{ flexShrink: 0, background: 'white', borderBottom: `1px solid ${BD}`, padding: '10px 16px 12px' }}>
         <div style={{ fontSize: 11, fontWeight: 600, color: T2, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Continue Watching</div>
