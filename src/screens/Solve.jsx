@@ -572,7 +572,7 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
                     <div style={{ fontSize: 12, fontWeight: 500, color: T2, marginBottom: 8 }}>Tell us more about it. <span style={{ color: T3 }}>(optional)</span></div>
                     <textarea value={reportNote} onChange={e => setReportNote(e.target.value)} placeholder="Describe the issue in more detail..." style={{ width: '100%', minHeight: 80, padding: '10px 12px', border: `1px solid ${BD}`, borderRadius: 10, fontSize: 13, color: T1, resize: 'vertical', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
                   </div>
-                  <button onClick={() => setReportSubmitted(true)} className="btn-primary" style={{ width: '100%' }}>Submit</button>
+                  <button onClick={() => setReportSubmitted(true)} disabled={reportSubs.size === 0} className="btn-primary" style={{ width: '100%', opacity: reportSubs.size === 0 ? 0.4 : 1, cursor: reportSubs.size === 0 ? 'not-allowed' : 'pointer', background: reportSubs.size === 0 ? T3 : undefined }}>Submit</button>
                 </div>
               </div>
             )}
