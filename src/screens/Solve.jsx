@@ -517,16 +517,14 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
                 </div>
               </div>
 
-              {/* Auto advance */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              {/* Save settings */}
+              <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', paddingTop: 4, borderTop: `1px solid ${BD}` }}>
+                <input type="checkbox" style={{ width: 16, height: 16, marginTop: 1, accentColor: P, flexShrink: 0, cursor: 'pointer' }} />
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: T1 }}>Auto-advance</div>
-                  <div style={{ fontSize: 11, color: T3 }}>Move to next question automatically after answering</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: T1 }}>Save this setting for later</div>
+                  <div style={{ fontSize: 11, color: T3, marginTop: 2 }}>Use these as my default preferences next time</div>
                 </div>
-                <button onClick={() => setAutoAdvance(a => !a)} style={{ width: 44, height: 24, borderRadius: 12, background: autoAdvance ? P : BD, border: 'none', cursor: 'pointer', position: 'relative', transition: 'background 0.2s' }}>
-                  <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'white', position: 'absolute', top: 2, left: autoAdvance ? 22 : 2, transition: 'left 0.2s' }} />
-                </button>
-              </div>
+              </label>
             </div>
           </div>
         </div>
