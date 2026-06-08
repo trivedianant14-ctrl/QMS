@@ -339,26 +339,6 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
               </div>
             </div>
 
-            {/* Clinical relevance — collapsed dropdown */}
-            {q?.clinical && (
-              <div style={{ marginBottom: 18, border: `1px solid ${BD}`, borderRadius: 12, overflow: 'hidden' }}>
-                <button onClick={() => setClinicalOpen(o => !o)} style={{ width: '100%', padding: '13px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: clinicalOpen ? '#FFF8E7' : 'white', border: 'none', cursor: 'pointer' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <div style={{ width: 22, height: 22, borderRadius: 6, background: '#FFE082', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#E65100" strokeWidth="2.5" strokeLinecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                    </div>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: T1 }}>Clinical Relevance</span>
-                  </div>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T3} strokeWidth="2.5">
-                    {clinicalOpen ? <path d="M18 15l-6-6-6 6"/> : <path d="M6 9l6 6 6-6"/>}
-                  </svg>
-                </button>
-                {clinicalOpen && (
-                  <div style={{ padding: '12px 14px 14px', fontSize: 13, color: T2, lineHeight: 1.65, borderTop: '1px solid #FFE082', background: '#FFFDF0' }}>{q.clinical}</div>
-                )}
-              </div>
-            )}
-
             {/* Why other options were wrong */}
             {q?.distractors?.length > 0 && (
               <div style={{ marginBottom: 18 }}>
@@ -384,6 +364,26 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
                   <img src={q.visual} alt="Anatomy reference diagram" style={{ width: '100%', display: 'block' }} />
                 </div>
                 <div style={{ fontSize: 10, color: T3, marginTop: 5, textAlign: 'center' }}>Tap to zoom · Pinch to magnify</div>
+              </div>
+            )}
+
+            {/* Clinical relevance — collapsed dropdown */}
+            {q?.clinical && (
+              <div style={{ marginBottom: 18, border: `1px solid ${BD}`, borderRadius: 12, overflow: 'hidden' }}>
+                <button onClick={() => setClinicalOpen(o => !o)} style={{ width: '100%', padding: '13px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: clinicalOpen ? '#FFF8E7' : 'white', border: 'none', cursor: 'pointer' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ width: 22, height: 22, borderRadius: 6, background: '#FFE082', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#E65100" strokeWidth="2.5" strokeLinecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                    </div>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: T1 }}>Clinical Relevance</span>
+                  </div>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T3} strokeWidth="2.5">
+                    {clinicalOpen ? <path d="M18 15l-6-6-6 6"/> : <path d="M6 9l6 6 6-6"/>}
+                  </svg>
+                </button>
+                {clinicalOpen && (
+                  <div style={{ padding: '12px 14px 14px', fontSize: 13, color: T2, lineHeight: 1.65, borderTop: '1px solid #FFE082', background: '#FFFDF0' }}>{q.clinical}</div>
+                )}
               </div>
             )}
 
