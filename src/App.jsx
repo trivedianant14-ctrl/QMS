@@ -5,6 +5,7 @@ import PreTest from './screens/PreTest'
 import Solve from './screens/Solve'
 import Result from './screens/Result'
 import Saved from './screens/Saved'
+import Summary from './screens/Summary'
 import Videos from './screens/Videos'
 import VideoSubject from './screens/VideoSubject'
 import VideoPlayer from './screens/VideoPlayer'
@@ -86,7 +87,7 @@ export default function App() {
     } else {
       setIsReattempt(true)
     }
-    setScreen('result')
+    setScreen('summary')
   }
 
   const viewAnalysis = () => {
@@ -145,6 +146,7 @@ export default function App() {
       {screen === 'subject' && <Subject {...sharedProps} />}
       {screen === 'pretest' && <PreTest {...sharedProps} />}
       {screen === 'solve' && <Solve {...sharedProps} />}
+      {screen === 'summary' && <Summary {...sharedProps} />}
       {screen === 'result' && <Result {...sharedProps} />}
       {screen === 'saved' && <Saved {...sharedProps} />}
       {screen === 'videos' && <Videos navigate={navigate} />}
