@@ -226,9 +226,9 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
             {QUESTIONS.map((_, i) => {
               const dc = getDotColor(i)
               return (
-                <button key={i} onClick={() => setCurrentQ(i)} style={{ width: 32, height: 32, borderRadius: '50%', border: `1.5px solid ${dc.border}`, background: dc.bg, color: dc.c, fontSize: 11, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div key={i} style={{ width: 32, height: 32, borderRadius: '50%', border: `1.5px solid ${dc.border}`, background: dc.bg, color: dc.c, fontSize: 11, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   {i + 1}
-                </button>
+                </div>
               )
             })}
           </div>
