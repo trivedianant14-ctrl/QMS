@@ -372,37 +372,48 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
               </div>
             )}
 
-            {/* Clinical relevance — collapsed dropdown */}
+            {/* Clinical Relevance — pill toggle */}
             {q?.clinical && (
-              <div style={{ marginBottom: 18, border: `1px solid ${BD}`, borderRadius: 12, overflow: 'hidden' }}>
-                <button onClick={() => setClinicalOpen(o => !o)} style={{ width: '100%', padding: '13px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: clinicalOpen ? '#FFF8E7' : 'white', border: 'none', cursor: 'pointer' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <div style={{ width: 22, height: 22, borderRadius: 6, background: '#FFE082', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#E65100" strokeWidth="2.5" strokeLinecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                    </div>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: T1 }}>Clinical Relevance</span>
+              <div style={{ marginBottom: 18 }}>
+                <button
+                  onClick={() => setClinicalOpen(o => !o)}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px 6px 10px', borderRadius: 999, border: `1.5px solid ${clinicalOpen ? '#FFB74D' : '#FFD54F'}`, background: clinicalOpen ? '#FFE082' : '#FFF8E7', cursor: 'pointer' }}
+                >
+                  <div style={{ width: 20, height: 20, borderRadius: '50%', background: clinicalOpen ? '#FFB74D' : '#FFE082', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#E65100" strokeWidth="2.5" strokeLinecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
                   </div>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T3} strokeWidth="2.5">
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#B45309' }}>Clinical Relevance</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#B45309" strokeWidth="2.5">
                     {clinicalOpen ? <path d="M18 15l-6-6-6 6"/> : <path d="M6 9l6 6 6-6"/>}
                   </svg>
                 </button>
                 {clinicalOpen && (
-                  <div style={{ padding: '12px 14px 14px', fontSize: 13, color: T2, lineHeight: 1.65, borderTop: '1px solid #FFE082', background: '#FFFDF0' }}>{q.clinical}</div>
+                  <div style={{ marginTop: 10, background: '#FFF8E7', border: '1px solid #FFD54F', borderRadius: 14, padding: '13px 14px', fontSize: 13, color: '#5D4037', lineHeight: 1.65 }}>
+                    {q.clinical}
+                  </div>
                 )}
               </div>
             )}
 
-            {/* How to approach — collapsed dropdown */}
+            {/* How to Approach — pill toggle */}
             {q?.approach && (
-              <div style={{ marginBottom: 18, border: `1px solid ${BD}`, borderRadius: 12, overflow: 'hidden' }}>
-                <button onClick={() => setExpandedSection(expandedSection === 'approach' ? '' : 'approach')} style={{ width: '100%', padding: '13px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: expandedSection === 'approach' ? BG2 : 'white', border: 'none', cursor: 'pointer' }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: T1 }}>How to Approach this Question</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T3} strokeWidth="2.5">
+              <div style={{ marginBottom: 18 }}>
+                <button
+                  onClick={() => setExpandedSection(expandedSection === 'approach' ? '' : 'approach')}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px 6px 10px', borderRadius: 999, border: `1.5px solid ${expandedSection === 'approach' ? PB : BD}`, background: expandedSection === 'approach' ? PL : BG2, cursor: 'pointer' }}
+                >
+                  <div style={{ width: 20, height: 20, borderRadius: '50%', background: expandedSection === 'approach' ? PB : BD, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={expandedSection === 'approach' ? PD : T2} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  </div>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: expandedSection === 'approach' ? PD : T2 }}>How to Approach</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={expandedSection === 'approach' ? P : T3} strokeWidth="2.5">
                     {expandedSection === 'approach' ? <path d="M18 15l-6-6-6 6"/> : <path d="M6 9l6 6 6-6"/>}
                   </svg>
                 </button>
                 {expandedSection === 'approach' && (
-                  <div style={{ padding: '12px 14px 14px', fontSize: 13, color: T2, lineHeight: 1.65, borderTop: `1px solid ${BD}` }}>{q.approach}</div>
+                  <div style={{ marginTop: 10, background: PL, border: `1px solid ${PB}`, borderRadius: 14, padding: '13px 14px', fontSize: 13, color: PD, lineHeight: 1.65 }}>
+                    {q.approach}
+                  </div>
                 )}
               </div>
             )}
