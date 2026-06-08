@@ -72,7 +72,6 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
   const [showSkipSurvey, setShowSkipSurvey] = useState(false)
   const [skipReason, setSkipReason] = useState(null)
   const [skipNote, setSkipNote] = useState('')
-  const [pendingNavNext, setPendingNavNext] = useState(false)
 
   const q = QUESTIONS[currentQ]
   const answered = answers[q?.id] !== undefined
@@ -147,26 +146,12 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
     setShowSkipSurvey(false)
     setSkipReason(null)
     setSkipNote('')
-    setPendingNavNext(false)
   }, [currentQ])
 
   const dismissSkipSurvey = () => {
     setShowSkipSurvey(false)
     setSkipReason(null)
     setSkipNote('')
-    if (pendingNavNext) {
-      setPendingNavNext(false)
-      setCurrentQ(c => c + 1)
-    }
-  }
-
-  const handleNext = () => {
-    if (mode === 'exam' && !answered && !timedOut && !isReviewMode) {
-      setShowSkipSurvey(true)
-      setPendingNavNext(true)
-    } else {
-      setCurrentQ(c => c + 1)
-    }
   }
 
   const renderExplanationText = (text, glossary) => {
@@ -461,7 +446,7 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
         {mode === 'exam' && !answered && !timedOut && !isReviewMode && (
           <div style={{ textAlign: 'center', marginBottom: 4 }}>
             <button onClick={() => setShowSkipSurvey(true)} style={{ background: 'none', border: 'none', fontSize: 12, color: T3, cursor: 'pointer', padding: '2px 0' }}>
-              Skipping this one? Tell us why →
+              Why did you leave this unattempted? →
             </button>
           </div>
         )}
@@ -479,7 +464,7 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
         )}
         {isLastQ
           ? <button onClick={() => isReviewMode ? navigate('result') : setShowSubmitConfirm(true)} className="btn-primary" style={{ flex: 2 }}>{isReviewMode ? 'Done' : 'Submit'}</button>
-          : <button onClick={handleNext} className="btn-primary" style={{ flex: currentQ === 0 ? 1 : 2 }}>Next →</button>
+          : <button onClick={() => setCurrentQ(c => c + 1)} className="btn-primary" style={{ flex: currentQ === 0 ? 1 : 2 }}>Next →</button>
         }
       </div>
 
