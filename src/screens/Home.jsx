@@ -15,7 +15,7 @@ const NavBar = ({ navigate }) => {
   return (
     <div style={{ flexShrink: 0, background: 'white', borderTop: `1px solid ${BD}`, display: 'flex', paddingBottom: 'env(safe-area-inset-bottom)' }}>
       {tabs.map(t => (
-        <button key={t.id} onClick={() => { if (t.id === 'qbank') navigate('home'); else if (t.id === 'videos') navigate('videos'); }} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '8px 0 10px', background: 'none', border: 'none', color: t.active ? P : T3, cursor: 'pointer' }}>
+        <button key={t.id} onClick={() => { if (t.id === 'qbank') navigate('home'); else if (t.id === 'videos') navigate('videos'); else if (t.id === 'tests') navigate('livetest'); }} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '8px 0 10px', background: 'none', border: 'none', color: t.active ? P : T3, cursor: 'pointer' }}>
           {t.icon}
           <span style={{ fontSize: 10, fontWeight: t.active ? 600 : 400 }}>{t.label}</span>
         </button>
