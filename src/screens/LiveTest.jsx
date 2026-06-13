@@ -320,8 +320,8 @@ export default function LiveTest({ navigate, onJoinNow }) {
   // activeModal: null | { type: 'confirm' | 'success', test }
   const [activeModal, setActiveModal]     = useState(null)
 
-  // Notification bell — open by default, track read IDs
-  const [showNotifs, setShowNotifs]       = useState(true)
+  // Notification bell — track read IDs
+  const [showNotifs, setShowNotifs]       = useState(false)
   const [readIds, setReadIds]             = useState(
     () => new Set(NOTIFICATIONS.filter(n => n.read).map(n => n.id))
   )
