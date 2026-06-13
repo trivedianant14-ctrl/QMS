@@ -160,17 +160,17 @@ export default function LiveTestSolve({ navigate, test }) {
 
         {/* Question strip — squares scroll left, grid icon pinned right */}
         <div style={{ padding:'0 16px 10px', display:'flex', alignItems:'center', gap:8 }}>
-          <div style={{ flex:1, display:'flex', gap:3, overflowX:'auto' }}>
+          <div style={{ flex:1, display:'flex', gap:4, overflowX:'auto' }}>
             {QUESTIONS.map((_, i) => {
               const st = S[getStatus(i)]
               const isCur = i === currentQ
               return (
                 <div key={i} onClick={() => goTo(i)} style={{
-                  width:22, height:22, borderRadius:3, flexShrink:0,
+                  width:30, height:30, borderRadius:5, flexShrink:0,
                   background: isCur ? P : st.bg,
                   color: isCur ? 'white' : st.c,
                   border:`1.5px solid ${isCur ? P : st.border}`,
-                  fontSize:9, fontWeight:700,
+                  fontSize:11, fontWeight:700,
                   display:'flex', alignItems:'center', justifyContent:'center',
                   cursor:'pointer',
                 }}>
@@ -205,23 +205,29 @@ export default function LiveTestSolve({ navigate, test }) {
           {q?.text}
         </div>
 
-        {/* Image with in-place magnify (CBT style) */}
+        {/* Image with scroll-to-explore magnify */}
         {q?.visual && (
-          <div style={{ position:'relative', borderRadius:6, overflow:'hidden', border:`1px solid ${BD}`, marginBottom:14, background:BG2, height:200 }}>
-            <img
-              src={q.visual}
-              alt="Question diagram"
-              style={{
-                width:'100%', height:'100%', objectFit:'contain',
-                transform:`scale(${imageZoom})`,
-                transformOrigin:'center center',
-                transition:'transform 0.2s ease',
-                display:'block',
-              }}
-            />
+          <div style={{ position:'relative', borderRadius:6, border:`1px solid ${BD}`, marginBottom:14, background:BG2, height:200, overflow:'hidden' }}>
+            {/* Scrollable inner pane — overflow:auto when zoomed */}
+            <div style={{
+              position:'absolute', inset:0,
+              overflow: imageZoom > 1 ? 'auto' : 'hidden',
+            }}>
+              <img
+                src={q.visual}
+                alt="Question diagram"
+                style={{
+                  display:'block',
+                  width: imageZoom > 1 ? `${imageZoom * 100}%` : '100%',
+                  height: imageZoom > 1 ? 'auto' : '100%',
+                  objectFit: imageZoom > 1 ? undefined : 'contain',
+                  minHeight: imageZoom > 1 ? '100%' : undefined,
+                }}
+              />
+            </div>
             {/* Zoom level badge */}
             {imageZoom > 1 && (
-              <div style={{ position:'absolute', top:8, left:8, padding:'2px 7px', borderRadius:4, background:'rgba(255,255,255,0.92)', border:`1px solid ${BD}`, fontSize:10, fontWeight:700, color:T2 }}>
+              <div style={{ position:'absolute', top:8, left:8, padding:'2px 7px', borderRadius:4, background:'rgba(255,255,255,0.92)', border:`1px solid ${BD}`, fontSize:10, fontWeight:700, color:T2, pointerEvents:'none', zIndex:1 }}>
                 {imageZoom}×
               </div>
             )}
@@ -229,7 +235,7 @@ export default function LiveTestSolve({ navigate, test }) {
             <button
               onClick={() => setImageZoom(z => z >= 2 ? 1 : parseFloat((z + 0.5).toFixed(1)))}
               style={{
-                position:'absolute', bottom:8, right:8,
+                position:'absolute', bottom:8, right:8, zIndex:1,
                 width:32, height:32, borderRadius:6,
                 background:'rgba(255,255,255,0.94)',
                 border:`1px solid ${BD}`,
