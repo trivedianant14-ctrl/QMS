@@ -221,6 +221,32 @@ export const QUESTIONS = [
     pyqYear: null,
     learnTopic: 'Body Cavities',
   },
+  {
+    id: 7,
+    topicId: 5,
+    topicName: 'Cardiovascular System',
+    text: 'Based on the diagram, identify the cardiac chamber marked ★. This chamber receives oxygenated blood directly from the pulmonary veins.',
+    options: [
+      { id: 'a', text: 'Right Atrium (RA)', pct: 12 },
+      { id: 'b', text: 'Right Ventricle (RV)', pct: 15 },
+      { id: 'c', text: 'Left Atrium (LA)', pct: 62 },
+      { id: 'd', text: 'Left Ventricle (LV)', pct: 11 },
+    ],
+    correct: 'c',
+    visual: '/img/visual-heart.svg',
+    explanation: 'The Left Atrium (LA) receives oxygenated blood from all four pulmonary veins after blood is oxygenated in the lungs. It then passes blood through the mitral (bicuspid) valve into the Left Ventricle, which pumps it to the entire body via the aorta.',
+    distractors: [
+      { optId: 'a', reason: 'The Right Atrium (RA) receives deoxygenated blood from the body via the superior and inferior vena cava — not oxygenated blood from pulmonary veins.' },
+      { optId: 'b', reason: 'The Right Ventricle (RV) pumps deoxygenated blood to the lungs via the pulmonary artery. It plays no role in receiving blood from pulmonary veins.' },
+      { optId: 'd', reason: 'The Left Ventricle (LV) receives blood FROM the Left Atrium (via the mitral valve) and pumps it to the body. The pulmonary veins drain into the LA, not LV.' },
+    ],
+    approach: 'Trace oxygenated blood flow: Lungs → Pulmonary veins → Left Atrium (LA) → Mitral valve → Left Ventricle (LV) → Aorta → Body. Pulmonary veins always drain into the LA.',
+    referenceBook: { name: "Gray's Anatomy", edition: '41st Edition', page: 992 },
+    isPYQ: false,
+    pyqExam: null,
+    pyqYear: null,
+    learnTopic: 'Cardiac Anatomy',
+  },
 ]
 
 export const TOPPER = {

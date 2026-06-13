@@ -77,6 +77,7 @@ export default function LiveTestSolve({ navigate, test }) {
   const [reportNote, setReportNote]     = useState('')
   const [reportSubmitted, setReportSubmitted] = useState(false)
   const [fontSize, setFontSize]         = useState(14)
+  const [imageZoom, setImageZoom]       = useState(1)
 
   const q        = QUESTIONS[currentQ]
   const selected = answers[q?.id]
@@ -93,9 +94,10 @@ export default function LiveTestSolve({ navigate, test }) {
     if (timeLeft === 0) navigate('livetest')
   }, [timeLeft])
 
-  // Mark question visited on navigate
+  // Mark question visited on navigate; reset image zoom
   useEffect(() => {
     if (q) setVisitedIds(prev => new Set([...prev, q.id]))
+    setImageZoom(1)
   }, [currentQ])
 
   const getStatus = (i) => {
@@ -164,7 +166,7 @@ export default function LiveTestSolve({ navigate, test }) {
               const isCur = i === currentQ
               return (
                 <div key={i} onClick={() => goTo(i)} style={{
-                  width:22, height:22, borderRadius:5, flexShrink:0,
+                  width:22, height:22, borderRadius:3, flexShrink:0,
                   background: isCur ? P : st.bg,
                   color: isCur ? 'white' : st.c,
                   border:`1.5px solid ${isCur ? P : st.border}`,
@@ -199,13 +201,55 @@ export default function LiveTestSolve({ navigate, test }) {
           <TimerInline timeLeft={timeLeft} />
         </div>
 
-        <div style={{ background:BG2, borderRadius:12, padding:'14px', marginBottom:16, fontSize, color:T1, lineHeight:1.6, fontWeight:500 }}>
+        <div style={{ background:'white', border:`1px solid ${BD}`, borderRadius:6, padding:'14px', marginBottom:14, fontSize, color:T1, lineHeight:1.6, fontWeight:500 }}>
           {q?.text}
         </div>
 
+        {/* Image with in-place magnify (CBT style) */}
+        {q?.visual && (
+          <div style={{ position:'relative', borderRadius:6, overflow:'hidden', border:`1px solid ${BD}`, marginBottom:14, background:BG2, height:200 }}>
+            <img
+              src={q.visual}
+              alt="Question diagram"
+              style={{
+                width:'100%', height:'100%', objectFit:'contain',
+                transform:`scale(${imageZoom})`,
+                transformOrigin:'center center',
+                transition:'transform 0.2s ease',
+                display:'block',
+              }}
+            />
+            {/* Zoom level badge */}
+            {imageZoom > 1 && (
+              <div style={{ position:'absolute', top:8, left:8, padding:'2px 7px', borderRadius:4, background:'rgba(255,255,255,0.92)', border:`1px solid ${BD}`, fontSize:10, fontWeight:700, color:T2 }}>
+                {imageZoom}×
+              </div>
+            )}
+            {/* Magnify button — cycles 1× → 1.5× → 2× → 1× */}
+            <button
+              onClick={() => setImageZoom(z => z >= 2 ? 1 : parseFloat((z + 0.5).toFixed(1)))}
+              style={{
+                position:'absolute', bottom:8, right:8,
+                width:32, height:32, borderRadius:6,
+                background:'rgba(255,255,255,0.94)',
+                border:`1px solid ${BD}`,
+                display:'flex', alignItems:'center', justifyContent:'center',
+                cursor:'pointer',
+                boxShadow:'0 1px 4px rgba(0,0,0,0.1)',
+              }}
+              title={imageZoom >= 2 ? 'Reset zoom' : 'Zoom in'}
+            >
+              {imageZoom < 2
+                ? <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={T2} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                : <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={T2} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+              }
+            </button>
+          </div>
+        )}
+
         {q?.options.map(opt => (
           <button key={opt.id} onClick={() => handleAnswer(opt.id)} style={{
-            width:'100%', padding:'13px 16px', borderRadius:12, marginBottom:8,
+            width:'100%', padding:'13px 16px', borderRadius:6, marginBottom:8,
             border:`1.5px solid ${selected === opt.id ? PB : BD}`,
             background: selected === opt.id ? PL : 'white',
             color: selected === opt.id ? PD : T1,
@@ -300,7 +344,7 @@ export default function LiveTestSolve({ navigate, test }) {
                   const isCur = i === currentQ
                   return (
                     <button key={i} onClick={() => { goTo(i); setShowGrid(false) }} style={{
-                      padding:'11px 0', borderRadius:8,
+                      padding:'11px 0', borderRadius:4,
                       border:`2px solid ${isCur ? P : st.border}`,
                       background: isCur ? P : st.bg,
                       color: isCur ? 'white' : st.c,
