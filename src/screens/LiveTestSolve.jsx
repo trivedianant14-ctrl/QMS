@@ -20,6 +20,7 @@ const S = {
   'answered-marked': { bg: PL,  c: PD,  border: GB },
 }
 
+// Full-size timer used in grid overlay header
 function Timer({ timeLeft }) {
   const h = Math.floor(timeLeft / 3600)
   const m = Math.floor((timeLeft % 3600) / 60)
@@ -31,6 +32,29 @@ function Timer({ timeLeft }) {
         <circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/>
       </svg>
       <span style={{ fontSize:12, fontWeight:700, color: urgent ? R : T2, fontVariantNumeric:'tabular-nums' }}>
+        {h > 0 && `${String(h).padStart(2,'0')}:`}{String(m).padStart(2,'0')}:{String(s).padStart(2,'0')}
+      </span>
+    </div>
+  )
+}
+
+// Compact inline timer — sits in the question strip row, same height as squares
+function TimerInline({ timeLeft }) {
+  const h = Math.floor(timeLeft / 3600)
+  const m = Math.floor((timeLeft % 3600) / 60)
+  const s = timeLeft % 60
+  const urgent = timeLeft <= 300
+  return (
+    <div style={{
+      display:'flex', alignItems:'center', gap:3, flexShrink:0,
+      height:22, padding:'0 7px', borderRadius:6,
+      background: urgent ? RL : BG2,
+      border:`1.5px solid ${urgent ? RB : BD}`,
+    }}>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={urgent ? R : T2} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/>
+      </svg>
+      <span style={{ fontSize:10, fontWeight:700, color: urgent ? R : T2, fontVariantNumeric:'tabular-nums', whiteSpace:'nowrap' }}>
         {h > 0 && `${String(h).padStart(2,'0')}:`}{String(m).padStart(2,'0')}:{String(s).padStart(2,'0')}
       </span>
     </div>
@@ -122,31 +146,32 @@ export default function LiveTestSolve({ navigate, test }) {
           </div>
         </div>
 
-        {/* Nav row: exit | Q counter | timer | grid */}
+        {/* Nav row: exit | Q counter | grid (timer moved to strip) */}
         <div style={{ padding:'4px 16px 10px', display:'flex', alignItems:'center', gap:10 }}>
           <button onClick={() => setShowExitConfirm(true)} style={{ background:'none', border:'none', cursor:'pointer', color:T1, fontSize:20, fontWeight:700, lineHeight:1 }}>✕</button>
           <div style={{ flex:1, textAlign:'center' }}>
             <span style={{ fontSize:13, fontWeight:700, color:T1 }}>Q {currentQ + 1}</span>
             <span style={{ fontSize:13, fontWeight:400, color:T3 }}> / {QUESTIONS.length}</span>
           </div>
-          <Timer timeLeft={timeLeft} />
-          <button onClick={() => setShowGrid(true)} style={{ background:'none', border:'none', cursor:'pointer', color:T2, marginLeft:2, display:'flex' }}>
+          <button onClick={() => setShowGrid(true)} style={{ background:'none', border:'none', cursor:'pointer', color:T2, display:'flex' }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
           </button>
         </div>
 
-        {/* Scrollable question status strip */}
-        <div style={{ padding:'0 16px 10px', display:'flex', gap:5, overflowX:'auto' }}>
+        {/* Question status strip — timer first, then numbered squares */}
+        <div style={{ padding:'0 16px 10px', display:'flex', gap:3, overflowX:'auto', alignItems:'center' }}>
+          <TimerInline timeLeft={timeLeft} />
+          <div style={{ width:6, flexShrink:0 }} />
           {QUESTIONS.map((_, i) => {
             const st = S[getStatus(i)]
             const isCur = i === currentQ
             return (
               <div key={i} onClick={() => goTo(i)} style={{
-                width:30, height:30, borderRadius:6, flexShrink:0,
+                width:22, height:22, borderRadius:5, flexShrink:0,
                 background: isCur ? P : st.bg,
                 color: isCur ? 'white' : st.c,
                 border:`1.5px solid ${isCur ? P : st.border}`,
-                fontSize:11, fontWeight:700,
+                fontSize:9, fontWeight:700,
                 display:'flex', alignItems:'center', justifyContent:'center',
                 cursor:'pointer',
               }}>
