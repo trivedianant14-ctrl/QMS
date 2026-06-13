@@ -10,12 +10,13 @@ import Videos from './screens/Videos'
 import VideoSubject from './screens/VideoSubject'
 import VideoPlayer from './screens/VideoPlayer'
 import LiveTest from './screens/LiveTest'
+import LiveTestPreTest from './screens/LiveTestPreTest'
 import { QUESTIONS } from './data'
 
 const SCREEN_DEPTH = {
   home: 0,
   subject: 1, videos: 1, saved: 1, livetest: 1,
-  pretest: 2, videosubject: 2,
+  pretest: 2, videosubject: 2, livetestpretest: 2,
   solve: 3, videoplayer: 3,
   summary: 4, result: 4,
 }
@@ -28,7 +29,8 @@ const EXISTING_USER_SAVES = [
 ]
 
 export default function App() {
-  const [screen, setScreen] = useState('home')
+  const [screen, setScreen] = useState('livetest')
+  const [currentLiveTest, setCurrentLiveTest] = useState(null)
   const [mode, setMode] = useState('guide')
   const [currentQ, setCurrentQ] = useState(0)
   const [answers, setAnswers] = useState({})
@@ -186,7 +188,8 @@ export default function App() {
         {screen === 'videos' && <Videos navigate={navigate} isNewUser={isNewUser} toggleUserMode={toggleUserMode} />}
         {screen === 'videosubject' && <VideoSubject navigate={navigate} setCurrentVideo={setCurrentVideo} />}
         {screen === 'videoplayer' && <VideoPlayer navigate={navigate} currentVideo={currentVideo} savedVideos={savedVideos} saveVideo={saveVideo} unsaveVideo={unsaveVideo} savedResources={savedResources} saveResource={saveResource} unsaveResource={unsaveResource} />}
-        {screen === 'livetest' && <LiveTest navigate={navigate} />}
+        {screen === 'livetest' && <LiveTest navigate={navigate} onJoinNow={(test) => { setCurrentLiveTest(test); navigate('livetestpretest') }} />}
+        {screen === 'livetestpretest' && <LiveTestPreTest navigate={navigate} test={currentLiveTest} />}
       </div>
     </div>
   )

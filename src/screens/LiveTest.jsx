@@ -307,7 +307,7 @@ function NavBar({ navigate }) {
 
 // ─── Main screen ──────────────────────────────────────────────────────────────
 
-export default function LiveTest({ navigate }) {
+export default function LiveTest({ navigate, onJoinNow }) {
   const [manyAttempts, setManyAttempts]   = useState(false)
   const [activeCategory, setActiveCategory] = useState('Live Test')
   const [upExpanded, setUpExpanded]       = useState(false)
@@ -388,7 +388,7 @@ export default function LiveTest({ navigate }) {
       <div style={{ padding:'8px 20px 10px', display:'flex', alignItems:'center', justifyContent:'space-between', flexShrink:0 }}>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
           <div style={{ width:36, height:36, borderRadius:'50%', background:`linear-gradient(135deg, ${P}, #8B82E0)`, display:'flex', alignItems:'center', justifyContent:'center', color:'white', fontWeight:700, fontSize:14 }}>A</div>
-          <span style={{ fontSize:17, fontWeight:700, color:T1 }}>Live Tests</span>
+          <span style={{ fontSize:17, fontWeight:700, color:T1 }}>Tests</span>
         </div>
         {/* Bell with badge */}
         <button onClick={handleBellClick}
@@ -443,7 +443,7 @@ export default function LiveTest({ navigate }) {
                   <UsersIcon />{LIVE_TEST.enrolled.toLocaleString()} joined
                 </span>
               </div>
-              <button style={{ width:'100%', padding:'12px', borderRadius:10, background:'white', color:P, fontSize:14, fontWeight:700, border:'none', cursor:'pointer', boxShadow:'0 2px 8px rgba(0,0,0,0.12)' }}>
+              <button onClick={() => onJoinNow && onJoinNow(LIVE_TEST)} style={{ width:'100%', padding:'12px', borderRadius:10, background:'white', color:P, fontSize:14, fontWeight:700, border:'none', cursor:'pointer', boxShadow:'0 2px 8px rgba(0,0,0,0.12)' }}>
                 Join Now
               </button>
             </div>
@@ -519,88 +519,58 @@ export default function LiveTest({ navigate }) {
 
       <NavBar navigate={navigate} />
 
-      {/* ── Notification sheet ── */}
+      {/* ── Notifications — full screen ── */}
       {showNotifs && (
-        <div className="overlay" onClick={() => setShowNotifs(false)}>
-          <div className="sheet" onClick={e => e.stopPropagation()} style={{ maxHeight:'82%', display:'flex', flexDirection:'column' }}>
-            <div className="sheet-handle" />
+        <div style={{ position:'absolute', inset:0, background:'white', zIndex:50, display:'flex', flexDirection:'column' }}>
 
-            {/* Header */}
-            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px 20px 10px', borderBottom:`1px solid ${BD}`, flexShrink:0 }}>
-              <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                <span style={{ fontSize:15, fontWeight:700, color:T1 }}>Notifications</span>
-                {unreadCount > 0 && (
-                  <span style={{ background:P, color:'white', fontSize:10, fontWeight:700, padding:'1px 7px', borderRadius:20 }}>
-                    {unreadCount} new
-                  </span>
-                )}
-              </div>
-              <button onClick={() => setShowNotifs(false)} style={{ background:'none', border:'none', color:T2, cursor:'pointer', display:'flex', padding:4 }}>
-                <CloseIcon />
-              </button>
+          {/* Header */}
+          <div style={{ padding:'12px 20px 4px', display:'flex', justifyContent:'space-between', alignItems:'center', flexShrink:0 }}>
+            <span style={{ fontSize:13, fontWeight:600, color:T1 }}>9:41</span>
+            <div style={{ display:'flex', gap:6, alignItems:'center', color:T2 }}>
+              <svg width="16" height="11" viewBox="0 0 30 20" fill="currentColor"><rect x="0" y="8" width="4" height="12" rx="1" opacity="0.4"/><rect x="7" y="5" width="4" height="15" rx="1" opacity="0.6"/><rect x="14" y="2" width="4" height="18" rx="1" opacity="0.8"/><rect x="21" y="0" width="4" height="20" rx="1"/></svg>
+              <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="2" stroke="currentColor"/><rect x="22" y="3.5" width="2.5" height="5" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="1.5" width="15" height="9" rx="1.5" fill="currentColor"/></svg>
             </div>
+          </div>
 
-            {/* Notification list */}
-            <div style={{ overflowY:'auto', padding:'10px 16px 28px', flex:1 }}>
-              {NOTIFICATIONS.map((n, i) => {
-                const isUnread = !readIds.has(n.id)
-                const isLive   = n.type === 'live'
-                const isResult = n.type === 'result'
+          <div style={{ display:'flex', alignItems:'center', gap:12, padding:'8px 20px 12px', borderBottom:`1px solid ${BD}`, flexShrink:0 }}>
+            <button onClick={() => setShowNotifs(false)} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', color:T1, padding:0 }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15,18 9,12 15,6"/></svg>
+            </button>
+            <span style={{ fontSize:16, fontWeight:700, color:T1 }}>Notifications</span>
+            {unreadCount > 0 && (
+              <span style={{ background:P, color:'white', fontSize:10, fontWeight:700, padding:'2px 8px', borderRadius:20, marginLeft:2 }}>{unreadCount} new</span>
+            )}
+          </div>
 
-                // Icon circle config
-                const iconBg     = isLive ? '#FFF0F0' : isResult ? GL : PL
-                const iconColor  = isLive ? '#E53E3E' : isResult ? G : P
-                const iconBorder = isLive ? '#FED7D7' : isResult ? GB : PB
-
-                return (
-                  <div key={n.id} style={{
-                    display:'flex', gap:12, padding:'13px 14px',
-                    borderRadius:12, marginBottom:8,
-                    background: isUnread ? 'white' : BG2,
-                    border: `1px solid ${isUnread ? (isLive ? '#FED7D7' : BD) : BD}`,
-                    borderLeft: isUnread ? `3px solid ${isLive ? '#E53E3E' : P}` : `1px solid ${BD}`,
-                    position:'relative',
-                  }}>
-                    {/* Icon */}
-                    <div style={{ width:38, height:38, borderRadius:10, background:iconBg, border:`1px solid ${iconBorder}`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:1 }}>
-                      {isLive ? (
-                        <span style={{ width:10, height:10, borderRadius:'50%', background:'#E53E3E', display:'inline-block', animation:'livePulse 1.4s ease-in-out infinite' }} />
-                      ) : isResult ? (
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={G} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
-                      ) : (
-                        <BellIcon size={16} />
-                      )}
+          {/* List */}
+          <div className="scroll" style={{ flex:1, padding:'12px 16px 24px' }}>
+            {NOTIFICATIONS.map(n => {
+              const isUnread = !readIds.has(n.id)
+              const isLive   = n.type === 'live'
+              return (
+                <div key={n.id} style={{
+                  padding:'13px 14px', borderRadius:12, marginBottom:8,
+                  background: isUnread ? 'white' : BG2,
+                  border:`1px solid ${BD}`,
+                }}>
+                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:4 }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:6, flex:1 }}>
+                      {isUnread && <span style={{ width:6, height:6, borderRadius:'50%', background: isLive ? '#E53E3E' : P, flexShrink:0, marginTop:2 }} />}
+                      <span style={{ fontSize:13, fontWeight: isUnread ? 700 : 500, color: isUnread ? T1 : T2, lineHeight:1.4 }}>{n.title}</span>
                     </div>
-
-                    {/* Content */}
-                    <div style={{ flex:1, minWidth:0 }}>
-                      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap:8, marginBottom:3 }}>
-                        <span style={{ fontSize:12, fontWeight: isUnread ? 700 : 600, color: isUnread ? T1 : T2, lineHeight:1.4, flex:1 }}>{n.title}</span>
-                        <span style={{ fontSize:10, color:T3, fontWeight:500, flexShrink:0, marginTop:1 }}>{n.time}</span>
-                      </div>
-                      <div style={{ fontSize:12, color: isUnread ? T2 : T3, lineHeight:1.5, marginBottom: isLive || isResult ? 10 : 0 }}>{n.body}</div>
-
-                      {/* Action button for live / result */}
-                      {isLive && (
-                        <button style={{ padding:'6px 14px', borderRadius:8, background:P, color:'white', fontSize:11, fontWeight:700, border:'none', cursor:'pointer' }}>
-                          Join Now
-                        </button>
-                      )}
-                      {isResult && (
-                        <button style={{ padding:'6px 14px', borderRadius:8, background:GL, color:G, fontSize:11, fontWeight:600, border:`1px solid ${GB}`, cursor:'pointer' }}>
-                          View Result
-                        </button>
-                      )}
-                    </div>
-
-                    {/* Unread dot */}
-                    {isUnread && (
-                      <span style={{ position:'absolute', top:13, right:13, width:7, height:7, borderRadius:'50%', background: isLive ? '#E53E3E' : P }} />
-                    )}
+                    <span style={{ fontSize:10, color:T3, flexShrink:0, marginLeft:8, marginTop:2 }}>{n.time}</span>
                   </div>
-                )
-              })}
-            </div>
+                  <div style={{ fontSize:12, color:T3, lineHeight:1.5, marginLeft: isUnread ? 14 : 0, marginBottom: isLive ? 10 : 0 }}>{n.body}</div>
+                  {isLive && (
+                    <div style={{ marginLeft: isUnread ? 14 : 0 }}>
+                      <button onClick={() => { setShowNotifs(false); onJoinNow && onJoinNow(LIVE_TEST) }} style={{ padding:'7px 16px', borderRadius:8, background:P, color:'white', fontSize:12, fontWeight:700, border:'none', cursor:'pointer' }}>
+                        Join Now
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
           </div>
         </div>
       )}
