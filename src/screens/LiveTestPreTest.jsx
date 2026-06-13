@@ -85,7 +85,7 @@ export default function LiveTestPreTest({ navigate, test }) {
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:1, background:BD, borderRadius:14, overflow:'hidden', marginTop:16, border:`1px solid ${BD}` }}>
           {[
             { value: t.questions,    unit: 'Questions' },
-            { value: `${t.duration} min`, unit: 'Duration' },
+            { value: t.durationLabel || `${t.duration} min`, unit: 'Duration' },
             { value: t.totalMarks,   unit: 'Total Marks' },
           ].map((cell, i) => (
             <div key={i} style={{ background:'white', padding:'14px 10px', textAlign:'center' }}>
@@ -118,7 +118,7 @@ export default function LiveTestPreTest({ navigate, test }) {
           {INSTRUCTIONS.map((text, i) => (
             <div key={i} style={{ display:'flex', gap:10, padding:'10px 12px', borderBottom: i < INSTRUCTIONS.length - 1 ? `1px solid ${BD}` : 'none' }}>
               <span style={{ width:20, height:20, borderRadius:'50%', background:PL, color:PD, fontSize:10, fontWeight:700, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:1 }}>{i + 1}</span>
-              <span style={{ fontSize:12, color:T2, lineHeight:1.55 }}>{text}</span>
+              <span style={{ fontSize:12, color:T1, lineHeight:1.55, textDecoration:'none' }}>{text}</span>
             </div>
           ))}
         </div>
@@ -128,7 +128,7 @@ export default function LiveTestPreTest({ navigate, test }) {
         <div style={{ background:BG2, border:`1px solid ${BD}`, borderRadius:12, overflow:'hidden' }}>
           {QUESTION_STATUSES.map((s, i) => (
             <div key={i} style={{ display:'flex', alignItems:'center', gap:12, padding:'11px 14px', borderBottom: i < QUESTION_STATUSES.length - 1 ? `1px solid ${BD}` : 'none', background:'white' }}>
-              <div style={{ width:28, height:28, borderRadius:'50%', background:s.bg, border:`2px solid ${s.border}`, flexShrink:0 }} />
+              <div style={{ width:28, height:28, borderRadius:6, background:s.bg, border:`2px solid ${s.border}`, flexShrink:0 }} />
               <div>
                 <div style={{ fontSize:12, fontWeight:600, color:T1, marginBottom:1 }}>{s.label}</div>
                 <div style={{ fontSize:11, color:T3 }}>{s.desc}</div>
@@ -138,12 +138,11 @@ export default function LiveTestPreTest({ navigate, test }) {
         </div>
 
         {/* Button guide */}
-        <SectionHeader>Buttons in the Test</SectionHeader>
-        <div style={{ background:BG2, border:`1px solid ${BD}`, borderRadius:12, overflow:'hidden', marginBottom:24 }}>
+        <SectionHeader>Test Controls</SectionHeader>
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:24 }}>
           {BUTTONS.map((b, i) => (
-            <div key={i} style={{ display:'flex', alignItems:'flex-start', gap:12, padding:'11px 14px', borderBottom: i < BUTTONS.length - 1 ? `1px solid ${BD}` : 'none', background:'white' }}>
-              <span style={{ flexShrink:0, padding:'3px 10px', borderRadius:6, background:PL, color:PD, fontSize:11, fontWeight:600, border:`1px solid ${PB}`, marginTop:1, whiteSpace:'nowrap' }}>{b.label}</span>
-              <span style={{ fontSize:12, color:T2, lineHeight:1.55 }}>{b.desc}</span>
+            <div key={i} style={{ padding:'10px 14px', borderRadius:10, background:'white', border:`1px solid ${BD}`, display:'flex', alignItems:'center', justifyContent:'center' }}>
+              <span style={{ fontSize:12, fontWeight:600, color:PD, textAlign:'center', lineHeight:1.4 }}>{b.label}</span>
             </div>
           ))}
         </div>

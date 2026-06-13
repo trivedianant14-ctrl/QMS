@@ -19,10 +19,32 @@ const LIVE_TEST = {
   id: 0,
   name: 'NORCET 8 Grand Test – Session 1',
   timeLabel: 'Today, 3:00 PM – 5:00 PM',
-  duration: '120 min',
+  duration: 120,
+  durationLabel: '120 min',
   marks: '200',
   enrolled: 2847,
+  questions: 200,
+  totalMarks: 200,
+  correctMarks: 1,
+  wrongMarks: -0.25,
 }
+
+const CONFETTI = [
+  { left:'8%',  color:'#FF6B6B', w:7,  h:7,  round:true,  delay:0,    dur:1.8 },
+  { left:'18%', color:'#FFD93D', w:5,  h:12, round:false, delay:0.10, dur:2.0 },
+  { left:'28%', color:'#3B6D11', w:8,  h:8,  round:true,  delay:0.05, dur:1.7 },
+  { left:'38%', color:'#534AB7', w:11, h:5,  round:false, delay:0.15, dur:1.9 },
+  { left:'48%', color:'#FF6B6B', w:7,  h:7,  round:true,  delay:0.20, dur:1.6 },
+  { left:'58%', color:'#FFD93D', w:5,  h:11, round:false, delay:0,    dur:2.1 },
+  { left:'68%', color:'#3B6D11', w:7,  h:7,  round:true,  delay:0.08, dur:1.8 },
+  { left:'78%', color:'#534AB7', w:10, h:5,  round:false, delay:0.05, dur:2.0 },
+  { left:'88%', color:'#FF6B6B', w:7,  h:7,  round:true,  delay:0.12, dur:1.7 },
+  { left:'13%', color:'#FFD93D', w:5,  h:5,  round:false, delay:0.65, dur:1.8 },
+  { left:'33%', color:'#534AB7', w:8,  h:8,  round:true,  delay:0.75, dur:2.0 },
+  { left:'53%', color:'#3B6D11', w:5,  h:10, round:false, delay:0.70, dur:1.7 },
+  { left:'73%', color:'#FFD93D', w:10, h:4,  round:true,  delay:0.80, dur:1.9 },
+  { left:'91%', color:'#FF6B6B', w:7,  h:7,  round:false, delay:0.60, dur:2.1 },
+]
 
 const UPCOMING = [
   { id:2, name:'Anatomy Subject Test – Series 4',  date:'Sat, 14 Jun', daysOut:2,  duration:'60 min',  marks:'100', registered:true  },
@@ -433,7 +455,7 @@ export default function LiveTest({ navigate, onJoinNow }) {
               <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:14 }}>
                 <span style={{ display:'inline-flex', alignItems:'center', gap:4, fontSize:11, color:'rgba(255,255,255,0.80)', fontWeight:500 }}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
-                  {LIVE_TEST.duration}
+                  {LIVE_TEST.durationLabel}
                 </span>
                 <span style={{ display:'inline-flex', alignItems:'center', gap:4, fontSize:11, color:'rgba(255,255,255,0.80)', fontWeight:500 }}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
@@ -601,21 +623,44 @@ export default function LiveTest({ navigate, onJoinNow }) {
         </div>
       )}
 
-      {/* ── Registration success popup ── */}
+      {/* ── Registration success popup (Hooray! gamified) ── */}
       {activeModal?.type === 'success' && (
-        <div className="popup-overlay">
-          <div className="popup" style={{ textAlign:'center' }}>
-            <div style={{ display:'flex', justifyContent:'center', marginBottom:14 }}>
-              <CheckCircleIcon />
+        <div className="popup-overlay" style={{ overflow:'hidden' }}>
+          {/* Confetti particles */}
+          {CONFETTI.map((c, i) => (
+            <div key={i} style={{
+              position:'absolute', top:0, left:c.left,
+              width:c.w, height:c.h,
+              borderRadius: c.round ? '50%' : 2,
+              background: c.color,
+              animation: `confettiFall ${c.dur}s ${c.delay}s ease-in both`,
+              zIndex:0, pointerEvents:'none',
+            }} />
+          ))}
+          <div className="popup" style={{ textAlign:'center', position:'relative', zIndex:1 }}>
+            {/* Animated check circle */}
+            <div style={{
+              width:72, height:72, borderRadius:'50%',
+              background:GL, border:`3px solid ${GB}`,
+              display:'flex', alignItems:'center', justifyContent:'center',
+              margin:'0 auto 14px',
+              animation:'checkPop 0.5s cubic-bezier(0.175,0.885,0.32,1.275) both',
+            }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={G} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20,6 9,17 4,12"/>
+              </svg>
             </div>
-            <div style={{ fontSize:16, fontWeight:700, color:T1, marginBottom:8 }}>You're registered!</div>
-            <div style={{ fontSize:13, color:T2, lineHeight:1.6, marginBottom:20 }}>
-              We'll send you a notification as soon as{' '}
+            <div style={{ fontSize:26, fontWeight:800, color:P, marginBottom:4, animation:'hooraySlide 0.4s 0.25s ease-out forwards', opacity:0 }}>
+              Hooray! 🎉
+            </div>
+            <div style={{ fontSize:15, fontWeight:700, color:T1, marginBottom:10 }}>You're Registered!</div>
+            <div style={{ fontSize:13, color:T2, lineHeight:1.6, marginBottom:22 }}>
+              We'll notify you as soon as{' '}
               <span style={{ fontWeight:600, color:T1 }}>{activeModal.test.name}</span>{' '}
               goes live. Good luck!
             </div>
             <button onClick={handleSuccessDone}
-              style={{ width:'100%', padding:'12px', borderRadius:10, background:P, color:'white', border:'none', fontSize:14, fontWeight:700, cursor:'pointer' }}>
+              style={{ width:'100%', padding:'13px', borderRadius:12, background:P, color:'white', border:'none', fontSize:14, fontWeight:700, cursor:'pointer' }}>
               Got it
             </button>
           </div>
