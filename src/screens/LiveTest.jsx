@@ -245,6 +245,117 @@ function PastCard({ test }) {
   )
 }
 
+// ─── Calendar full-screen overlay ────────────────────────────────────────────
+
+const MONTH_MAP = { Jan:'January', Feb:'February', Mar:'March', Apr:'April', May:'May', Jun:'June', Jul:'July', Aug:'August', Sep:'September', Oct:'October', Nov:'November', Dec:'December' }
+const DAY_MAP   = { Sun:'Sunday', Mon:'Monday', Tue:'Tuesday', Wed:'Wednesday', Thu:'Thursday', Fri:'Friday', Sat:'Saturday' }
+
+function CalendarScreen({ tests, registeredIds, onRegister, onBack }) {
+  const monthGroups = []
+  const seenMonths = {}
+  tests.forEach(t => {
+    const parts = t.date.split(', ')
+    const [dayNum, monthAbbr] = parts[1].split(' ')
+    const month  = MONTH_MAP[monthAbbr] || monthAbbr
+    const dayName = DAY_MAP[parts[0]] || parts[0]
+    if (!seenMonths[month]) {
+      const mg = { month, dateGroups: [], _dates: {} }
+      seenMonths[month] = mg
+      monthGroups.push(mg)
+    }
+    const mg = seenMonths[month]
+    if (!mg._dates[t.date]) {
+      const dg = { date: t.date, daysOut: t.daysOut, dayNum, dayName, tests: [] }
+      mg._dates[t.date] = dg
+      mg.dateGroups.push(dg)
+    }
+    mg._dates[t.date].tests.push(t)
+  })
+
+  return (
+    <div style={{ position:'absolute', inset:0, background:'white', zIndex:50, display:'flex', flexDirection:'column' }}>
+
+      {/* Status bar */}
+      <div style={{ padding:'12px 20px 4px', display:'flex', justifyContent:'space-between', alignItems:'center', flexShrink:0 }}>
+        <span style={{ fontSize:13, fontWeight:600, color:T1 }}>9:41</span>
+        <div style={{ display:'flex', gap:6, alignItems:'center', color:T2 }}>
+          <svg width="16" height="11" viewBox="0 0 30 20" fill="currentColor"><rect x="0" y="8" width="4" height="12" rx="1" opacity="0.4"/><rect x="7" y="5" width="4" height="15" rx="1" opacity="0.6"/><rect x="14" y="2" width="4" height="18" rx="1" opacity="0.8"/><rect x="21" y="0" width="4" height="20" rx="1"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="2" stroke="currentColor"/><rect x="22" y="3.5" width="2.5" height="5" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="1.5" width="15" height="9" rx="1.5" fill="currentColor"/></svg>
+        </div>
+      </div>
+
+      {/* Header */}
+      <div style={{ display:'flex', alignItems:'center', gap:12, padding:'6px 16px 12px', borderBottom:`1px solid ${BD}`, flexShrink:0 }}>
+        <button onClick={onBack} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', color:T1, padding:0, flexShrink:0 }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15,18 9,12 15,6"/></svg>
+        </button>
+        <div>
+          <div style={{ fontSize:16, fontWeight:700, color:T1 }}>Test Calendar</div>
+          <div style={{ fontSize:11, color:T3, marginTop:1 }}>Upcoming scheduled tests</div>
+        </div>
+      </div>
+
+      {/* Scrollable month list */}
+      <div className="scroll" style={{ flex:1, padding:'20px 16px 40px' }}>
+        {monthGroups.map(mg => (
+          <div key={mg.month} style={{ marginBottom:28 }}>
+
+            {/* Month header */}
+            <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:18 }}>
+              <span style={{ fontSize:17, fontWeight:800, color:T1 }}>{mg.month}</span>
+              <div style={{ flex:1, height:1.5, background:BD }} />
+            </div>
+
+            {mg.dateGroups.map(dg => (
+              <div key={dg.date} style={{ marginBottom:20 }}>
+
+                {/* Date row */}
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
+                  <div style={{ display:'flex', alignItems:'baseline', gap:7 }}>
+                    <span style={{ fontSize:26, fontWeight:800, color:T1, lineHeight:1 }}>{dg.dayNum}</span>
+                    <span style={{ fontSize:13, fontWeight:500, color:T3 }}>{dg.dayName}</span>
+                  </div>
+                  <span style={{ fontSize:10, fontWeight:600, color:'#1A56B0', background:'#EDF4FF', border:'1px solid #93B8F0', padding:'3px 9px', borderRadius:20 }}>
+                    In {dg.daysOut} {dg.daysOut === 1 ? 'day' : 'days'}
+                  </span>
+                </div>
+
+                {/* Test cards */}
+                {dg.tests.map(t => {
+                  const isReg = registeredIds.has(t.id)
+                  return (
+                    <div key={t.id} style={{ background:'white', border:`1.5px solid ${BD}`, borderRadius:12, padding:'13px 14px', marginBottom:8, boxShadow:'0 1px 4px rgba(0,0,0,0.05)' }}>
+                      <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:10 }}>
+                        <div style={{ flex:1, minWidth:0 }}>
+                          <div style={{ fontSize:14, fontWeight:700, color:T1, lineHeight:1.4, marginBottom:2 }}>{t.fullName}</div>
+                          <div style={{ fontSize:11, color:T3, marginBottom:8 }}>{t.subtitle}</div>
+                          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                            <span style={{ fontSize:11, color:T2, display:'inline-flex', alignItems:'center', gap:3 }}><ClockIcon />{t.duration}</span>
+                            <span style={{ fontSize:11, color:T2, display:'inline-flex', alignItems:'center', gap:3 }}><StarIcon />{t.marks} Marks</span>
+                            {isReg && (
+                              <span style={{ fontSize:10, fontWeight:700, color:G, background:GL, border:`1px solid ${GB}`, padding:'1px 7px', borderRadius:20 }}>you're in!</span>
+                            )}
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => !isReg && onRegister(t)}
+                          style={{ padding:'7px 14px', borderRadius:8, fontSize:12, fontWeight:700, cursor:isReg?'default':'pointer', background:isReg?GL:'#1A56B0', color:isReg?G:'white', border:`1px solid ${isReg?GB:'#1A56B0'}`, flexShrink:0, marginTop:2 }}>
+                          {isReg ? '✓ Registered' : 'Register'}
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
+
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // ─── Bottom nav ───────────────────────────────────────────────────────────────
 
 function NavBar({ navigate }) {
@@ -403,63 +514,20 @@ export default function LiveTest({ navigate, onJoinNow, variant = 'cta' }) {
             {/* ── Upcoming Tests ── */}
             <div style={{ borderTop:`1px solid ${BD}`, paddingTop:16, marginBottom:24 }}>
               {variant === 'cta' ? (
-                // ── V1: Calendar CTA card ──
-                !showCalendar ? (
-                  <button onClick={() => setShowCalendar(true)}
-                    style={{ width:'100%', display:'flex', alignItems:'center', gap:12, background:'#EDF4FF', border:'1.5px solid #93B8F0', borderRadius:12, padding:'13px 14px', cursor:'pointer', textAlign:'left' }}>
-                    <div style={{ width:40, height:40, borderRadius:10, background:'#1A56B0', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-                      </svg>
-                    </div>
-                    <div style={{ flex:1 }}>
-                      <div style={{ fontSize:13, fontWeight:700, color:'#1A56B0' }}>Upcoming Test Calendar</div>
-                      <div style={{ fontSize:11, color:T2, marginTop:2 }}>Tap to view all upcoming tests</div>
-                    </div>
-                    <ChevronRight size={18} />
-                  </button>
-                ) : (
-                  <>
-                    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
-                      <span style={{ fontSize:13, fontWeight:700, color:T1 }}>Upcoming Test Calendar</span>
-                      <button onClick={() => setShowCalendar(false)}
-                        style={{ background:'none', border:'none', cursor:'pointer', fontSize:11, fontWeight:600, color:T3, padding:0 }}>
-                        Hide ✕
-                      </button>
-                    </div>
-                    {(() => {
-                      const groups = []
-                      const seen = {}
-                      calendarTests.forEach(t => {
-                        if (!seen[t.date]) { seen[t.date] = []; groups.push({ date: t.date, daysOut: t.daysOut, tests: seen[t.date] }) }
-                        seen[t.date].push(t)
-                      })
-                      return groups.map(g => (
-                        <div key={g.date} style={{ marginBottom:16 }}>
-                          <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
-                            <span style={{ fontSize:12, fontWeight:700, color:T2 }}>{g.date}</span>
-                            <span style={{ fontSize:10, fontWeight:600, color:'#1A56B0', background:'#EDF4FF', border:'1px solid #93B8F0', padding:'1px 7px', borderRadius:20 }}>
-                              In {g.daysOut} {g.daysOut === 1 ? 'day' : 'days'}
-                            </span>
-                          </div>
-                          {g.tests.map(t => {
-                            const isReg = registeredIds.has(t.id)
-                            return (
-                              <div key={t.id} style={{ background:'#1A56B0', borderRadius:10, padding:'11px 14px', marginBottom:8, display:'flex', alignItems:'center', justifyContent:'space-between', gap:10 }}>
-                                <span style={{ fontSize:13, fontWeight:600, color:'white', flex:1, lineHeight:1.35 }}>{t.fullName}</span>
-                                <button
-                                  onClick={() => !isReg && handleRegisterClick(t)}
-                                  style={{ padding:'5px 13px', borderRadius:7, fontSize:11, fontWeight:700, cursor:isReg?'default':'pointer', background:isReg?'rgba(255,255,255,0.18)':'white', color:isReg?'rgba(255,255,255,0.8)':'#1A56B0', border:isReg?'1px solid rgba(255,255,255,0.35)':'none', flexShrink:0 }}>
-                                  {isReg ? '✓ Registered' : 'Register'}
-                                </button>
-                              </div>
-                            )
-                          })}
-                        </div>
-                      ))
-                    })()}
-                  </>
-                )
+                // ── V1: Calendar CTA card (opens full-screen overlay) ──
+                <button onClick={() => setShowCalendar(true)}
+                  style={{ width:'100%', display:'flex', alignItems:'center', gap:12, background:'#EDF4FF', border:'1.5px solid #93B8F0', borderRadius:12, padding:'13px 14px', cursor:'pointer', textAlign:'left' }}>
+                  <div style={{ width:40, height:40, borderRadius:10, background:'#1A56B0', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                  </div>
+                  <div style={{ flex:1 }}>
+                    <div style={{ fontSize:13, fontWeight:700, color:'#1A56B0' }}>Upcoming Test Calendar</div>
+                    <div style={{ fontSize:11, color:T2, marginTop:2 }}>Tap to view all upcoming tests</div>
+                  </div>
+                  <ChevronRight size={18} />
+                </button>
               ) : (
                 // ── V2: Full list with segmented toggle ──
                 <>
@@ -582,6 +650,16 @@ export default function LiveTest({ navigate, onJoinNow, variant = 'cta' }) {
       </div>
 
       <NavBar navigate={navigate} />
+
+      {/* ── Calendar screen overlay ── */}
+      {showCalendar && (
+        <CalendarScreen
+          tests={calendarTests}
+          registeredIds={registeredIds}
+          onRegister={handleRegisterClick}
+          onBack={() => setShowCalendar(false)}
+        />
+      )}
 
       {/* ── Notifications ── */}
       {showNotifs && (
