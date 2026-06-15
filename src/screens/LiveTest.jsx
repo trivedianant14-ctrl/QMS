@@ -409,6 +409,11 @@ export default function LiveTest({ navigate, onJoinNow, variant = 'cta' }) {
 
   const calendarTests = [...ALL_UPCOMING].sort((a, b) => a.daysOut - b.daysOut)
   const filteredPast  = pastTests.filter(t => t.format === pastTab)
+
+  const subjectPast      = pastTests.filter(t => t.format === 'subject_preboard')
+  const fullPast         = pastTests.filter(t => t.format === 'full_mock')
+  const subjectAttempted = subjectPast.filter(t => t.attempted).length
+  const fullAttempted    = fullPast.filter(t => t.attempted).length
   const SHOW_UPCOMING = 3
   const activeList    = upcomingTab === 'subject_preboard' ? UPCOMING_PREBOARDS : UPCOMING_MOCKS
   const visibleList   = upcomingExpanded ? activeList : activeList.slice(0, SHOW_UPCOMING)
@@ -576,7 +581,7 @@ export default function LiveTest({ navigate, onJoinNow, variant = 'cta' }) {
               {variant === 'cta' ? (
                 // ── V1: Segmented filter tabs, always visible ──
                 <>
-                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8 }}>
                     <span style={{ fontSize:13, fontWeight:700, color:T1 }}>Past Tests</span>
                     <div style={{ display:'inline-flex', background:BG2, border:`1px solid ${BD}`, borderRadius:20, padding:3, gap:2 }}>
                       {[{ id:'subject_preboard', label:'Subject-level' }, { id:'full_mock', label:'Full-length' }].map(tab => {
@@ -589,6 +594,20 @@ export default function LiveTest({ navigate, onJoinNow, variant = 'cta' }) {
                         )
                       })}
                     </div>
+                  </div>
+                  {/* Attempt counts for both categories */}
+                  <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:14, fontSize:11 }}>
+                    <span style={{ color: pastTab === 'subject_preboard' ? T1 : T3, fontWeight: pastTab === 'subject_preboard' ? 600 : 400 }}>
+                      Subject{' '}
+                      <span style={{ color:G, fontWeight:700 }}>{subjectAttempted}</span>
+                      <span style={{ color:T3 }}>/{subjectPast.length}</span>
+                    </span>
+                    <span style={{ color:BD }}>·</span>
+                    <span style={{ color: pastTab === 'full_mock' ? T1 : T3, fontWeight: pastTab === 'full_mock' ? 600 : 400 }}>
+                      Full-length{' '}
+                      <span style={{ color:G, fontWeight:700 }}>{fullAttempted}</span>
+                      <span style={{ color:T3 }}>/{fullPast.length}</span>
+                    </span>
                   </div>
                   {filteredPast.length === 0 ? (
                     <div style={{ textAlign:'center', padding:'24px 0', color:T3, fontSize:13 }}>No past tests in this category</div>
@@ -610,10 +629,12 @@ export default function LiveTest({ navigate, onJoinNow, variant = 'cta' }) {
                         <div>
                           <div style={{ fontSize:13, fontWeight:600, color:T1, textAlign:'left' }}>
                             {totalPast} past tests
-                            <span style={{ color:T3, fontWeight:500 }}> · </span>
-                            <span style={{ color:G, fontWeight:700 }}>{attemptedPast} attempted</span>
                           </div>
-                          <div style={{ fontSize:11, color:T3, fontWeight:400, marginTop:1 }}>Tap to view full history</div>
+                          <div style={{ fontSize:11, color:T3, marginTop:3, display:'flex', alignItems:'center', gap:6 }}>
+                            <span>Subject <span style={{ color:G, fontWeight:700 }}>{subjectAttempted}</span>/{subjectPast.length}</span>
+                            <span style={{ color:BD }}>·</span>
+                            <span>Full-length <span style={{ color:G, fontWeight:700 }}>{fullAttempted}</span>/{fullPast.length}</span>
+                          </div>
                         </div>
                       </div>
                       <div style={{ color:T3 }}><ChevronDown size={18} /></div>
