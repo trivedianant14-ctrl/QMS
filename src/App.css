@@ -417,6 +417,39 @@ textarea {
   font-size: 14px;
 }
 
+.dashboard-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.version-switcher {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--white);
+}
+
+.version-switcher button {
+  min-height: 34px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 14px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.version-switcher button.active {
+  background: var(--navy);
+  color: var(--white);
+}
+
 .ref-badge,
 .status-badge,
 .category-badge {
@@ -466,6 +499,10 @@ textarea {
 
 .kpi-value.danger {
   color: var(--danger);
+}
+
+.kpi-value.success-value {
+  color: var(--success);
 }
 
 .kpi-target {
@@ -652,6 +689,82 @@ textarea {
   font-size: 12px;
 }
 
+.new-dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.queue-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.queue-row {
+  display: grid;
+  grid-template-columns: 170px 1fr 88px;
+  align-items: center;
+  gap: 12px;
+}
+
+.queue-row strong,
+.queue-row b {
+  display: block;
+  color: var(--navy);
+  font-size: 13px;
+}
+
+.queue-row span {
+  display: block;
+  margin-top: 3px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.queue-meter {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #EAF3DE;
+}
+
+.queue-meter span {
+  display: block;
+  height: 100%;
+  margin: 0;
+  background: var(--danger);
+}
+
+.compact-chart {
+  height: 240px;
+}
+
+.sla-pill {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #BBF7D0;
+  border-radius: 999px;
+  padding: 4px 8px;
+  background: var(--success-bg);
+  color: var(--success);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.sla-pill.risk {
+  border-color: #FED7AA;
+  background: var(--orange-light);
+  color: var(--orange);
+}
+
+.sla-pill.breached {
+  border-color: #FECACA;
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
 @media (max-width: 768px) {
   .raq-nav-main {
     gap: 6px;
@@ -691,6 +804,17 @@ textarea {
   }
   .dashboard-header {
     flex-direction: column;
+  }
+  .dashboard-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .new-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  .queue-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
   .kpi-grid {
     grid-template-columns: 1fr 1fr;
