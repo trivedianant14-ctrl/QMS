@@ -279,8 +279,8 @@ function NavBar({ navigate }) {
 export default function LiveTest({ navigate, onJoinNow }) {
   const [manyAttempts, setManyAttempts]       = useState(false)
   const [activeCategory, setActiveCategory]   = useState('Live Test')
-  const [preboardsExpanded, setPreboardsExpanded] = useState(false)
-  const [mocksExpanded, setMocksExpanded]     = useState(false)
+  const [upcomingTab, setUpcomingTab]         = useState('full_mock')
+  const [upcomingExpanded, setUpcomingExpanded] = useState(false)
   const [pastExpanded, setPastExpanded]       = useState(false)
 
   const [registeredIds, setRegisteredIds]     = useState(() => new Set(ALL_UPCOMING.filter(t => t.registered).map(t => t.id)))
@@ -294,11 +294,10 @@ export default function LiveTest({ navigate, onJoinNow }) {
   const totalPast     = pastTests.length
   const attemptedPast = pastTests.filter(t => t.attempted).length
 
-  const SHOW_PREBOARDS = 3, SHOW_MOCKS = 2
-  const visiblePreboards = preboardsExpanded ? UPCOMING_PREBOARDS : UPCOMING_PREBOARDS.slice(0, SHOW_PREBOARDS)
-  const hasMorePreboards = UPCOMING_PREBOARDS.length > SHOW_PREBOARDS
-  const visibleMocks  = mocksExpanded ? UPCOMING_MOCKS : UPCOMING_MOCKS.slice(0, SHOW_MOCKS)
-  const hasMoreMocks  = UPCOMING_MOCKS.length > SHOW_MOCKS
+  const SHOW_UPCOMING = 3
+  const activeList    = upcomingTab === 'subject_preboard' ? UPCOMING_PREBOARDS : UPCOMING_MOCKS
+  const visibleList   = upcomingExpanded ? activeList : activeList.slice(0, SHOW_UPCOMING)
+  const hasMore       = activeList.length > SHOW_UPCOMING
 
   const CATEGORIES = ['PYQ Test', 'Subject Test', 'Daily Test', 'Mini Test', 'Live Test']
 
@@ -397,41 +396,47 @@ export default function LiveTest({ navigate, onJoinNow }) {
               </button>
             </div>
 
-            {/* ── Subject Preboards sub-group ── */}
-            <div style={{ borderTop:`1px solid ${BD}`, paddingTop:16, marginBottom:0 }}>
-              <SubGroupHeader>Subject Preboards</SubGroupHeader>
-              {visiblePreboards.map(t => (
-                <UpcomingCard key={t.id} test={t} isRegistered={registeredIds.has(t.id)} onRegisterClick={handleRegisterClick} />
-              ))}
-              {hasMorePreboards && !preboardsExpanded && (
-                <button onClick={() => setPreboardsExpanded(true)}
-                  style={{ display:'flex', alignItems:'center', gap:4, background:'none', border:'none', color:P, fontSize:12, fontWeight:600, cursor:'pointer', padding:'4px 0 16px' }}>
-                  View All Subject Preboards <ChevronRight />
-                </button>
-              )}
-              {preboardsExpanded && (
-                <button onClick={() => setPreboardsExpanded(false)}
-                  style={{ display:'flex', alignItems:'center', gap:4, background:'none', border:'none', color:T2, fontSize:12, fontWeight:600, cursor:'pointer', padding:'4px 0 16px' }}>
-                  Show fewer <ChevronUp size={14} />
-                </button>
-              )}
-              {!hasMorePreboards && <div style={{ height:12 }} />}
-            </div>
-
-            {/* ── Full Mock Tests (NASHTA) sub-group ── */}
+            {/* ── Upcoming Tests — tabbed ── */}
             <div style={{ borderTop:`1px solid ${BD}`, paddingTop:16, marginBottom:24 }}>
-              <SubGroupHeader tag="NASHTA Series">Full Mock Tests</SubGroupHeader>
-              {visibleMocks.map(t => (
+              {/* Section label + segmented control on same row */}
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
+                <span style={{ fontSize:13, fontWeight:700, color:T1 }}>Upcoming Tests</span>
+                <div style={{ display:'inline-flex', background:BG2, border:`1px solid ${BD}`, borderRadius:20, padding:3, gap:2 }}>
+                  {[
+                    { id:'subject_preboard', label:'Subject' },
+                    { id:'full_mock',        label:'Full Mock' },
+                  ].map(tab => {
+                    const isActive = upcomingTab === tab.id
+                    return (
+                      <button key={tab.id}
+                        onClick={() => { setUpcomingTab(tab.id); setUpcomingExpanded(false) }}
+                        style={{ padding:'4px 12px', borderRadius:16, fontSize:11, fontWeight:600, background:isActive?P:'transparent', color:isActive?'white':T3, border:'none', cursor:'pointer', whiteSpace:'nowrap' }}>
+                        {tab.label}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+              {/* Active tab descriptor */}
+              {upcomingTab === 'full_mock' && (
+                <div style={{ fontSize:11, color:T3, marginBottom:12, display:'flex', alignItems:'center', gap:5 }}>
+                  <span style={{ fontSize:10, fontWeight:600, background:PL, color:PD, border:`1px solid ${PB}`, padding:'2px 7px', borderRadius:20 }}>NASHTA Series</span>
+                  Full-length NORCET simulations
+                </div>
+              )}
+              {/* Cards */}
+              {visibleList.map(t => (
                 <UpcomingCard key={t.id} test={t} isRegistered={registeredIds.has(t.id)} onRegisterClick={handleRegisterClick} />
               ))}
-              {hasMoreMocks && !mocksExpanded && (
-                <button onClick={() => setMocksExpanded(true)}
+              {/* Expand / collapse */}
+              {hasMore && !upcomingExpanded && (
+                <button onClick={() => setUpcomingExpanded(true)}
                   style={{ display:'flex', alignItems:'center', gap:4, background:'none', border:'none', color:P, fontSize:12, fontWeight:600, cursor:'pointer', padding:'4px 0 0' }}>
-                  View All Full Mocks <ChevronRight />
+                  {upcomingTab === 'subject_preboard' ? 'View All Subject Preboards' : 'View All Full Mocks'} <ChevronRight />
                 </button>
               )}
-              {mocksExpanded && (
-                <button onClick={() => setMocksExpanded(false)}
+              {upcomingExpanded && (
+                <button onClick={() => setUpcomingExpanded(false)}
                   style={{ display:'flex', alignItems:'center', gap:4, background:'none', border:'none', color:T2, fontSize:12, fontWeight:600, cursor:'pointer', padding:'4px 0 0' }}>
                   Show fewer <ChevronUp size={14} />
                 </button>
