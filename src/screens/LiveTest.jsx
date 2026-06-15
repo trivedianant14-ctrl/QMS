@@ -279,9 +279,8 @@ function NavBar({ navigate }) {
 export default function LiveTest({ navigate, onJoinNow }) {
   const [manyAttempts, setManyAttempts]       = useState(false)
   const [activeCategory, setActiveCategory]   = useState('Live Test')
-  const [upcomingTab, setUpcomingTab]         = useState('full_mock')
-  const [upcomingExpanded, setUpcomingExpanded] = useState(false)
-  const [pastExpanded, setPastExpanded]       = useState(false)
+  const [showCalendar, setShowCalendar]       = useState(false)
+  const [pastTab, setPastTab]                 = useState('subject_preboard')
 
   const [registeredIds, setRegisteredIds]     = useState(() => new Set(ALL_UPCOMING.filter(t => t.registered).map(t => t.id)))
   const [activeModal, setActiveModal]         = useState(null)
@@ -294,10 +293,8 @@ export default function LiveTest({ navigate, onJoinNow }) {
   const totalPast     = pastTests.length
   const attemptedPast = pastTests.filter(t => t.attempted).length
 
-  const SHOW_UPCOMING = 3
-  const activeList    = upcomingTab === 'subject_preboard' ? UPCOMING_PREBOARDS : UPCOMING_MOCKS
-  const visibleList   = upcomingExpanded ? activeList : activeList.slice(0, SHOW_UPCOMING)
-  const hasMore       = activeList.length > SHOW_UPCOMING
+  const calendarTests = [...ALL_UPCOMING].sort((a, b) => a.daysOut - b.daysOut)
+  const filteredPast  = pastTests.filter(t => t.format === pastTab)
 
   const CATEGORIES = ['PYQ Test', 'Subject Test', 'Daily Test', 'Mini Test', 'Live Test']
 
@@ -327,11 +324,11 @@ export default function LiveTest({ navigate, onJoinNow }) {
       {/* Prototype toggle */}
       <div style={{ flexShrink:0, display:'flex', justifyContent:'center', padding:'6px 16px', background:BG2, borderBottom:`1px solid ${BD}` }}>
         <div style={{ display:'inline-flex', background:'white', border:`1px solid ${BD}`, borderRadius:20, padding:3, gap:2 }}>
-          <button onClick={() => { setManyAttempts(false); setPastExpanded(false) }}
+          <button onClick={() => setManyAttempts(false)}
             style={{ padding:'4px 14px', borderRadius:16, fontSize:11, fontWeight:600, background:!manyAttempts?P:'transparent', color:!manyAttempts?'white':T3, border:'none', cursor:'pointer' }}>
             Few Attempts
           </button>
-          <button onClick={() => { setManyAttempts(true); setPastExpanded(false) }}
+          <button onClick={() => setManyAttempts(true)}
             style={{ padding:'4px 14px', borderRadius:16, fontSize:11, fontWeight:600, background:manyAttempts?P:'transparent', color:manyAttempts?'white':T3, border:'none', cursor:'pointer' }}>
             Many Attempts
           </button>
@@ -396,20 +393,74 @@ export default function LiveTest({ navigate, onJoinNow }) {
               </button>
             </div>
 
-            {/* ── Upcoming Tests — tabbed ── */}
+            {/* ── Upcoming Tests — calendar CTA ── */}
             <div style={{ borderTop:`1px solid ${BD}`, paddingTop:16, marginBottom:24 }}>
-              {/* Section label + segmented control on same row */}
+              {!showCalendar ? (
+                <button onClick={() => setShowCalendar(true)}
+                  style={{ display:'flex', alignItems:'center', gap:8, background:'none', border:'none', cursor:'pointer', padding:0, marginBottom:4 }}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke='#1A56B0' strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
+                  <span style={{ fontSize:13, fontWeight:600, color:'#1A56B0', textDecoration:'underline', textUnderlineOffset:2 }}>
+                    Click here to view the upcoming test calendar
+                  </span>
+                </button>
+              ) : (
+                <>
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
+                    <span style={{ fontSize:13, fontWeight:700, color:T1 }}>Upcoming Test Calendar</span>
+                    <button onClick={() => setShowCalendar(false)}
+                      style={{ background:'none', border:'none', cursor:'pointer', fontSize:11, fontWeight:600, color:T3, padding:0 }}>
+                      Hide ✕
+                    </button>
+                  </div>
+                  {(() => {
+                    const groups = []
+                    const seen = {}
+                    calendarTests.forEach(t => {
+                      if (!seen[t.date]) { seen[t.date] = []; groups.push({ date: t.date, daysOut: t.daysOut, tests: seen[t.date] }) }
+                      seen[t.date].push(t)
+                    })
+                    return groups.map(g => (
+                      <div key={g.date} style={{ marginBottom:16 }}>
+                        <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
+                          <span style={{ fontSize:12, fontWeight:700, color:T2 }}>{g.date}</span>
+                          <span style={{ fontSize:10, fontWeight:600, color:'#1A56B0', background:'#EDF4FF', border:'1px solid #93B8F0', padding:'1px 7px', borderRadius:20 }}>
+                            In {g.daysOut} {g.daysOut === 1 ? 'day' : 'days'}
+                          </span>
+                        </div>
+                        {g.tests.map(t => {
+                          const isReg = registeredIds.has(t.id)
+                          return (
+                            <div key={t.id} style={{ background:'#1A56B0', borderRadius:10, padding:'11px 14px', marginBottom:8, display:'flex', alignItems:'center', justifyContent:'space-between', gap:10 }}>
+                              <span style={{ fontSize:13, fontWeight:600, color:'white', flex:1, lineHeight:1.35 }}>{t.fullName}</span>
+                              <button
+                                onClick={() => !isReg && handleRegisterClick(t)}
+                                style={{ padding:'5px 13px', borderRadius:7, fontSize:11, fontWeight:700, cursor:isReg?'default':'pointer', background:isReg?'rgba(255,255,255,0.18)':'white', color:isReg?'rgba(255,255,255,0.8)':'#1A56B0', border:isReg?'1px solid rgba(255,255,255,0.35)':'none', flexShrink:0 }}>
+                                {isReg ? '✓ Registered' : 'Register'}
+                              </button>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    ))
+                  })()}
+                </>
+              )}
+            </div>
+
+            {/* ── Past Tests ── */}
+            <div style={{ borderTop:`1px solid ${BD}`, paddingTop:16 }}>
               <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
-                <span style={{ fontSize:13, fontWeight:700, color:T1 }}>Upcoming Tests</span>
+                <span style={{ fontSize:13, fontWeight:700, color:T1 }}>Past Tests</span>
                 <div style={{ display:'inline-flex', background:BG2, border:`1px solid ${BD}`, borderRadius:20, padding:3, gap:2 }}>
                   {[
-                    { id:'subject_preboard', label:'Subject' },
-                    { id:'full_mock',        label:'Full Mock' },
+                    { id:'subject_preboard', label:'Subject-level' },
+                    { id:'full_mock',        label:'Full-length' },
                   ].map(tab => {
-                    const isActive = upcomingTab === tab.id
+                    const isActive = pastTab === tab.id
                     return (
-                      <button key={tab.id}
-                        onClick={() => { setUpcomingTab(tab.id); setUpcomingExpanded(false) }}
+                      <button key={tab.id} onClick={() => setPastTab(tab.id)}
                         style={{ padding:'4px 12px', borderRadius:16, fontSize:11, fontWeight:600, background:isActive?P:'transparent', color:isActive?'white':T3, border:'none', cursor:'pointer', whiteSpace:'nowrap' }}>
                         {tab.label}
                       </button>
@@ -417,69 +468,10 @@ export default function LiveTest({ navigate, onJoinNow }) {
                   })}
                 </div>
               </div>
-              {/* Active tab descriptor */}
-              {upcomingTab === 'full_mock' && (
-                <div style={{ fontSize:11, color:T3, marginBottom:12, display:'flex', alignItems:'center', gap:5 }}>
-                  <span style={{ fontSize:10, fontWeight:600, background:PL, color:PD, border:`1px solid ${PB}`, padding:'2px 7px', borderRadius:20 }}>NASHTA Series</span>
-                  Full-length NORCET simulations
-                </div>
-              )}
-              {/* Cards */}
-              {visibleList.map(t => (
-                <UpcomingCard key={t.id} test={t} isRegistered={registeredIds.has(t.id)} onRegisterClick={handleRegisterClick} />
-              ))}
-              {/* Expand / collapse */}
-              {hasMore && !upcomingExpanded && (
-                <button onClick={() => setUpcomingExpanded(true)}
-                  style={{ display:'flex', alignItems:'center', gap:4, background:'none', border:'none', color:P, fontSize:12, fontWeight:600, cursor:'pointer', padding:'4px 0 0' }}>
-                  {upcomingTab === 'subject_preboard' ? 'View All Subject Preboards' : 'View All Full Mocks'} <ChevronRight />
-                </button>
-              )}
-              {upcomingExpanded && (
-                <button onClick={() => setUpcomingExpanded(false)}
-                  style={{ display:'flex', alignItems:'center', gap:4, background:'none', border:'none', color:T2, fontSize:12, fontWeight:600, cursor:'pointer', padding:'4px 0 0' }}>
-                  Show fewer <ChevronUp size={14} />
-                </button>
-              )}
-            </div>
-
-            {/* ── Past Tests ── */}
-            <div style={{ borderTop:`1px solid ${BD}`, paddingTop:16 }}>
-              <div style={{ fontSize:13, fontWeight:700, color:T1, marginBottom:12 }}>Past Tests</div>
-              {!pastExpanded ? (
-                <button onClick={() => setPastExpanded(true)}
-                  style={{ width:'100%', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'14px 16px', borderRadius:12, background:BG2, border:`1px solid ${BD}`, cursor:'pointer', marginBottom:8 }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-                    <div style={{ width:36, height:36, borderRadius:10, background:PL, display:'flex', alignItems:'center', justifyContent:'center' }}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={P} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><polyline points="9,12 11,14 15,10"/></svg>
-                    </div>
-                    <div>
-                      <div style={{ fontSize:13, fontWeight:600, color:T1, textAlign:'left' }}>
-                        {totalPast} past tests
-                        <span style={{ color:T3, fontWeight:500 }}> · </span>
-                        <span style={{ color:G, fontWeight:700 }}>{attemptedPast} attempted</span>
-                      </div>
-                      <div style={{ fontSize:11, color:T3, fontWeight:400, marginTop:1 }}>Tap to view full history</div>
-                    </div>
-                  </div>
-                  <div style={{ color:T3 }}><ChevronDown size={18} /></div>
-                </button>
+              {filteredPast.length === 0 ? (
+                <div style={{ textAlign:'center', padding:'24px 0', color:T3, fontSize:13 }}>No past tests in this category</div>
               ) : (
-                <>
-                  <button onClick={() => setPastExpanded(false)}
-                    style={{ width:'100%', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'10px 16px', borderRadius:12, background:PL, border:`1px solid ${PB}`, cursor:'pointer', marginBottom:12 }}>
-                    <span style={{ fontSize:13, fontWeight:600, color:PD }}>
-                      {totalPast} past tests
-                      <span style={{ color:PB, fontWeight:500 }}> · </span>
-                      <span style={{ color:G, fontWeight:700 }}>{attemptedPast} attempted</span>
-                    </span>
-                    <div style={{ display:'flex', alignItems:'center', gap:4, color:P }}>
-                      <span style={{ fontSize:11, fontWeight:600 }}>Hide</span>
-                      <ChevronUp size={14} />
-                    </div>
-                  </button>
-                  {pastTests.map(t => <PastCard key={t.id} test={t} />)}
-                </>
+                filteredPast.map(t => <PastCard key={t.id} test={t} />)
               )}
             </div>
 
