@@ -41,18 +41,18 @@ const CONFETTI = [
 
 // Upcoming — Subject Preboards
 const UPCOMING_PREBOARDS = [
-  { id:3,  format:'subject_preboard', fullName:'Fundamentals of Nursing',          subtitle:'FON · NORCET Preboard',   date:'Sun, 22 Jun', daysOut:7,  duration:'60 min',  marks:'100', enrolled:743,  registered:false },
-  { id:4,  format:'subject_preboard', fullName:'Medical Surgical Nursing',         subtitle:'MSN · NORCET Preboard',   date:'Wed, 25 Jun', daysOut:10, duration:'60 min',  marks:'100', enrolled:1203, registered:false },
-  { id:5,  format:'subject_preboard', fullName:'Community Health Nursing',         subtitle:'CHN · NORCET Preboard',   date:'Sun, 29 Jun', daysOut:14, duration:'60 min',  marks:'100', enrolled:891,  registered:false },
-  { id:6,  format:'subject_preboard', fullName:'Obstetrics & Gynecology Nursing',  subtitle:'OBG · NORCET Preboard',   date:'Mon, 7 Jul',  daysOut:22, duration:'60 min',  marks:'100', enrolled:654,  registered:true  },
-  { id:7,  format:'subject_preboard', fullName:'Pediatric Nursing',                subtitle:'PDR TREX · NORCET Preboard', date:'Sun, 13 Jul', daysOut:28, duration:'60 min', marks:'100', enrolled:512, registered:false },
+  { id:3,  format:'subject_preboard', recommended:true,  fullName:'Fundamentals of Nursing',          subtitle:'FON · NORCET Preboard',      date:'Sun, 22 Jun', daysOut:7,  duration:'60 min',  marks:'100', enrolled:743,  registered:false },
+  { id:4,  format:'subject_preboard', recommended:true,  fullName:'Medical Surgical Nursing',         subtitle:'MSN · NORCET Preboard',      date:'Wed, 25 Jun', daysOut:10, duration:'60 min',  marks:'100', enrolled:1203, registered:false },
+  { id:5,  format:'subject_preboard', recommended:false, fullName:'Community Health Nursing',         subtitle:'CHN · NORCET Preboard',      date:'Sun, 29 Jun', daysOut:14, duration:'60 min',  marks:'100', enrolled:891,  registered:false },
+  { id:6,  format:'subject_preboard', recommended:false, fullName:'Obstetrics & Gynecology Nursing',  subtitle:'OBG · NORCET Preboard',      date:'Mon, 7 Jul',  daysOut:22, duration:'60 min',  marks:'100', enrolled:654,  registered:true  },
+  { id:7,  format:'subject_preboard', recommended:false, fullName:'Pediatric Nursing',                subtitle:'PDR TREX · NORCET Preboard', date:'Sun, 13 Jul', daysOut:28, duration:'60 min',  marks:'100', enrolled:512,  registered:false },
 ]
 
 // Upcoming — Full Mock Tests (NASHTA Series)
 const UPCOMING_MOCKS = [
-  { id:10, format:'full_mock', fullName:'NASHTA 3 for NORCET', subtitle:'Full-length NORCET simulation · All subjects', date:'Sat, 5 Jul',  daysOut:20, duration:'120 min', marks:'200', enrolled:3241, registered:true  },
-  { id:11, format:'full_mock', fullName:'NASHTA 4 for NORCET', subtitle:'Full-length NORCET simulation · All subjects', date:'Sat, 26 Jul', daysOut:41, duration:'120 min', marks:'200', enrolled:2103, registered:false },
-  { id:12, format:'full_mock', fullName:'RRB NASHTA',           subtitle:'RRB Nursing · Full Mock',                       date:'Sat, 9 Aug',  daysOut:55, duration:'120 min', marks:'200', enrolled:1847, registered:false },
+  { id:10, format:'full_mock', recommended:true,  fullName:'NASHTA 3 for NORCET', subtitle:'Full-length NORCET simulation · All subjects', date:'Sat, 5 Jul',  daysOut:20, duration:'120 min', marks:'200', enrolled:3241, registered:true  },
+  { id:11, format:'full_mock', recommended:false, fullName:'NASHTA 4 for NORCET', subtitle:'Full-length NORCET simulation · All subjects', date:'Sat, 26 Jul', daysOut:41, duration:'120 min', marks:'200', enrolled:2103, registered:false },
+  { id:12, format:'full_mock', recommended:false, fullName:'RRB NASHTA',           subtitle:'RRB Nursing · Full Mock',                      date:'Sat, 9 Aug',  daysOut:55, duration:'120 min', marks:'200', enrolled:1847, registered:false },
 ]
 
 const ALL_UPCOMING = [...UPCOMING_PREBOARDS, ...UPCOMING_MOCKS]
@@ -157,7 +157,15 @@ function UpcomingCard({ test, isRegistered, onRegisterClick }) {
   const dayColor = soon ? A : '#1A56B0'
   const dayBorder = soon ? AB : '#93B8F0'
   return (
-    <div style={{ background:'white', border:`1px solid ${BD}`, borderRadius:12, padding:'14px 14px 12px', marginBottom:10 }}>
+    <div style={{ background:'white', border:`1.5px solid ${test.recommended ? GB : BD}`, borderRadius:12, overflow:'hidden', marginBottom:10 }}>
+      {/* Recommended banner */}
+      {test.recommended && (
+        <div style={{ background:GL, borderBottom:`1px solid ${GB}`, padding:'5px 14px', display:'flex', alignItems:'center', gap:5 }}>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill={G} stroke="none"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+          <span style={{ fontSize:11, fontWeight:700, color:G }}>Recommended</span>
+        </div>
+      )}
+      <div style={{ padding:'14px 14px 12px' }}>
       {/* Top row: countdown badge | date */}
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
         <span style={{ display:'inline-flex', alignItems:'center', padding:'2px 9px', borderRadius:20, fontSize:10, fontWeight:700, background:dayBg, color:dayColor, border:`1px solid ${dayBorder}` }}>
@@ -188,6 +196,7 @@ function UpcomingCard({ test, isRegistered, onRegisterClick }) {
           style={{ marginLeft:'auto', padding:'6px 14px', borderRadius:8, fontSize:11, fontWeight:600, cursor:isRegistered?'default':'pointer', background:isRegistered?GL:'transparent', color:isRegistered?G:P, border:`1px solid ${isRegistered?GB:PB}` }}>
           {isRegistered ? '✓ Registered' : 'Register'}
         </button>
+      </div>
       </div>
     </div>
   )
