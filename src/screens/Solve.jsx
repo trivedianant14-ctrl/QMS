@@ -120,8 +120,12 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
   const getOptStyle = (optId) => {
     const base = { width: '100%', padding: '13px 16px', borderRadius: 12, border: '1.5px solid', textAlign: 'left', cursor: answered || timedOut || isReviewMode ? 'default' : 'pointer', fontSize: 13, fontWeight: 500, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, transition: 'all 0.15s' }
     if (!answered && !timedOut && !isReviewMode) return { ...base, background: 'white', borderColor: BD, color: T1 }
-    if (optId === q.correct) return { ...base, background: '#EAF3DE', borderColor: '#97C459', color: '#1F4A07' }
-    if (optId === selected && optId !== q.correct) return { ...base, background: '#FCEBEB', borderColor: '#F09595', color: '#791F1F' }
+    if (showFeedback) {
+      if (optId === q.correct) return { ...base, background: '#EAF3DE', borderColor: '#97C459', color: '#1F4A07' }
+      if (optId === selected && optId !== q.correct) return { ...base, background: '#FCEBEB', borderColor: '#F09595', color: '#791F1F' }
+    }
+    // Exam mode during active attempt: show selected option in neutral purple, others plain
+    if (optId === selected) return { ...base, background: PL, borderColor: PB, color: PD }
     return { ...base, background: 'white', borderColor: BD, color: T3 }
   }
 
@@ -129,8 +133,12 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
     const qItem = QUESTIONS[idx]
     if (!answers[qItem.id]) return { bg: idx === currentQ ? PL : BG2, c: idx === currentQ ? P : T3, border: idx === currentQ ? PB : BD }
     if (answers[qItem.id] === 'timeout') return { bg: '#FFF3E0', c: '#E65100', border: '#FFB74D' }
-    if (answers[qItem.id] === qItem.correct) return { bg: '#EAF3DE', c: '#27500A', border: '#97C459' }
-    return { bg: '#FCEBEB', c: '#791F1F', border: '#F09595' }
+    if (showFeedback) {
+      if (answers[qItem.id] === qItem.correct) return { bg: '#EAF3DE', c: '#27500A', border: '#97C459' }
+      return { bg: '#FCEBEB', c: '#791F1F', border: '#F09595' }
+    }
+    // Exam mode: answered = neutral purple dot, no correct/wrong reveal
+    return { bg: PL, c: P, border: PB }
   }
 
   const handleNext = () => {
@@ -154,6 +162,7 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
   const skipped = QUESTIONS.filter(q => answers[q.id] === 'timeout').length
   const unanswered = QUESTIONS.filter(q => !answers[q.id]).length
 
+  const showFeedback = mode === 'guide' || isReviewMode
   const showGuideContent = isReviewMode || (answered && mode === 'guide')
   const showPYQtag = q?.isPYQ && (mode === 'guide' || isReviewMode)
 
@@ -269,7 +278,7 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
           {q?.options.map(opt => (
             <button key={opt.id} onClick={() => handleAnswer(opt.id)} style={getOptStyle(opt.id)}>
               <span><span style={{ fontWeight: 700, marginRight: 8 }}>{opt.id.toUpperCase()}.</span>{opt.text}</span>
-              {(answered || timedOut || isReviewMode) && <span style={{ fontSize: 11, fontWeight: 600, opacity: 0.7, marginLeft: 8, flexShrink: 0 }}>{opt.pct}%</span>}
+              {(answered || timedOut || isReviewMode) && showFeedback && <span style={{ fontSize: 11, fontWeight: 600, opacity: 0.7, marginLeft: 8, flexShrink: 0 }}>{opt.pct}%</span>}
             </button>
           ))}
         </div>
@@ -292,7 +301,7 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
             </div>
           </div>
         )}
-        {answered && selected !== 'timeout' && (
+        {answered && selected !== 'timeout' && showFeedback && (
           <div style={{ marginBottom: 16 }}>
             {/* Result line */}
             <div style={{ background: isCorrect ? '#EAF3DE' : '#FCEBEB', border: `1px solid ${isCorrect ? '#97C459' : '#F09595'}`, borderRadius: 10, padding: '10px 14px', marginBottom: 8 }}>
