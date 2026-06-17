@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { MAIN_OPTIONS, OTHERS_PLACEHOLDER, SUB_OPTIONS } from '../../data/formConfig'
 import { useQueries } from '../../context/QueryContext'
 
@@ -214,6 +214,7 @@ function OthersText({ value, onChange, onSubmit }) {
       <div className={`char-counter ${value.trim().length >= 20 ? 'complete' : ''}`}>
         {value.trim().length} / 20 minimum{value.trim().length >= 20 ? ' ✓' : ''}
       </div>
+      <VoiceRecorder />
       <button className="primary-btn" type="button" disabled={value.trim().length < 20} onClick={onSubmit}>Submit query</button>
     </>
   )
@@ -264,10 +265,6 @@ function WrongAnswerEvidenceScreen({
             <input type="file" accept="image/*" onChange={(event) => handleFile('Photo', event.target.files)} />
             Photo
           </label>
-          <label className="evidence-btn">
-            <input type="file" accept="audio/*" onChange={(event) => handleFile('Voice note', event.target.files)} />
-            Voice note
-          </label>
         </div>
         {attachment && (
           <div className="attachment-pill">
@@ -276,6 +273,7 @@ function WrongAnswerEvidenceScreen({
           </div>
         )}
       </div>
+      <VoiceRecorder />
       <button className="primary-btn" type="button" onClick={onSubmit}>Submit query</button>
       <button className="secondary-btn" type="button" onClick={onSkip}>Skip and submit</button>
     </>
@@ -295,9 +293,89 @@ function CommentScreen({ value, prompt, onChange, onSubmit, onSkip }) {
         onChange={(event) => onChange(event.target.value)}
         style={{ minHeight: 100 }}
       />
+      <VoiceRecorder />
       <button className="primary-btn" type="button" onClick={onSubmit}>Submit query</button>
       <button className="secondary-btn" type="button" onClick={onSkip}>Skip and submit</button>
     </>
+  )
+}
+
+function VoiceRecorder() {
+  const [recState, setRecState] = useState('idle')
+  const [audioURL, setAudioURL] = useState(null)
+  const [duration, setDuration] = useState(0)
+  const mrRef = useRef(null)
+  const chunksRef = useRef([])
+  const timerRef = useRef(null)
+
+  useEffect(() => () => {
+    clearInterval(timerRef.current)
+    if (audioURL) URL.revokeObjectURL(audioURL)
+  }, [audioURL])
+
+  const start = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const mr = new MediaRecorder(stream)
+      chunksRef.current = []
+      mr.ondataavailable = e => { if (e.data.size > 0) chunksRef.current.push(e.data) }
+      mr.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: 'audio/webm' })
+        setAudioURL(URL.createObjectURL(blob))
+        stream.getTracks().forEach(t => t.stop())
+        setRecState('recorded')
+      }
+      mr.start()
+      mrRef.current = mr
+      setRecState('recording')
+      setDuration(0)
+      timerRef.current = setInterval(() => setDuration(d => d + 1), 1000)
+    } catch {
+      // mic access denied — silently ignore
+    }
+  }
+
+  const stop = () => {
+    if (mrRef.current?.state === 'recording') mrRef.current.stop()
+    clearInterval(timerRef.current)
+  }
+
+  const remove = () => {
+    if (audioURL) URL.revokeObjectURL(audioURL)
+    setAudioURL(null)
+    setDuration(0)
+    setRecState('idle')
+  }
+
+  const fmt = s => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`
+
+  if (recState === 'idle') return (
+    <button type="button" className="voice-idle-btn" onClick={start}>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
+        <path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
+      </svg>
+      Add voice note
+    </button>
+  )
+
+  if (recState === 'recording') return (
+    <div className="voice-recording-bar">
+      <span className="voice-dot" />
+      <span className="voice-timer">{fmt(duration)}</span>
+      <button type="button" className="voice-stop-btn" onClick={stop}>Stop</button>
+    </div>
+  )
+
+  return (
+    <div className="voice-recorded-bar">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#534AB7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
+        <path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
+      </svg>
+      <audio src={audioURL} controls className="voice-audio" />
+      <button type="button" className="voice-delete-btn" onClick={remove} aria-label="Remove voice note">✕</button>
+    </div>
   )
 }
 

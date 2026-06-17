@@ -657,6 +657,112 @@ textarea {
   text-decoration: underline;
 }
 
+/* ── Voice recorder ──────────────────────────────── */
+.voice-idle-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 10px;
+  padding: 9px 14px;
+  width: 100%;
+  border: 1px dashed #AFA9EC;
+  border-radius: 8px;
+  background: white;
+  color: #5a5a78;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.voice-idle-btn:hover {
+  border-color: #534AB7;
+  color: #534AB7;
+}
+
+.voice-recording-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 9px 14px;
+  border: 1px solid #F09595;
+  border-radius: 8px;
+  background: #FCEBEB;
+}
+
+.voice-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #DC2626;
+  flex-shrink: 0;
+  animation: voice-pulse 1s ease-in-out infinite;
+}
+
+@keyframes voice-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.75); }
+}
+
+.voice-timer {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 700;
+  color: #DC2626;
+  font-variant-numeric: tabular-nums;
+}
+
+.voice-stop-btn {
+  padding: 4px 12px;
+  border: 1px solid #F09595;
+  border-radius: 6px;
+  background: white;
+  color: #DC2626;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.voice-recorded-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 8px 10px 8px 12px;
+  border: 1px solid #AFA9EC;
+  border-radius: 8px;
+  background: #EEEDFE;
+}
+
+.voice-audio {
+  flex: 1;
+  height: 32px;
+  min-width: 0;
+  accent-color: #534AB7;
+}
+
+.voice-delete-btn {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: none;
+  color: #5a5a78;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+.voice-delete-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+/* ─────────────────────────────────────────────────── */
+
 .form-shell.embedded .reference-field span,
 .form-shell.embedded .evidence-label {
   color: #5a5a78;
