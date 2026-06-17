@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { NORCET_QUESTIONS as QUESTIONS, NORCET_META } from '../norcetData'
+import FormShell from '../components/form/FormShell'
 
 // NORCET navy theme
 const NAVY='#1f3a68', NAVY_D='#162d52', NAVY_L='#dce5f0'
@@ -15,11 +16,6 @@ const G='#3B6D11', GL='#EAF3DE', GB='#97C459'
 const R='#791F1F', RL='#FCEBEB', RB='#F09595'
 const A='#633806', AL='#FAEEDA', AB='#FAC775'
 const TX1='#1a1a2e', TX2='#5a5a78', TX3='#9898b0', BDX='#e8e8f2', BG2='#f5f5fb'
-
-const REPORT_OPTIONS = {
-  technical: ['App is crashing or freezing','Question not loading','Options not selectable','Timer not working','Other technical issue'],
-  content: ['Wrong answer marked correct','Explanation is incorrect','Grammatical or spelling error','Question is out of syllabus','Other content issue'],
-}
 
 // Group QUESTIONS by topicName into exam sections
 const buildSections = () => {
@@ -89,10 +85,6 @@ export default function LiveTestSolve({ navigate, test }) {
   const [showExitConfirm, setShowExitConfirm]     = useState(false)
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false)
   const [showReport, setShowReport]               = useState(false)
-  const [reportType, setReportType]               = useState('technical')
-  const [reportSubs, setReportSubs]               = useState(new Set())
-  const [reportNote, setReportNote]               = useState('')
-  const [reportSubmitted, setReportSubmitted]     = useState(false)
   const [imageZoom, setImageZoom]                 = useState(1)
   const [phase, setPhase]                         = useState('test')
   const [finalResults, setFinalResults]           = useState(null)
@@ -549,44 +541,12 @@ export default function LiveTestSolve({ navigate, test }) {
         </div>
       )}
 
-      {/* Report issue */}
+      {/* Raise query */}
       {showReport && (
-        <div className="overlay" onClick={() => { setShowReport(false); setReportSubmitted(false); setReportSubs(new Set()); setReportNote('') }}>
-          <div className="sheet" style={{ maxHeight:'88%' }} onClick={e => e.stopPropagation()}>
+        <div className="overlay" onClick={() => setShowReport(false)}>
+          <div className="sheet query-sheet" onClick={e => e.stopPropagation()}>
             <div className="sheet-handle" />
-            {reportSubmitted ? (
-              <div style={{ padding:'30px 20px 40px', textAlign:'center' }}>
-                <div style={{ width:56, height:56, borderRadius:'50%', background:GRUN_L, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 14px', fontSize:24, color:GRUN }}>✓</div>
-                <div style={{ fontSize:15, fontWeight:700, color:T1, marginBottom:6 }}>Report submitted</div>
-                <div style={{ fontSize:13, color:T2 }}>Our team will review this question.</div>
-                <button onClick={() => { setShowReport(false); setReportSubmitted(false); setReportSubs(new Set()); setReportNote('') }} style={{ ...gPrim({ marginTop:20, width:'100%', padding:'12px', borderRadius:2 }) }}>Done</button>
-              </div>
-            ) : (
-              <>
-                <div style={{ padding:'14px 20px 10px', display:'flex', justifyContent:'space-between', alignItems:'center', borderBottom:`1px solid ${BD}`, flexShrink:0 }}>
-                  <span style={{ fontSize:16, fontWeight:700, color:T1 }}>Report an Issue</span>
-                  <button onClick={() => setShowReport(false)} style={{ background:'none', border:'none', fontSize:22, color:T3, cursor:'pointer' }}>×</button>
-                </div>
-                <div className="scroll" style={{ flex:1, padding:'16px 20px 30px' }}>
-                  <div style={{ display:'flex', gap:16, marginBottom:18 }}>
-                    {['technical','content'].map(type => (
-                      <label key={type} style={{ display:'flex', alignItems:'center', gap:8, cursor:'pointer' }}>
-                        <input type="radio" name="rtype" checked={reportType===type} onChange={() => { setReportType(type); setReportSubs(new Set()) }} style={{ width:18, height:18, accentColor:NAVY }} />
-                        <span style={{ fontSize:13, fontWeight:600, color:T1 }}>{type==='technical'?'Technical':'Content'}</span>
-                      </label>
-                    ))}
-                  </div>
-                  {REPORT_OPTIONS[reportType].map(opt => (
-                    <label key={opt} style={{ display:'flex', alignItems:'center', gap:12, padding:'11px 0', borderBottom:'1px solid #f0f0f0', cursor:'pointer' }}>
-                      <input type="checkbox" checked={reportSubs.has(opt)} onChange={() => setReportSubs(prev => { const n=new Set(prev); n.has(opt)?n.delete(opt):n.add(opt); return n })} style={{ width:18, height:18, accentColor:NAVY, flexShrink:0 }} />
-                      <span style={{ fontSize:13, color:T1 }}>{opt}</span>
-                    </label>
-                  ))}
-                  <textarea value={reportNote} onChange={e => setReportNote(e.target.value)} placeholder="Describe the issue… (optional)" style={{ width:'100%', minHeight:72, padding:'10px 12px', border:`1px solid ${BD}`, borderRadius:4, fontSize:13, color:T1, resize:'none', fontFamily:'inherit', outline:'none', boxSizing:'border-box', marginTop:14, marginBottom:16 }} />
-                  <button onClick={() => setReportSubmitted(true)} disabled={reportSubs.size===0} style={{ width:'100%', padding:'12px', background:reportSubs.size===0?BG:NAVY, color:reportSubs.size===0?T3:'white', border:'none', fontSize:14, fontWeight:700, cursor:reportSubs.size===0?'not-allowed':'pointer', borderRadius:2 }}>Submit Report</button>
-                </div>
-              </>
-            )}
+            <FormShell embedded onClose={() => setShowReport(false)} onDone={() => setShowReport(false)} />
           </div>
         </div>
       )}

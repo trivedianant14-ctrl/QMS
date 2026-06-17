@@ -70,6 +70,12 @@ input { font-family: inherit; }
   display: flex; flex-direction: column;
 }
 
+.query-sheet {
+  height: 58%;
+  min-height: 430px;
+  max-height: 64%;
+}
+
 .sheet-handle {
   width: 36px; height: 4px;
   background: var(--border);

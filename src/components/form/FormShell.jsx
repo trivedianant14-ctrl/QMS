@@ -2,14 +2,16 @@ import { useState } from 'react'
 import { MAIN_OPTIONS, OTHERS_PLACEHOLDER, SUB_OPTIONS } from '../../data/formConfig'
 import { useQueries } from '../../context/QueryContext'
 
-const progressMap = { 1: 20, '2A': 40, '2B': 40, '2C': 40, '2D': 40, 5: 80, 6: 100 }
+const progressMap = { 1: 20, '2A': 42, '2B': 42, '2C': 42, '2D': 42, 3: 35, 4: 62, 5: 80, 6: 100 }
 
-export default function FormShell() {
+export default function FormShell({ embedded = false, onClose, onDone }) {
   const { addQuery } = useQueries()
   const [screen, setScreen] = useState('1')
   const [selectedOption, setSelectedOption] = useState(null)
   const [selectedSubOption, setSelectedSubOption] = useState(null)
   const [commentText, setCommentText] = useState('')
+  const [referenceText, setReferenceText] = useState('')
+  const [attachment, setAttachment] = useState(null)
   const [othersText, setOthersText] = useState('')
 
   const reset = () => {
@@ -17,7 +19,14 @@ export default function FormShell() {
     setSelectedOption(null)
     setSelectedSubOption(null)
     setCommentText('')
+    setReferenceText('')
+    setAttachment(null)
     setOthersText('')
+  }
+
+  const finish = () => {
+    reset()
+    if (onDone) onDone()
   }
 
   const chooseMain = (option) => {
@@ -30,14 +39,19 @@ export default function FormShell() {
     if (screen === '4') setScreen('3')
     else if (screen === '5') setScreen(selectedOption?.screenKey || '1')
     else if (['2A', '2B', '2C', '2D'].includes(screen)) setScreen('1')
+    else if (screen === '3') setScreen('1')
   }
 
-  const submitStructured = (text = commentText) => {
+  const submitStructured = ({ comment = commentText, reference = referenceText, media = attachment } = {}) => {
     const config = SUB_OPTIONS[selectedOption.screenKey]
     addQuery({
       category: config.category,
       subOption: selectedSubOption.label,
-      commentText: text
+      commentText: [
+        comment && `Reason: ${comment}`,
+        reference && `Reference: ${reference}`,
+        media && `Attachment: ${media.type} - ${media.name}`
+      ].filter(Boolean).join('\n')
     })
     setScreen('6')
   }
@@ -48,16 +62,21 @@ export default function FormShell() {
   }
 
   return (
-    <main className="raq-form-page">
-      <section className="form-shell">
-        {progressMap[screen] && (
+    <main className={embedded ? 'raq-form-page embedded' : 'raq-form-page'}>
+      <section className={embedded ? 'form-shell embedded' : 'form-shell'}>
+        <div className="form-head">
+          {!['1', '6'].includes(screen) ? (
+            <button className="form-head-btn" type="button" onClick={goBack} aria-label="Back">‹</button>
+          ) : <span className="form-head-spacer" />}
+          <div className="form-head-title">{embedded ? 'Report an Error' : 'Raise a query'}</div>
+          {embedded && screen !== '6' ? (
+            <button className="form-head-btn" type="button" onClick={onClose} aria-label="Close">×</button>
+          ) : <span className="form-head-spacer" />}
           <div className="form-progress" aria-hidden="true">
             <span style={{ width: `${progressMap[screen]}%` }} />
           </div>
-        )}
-        {!['1', '3', '6'].includes(screen) && (
-          <button className="back-btn" type="button" onClick={goBack}>Back</button>
-        )}
+        </div>
+        <div className="form-body">
 
         {screen === '1' && <Screen1 selectedOption={selectedOption} onChoose={chooseMain} onOthers={() => setScreen('3')} />}
         {['2A', '2B', '2C', '2D'].includes(screen) && (
@@ -67,6 +86,8 @@ export default function FormShell() {
             onSelect={setSelectedSubOption}
             onContinue={() => {
               setCommentText('')
+              setReferenceText('')
+              setAttachment(null)
               setScreen('5')
             }}
           />
@@ -80,15 +101,30 @@ export default function FormShell() {
           />
         )}
         {screen === '5' && (
-          <CommentScreen
-            value={commentText}
-            prompt={selectedSubOption?.prompt}
-            onChange={setCommentText}
-            onSubmit={() => submitStructured(commentText)}
-            onSkip={() => submitStructured('')}
-          />
+          selectedOption?.id === 'wrong-answer' ? (
+            <WrongAnswerEvidenceScreen
+              value={commentText}
+              referenceValue={referenceText}
+              attachment={attachment}
+              prompt={selectedSubOption?.prompt}
+              onChange={setCommentText}
+              onReferenceChange={setReferenceText}
+              onAttachmentChange={setAttachment}
+              onSubmit={() => submitStructured()}
+              onSkip={() => submitStructured({ comment: '', reference: '', media: null })}
+            />
+          ) : (
+            <CommentScreen
+              value={commentText}
+              prompt={selectedSubOption?.prompt}
+              onChange={setCommentText}
+              onSubmit={() => submitStructured({ comment: commentText, reference: '', media: null })}
+              onSkip={() => submitStructured({ comment: '', reference: '', media: null })}
+            />
+          )
         )}
-        {screen === '6' && <SuccessScreen onReset={reset} />}
+        {screen === '6' && <SuccessScreen onReset={reset} onDone={finish} />}
+        </div>
       </section>
     </main>
   )
@@ -107,7 +143,6 @@ function Screen1({ selectedOption, onChoose, onOthers }) {
             className={`main-card ${selectedOption?.id === option.id ? 'selected' : ''}`}
             onClick={() => onChoose(option)}
           >
-            <span className="main-icon">{option.icon}</span>
             <span className="main-copy">
               <span className="main-title">{option.title}</span>
               <span className="main-subtitle">{option.subtitle}</span>
@@ -142,7 +177,7 @@ function SubOptionScreen({ screenKey, selectedSubOption, onSelect, onContinue })
           </button>
         ))}
       </div>
-      {selectedSubOption && <button className="primary-btn" type="button" onClick={onContinue}>Continue</button>}
+      <button className="primary-btn" type="button" disabled={!selectedSubOption} onClick={onContinue}>Continue</button>
     </>
   )
 }
@@ -176,7 +211,73 @@ function OthersText({ value, onChange, onSubmit }) {
         placeholder={OTHERS_PLACEHOLDER}
         onChange={(event) => onChange(event.target.value)}
       />
-      <button className="primary-btn" type="button" disabled={!value.trim()} onClick={onSubmit}>Submit Query</button>
+      <div className={`char-counter ${value.trim().length >= 20 ? 'complete' : ''}`}>
+        {value.trim().length} / 20 minimum{value.trim().length >= 20 ? ' ✓' : ''}
+      </div>
+      <button className="primary-btn" type="button" disabled={value.trim().length < 20} onClick={onSubmit}>Submit query</button>
+    </>
+  )
+}
+
+function WrongAnswerEvidenceScreen({
+  value,
+  referenceValue,
+  attachment,
+  prompt,
+  onChange,
+  onReferenceChange,
+  onAttachmentChange,
+  onSubmit,
+  onSkip
+}) {
+  const handleFile = (type, fileList) => {
+    const file = fileList?.[0]
+    if (!file) return
+    onAttachmentChange({ type, name: file.name })
+  }
+
+  return (
+    <>
+      <div className="comment-title">
+        <h1 className="form-title small">Why do you feel this is wrong?</h1>
+        <span className="optional">(optional)</span>
+      </div>
+      <p className="form-subtitle">Tell us why the shown option or marked answer seems incorrect.</p>
+      <textarea
+        value={value}
+        placeholder={prompt || 'For example: Google says ___, but this answer says ___...'}
+        onChange={(event) => onChange(event.target.value)}
+        style={{ minHeight: 82 }}
+      />
+      <label className="reference-field">
+        <span>Reference or source <em>(optional)</em></span>
+        <input
+          value={referenceValue}
+          placeholder="Book, class note, Google result, website, or teacher reference"
+          onChange={(event) => onReferenceChange(event.target.value)}
+        />
+      </label>
+      <div className="evidence-block">
+        <div className="evidence-label">Add evidence <span>(optional)</span></div>
+        <div className="evidence-actions">
+          <label className="evidence-btn">
+            <input type="file" accept="image/*" onChange={(event) => handleFile('Photo', event.target.files)} />
+            Photo
+          </label>
+          <label className="evidence-btn">
+            <input type="file" accept="audio/*" onChange={(event) => handleFile('Voice note', event.target.files)} />
+            Voice note
+          </label>
+        </div>
+        {attachment && (
+          <div className="attachment-pill">
+            {attachment.type}: {attachment.name}
+            <button type="button" onClick={() => onAttachmentChange(null)}>Remove</button>
+          </div>
+        )}
+      </div>
+      <button className="primary-btn" type="button" onClick={onSubmit}>Submit query</button>
+      <button className="secondary-btn" type="button" onClick={onSkip}>Skip and submit</button>
     </>
   )
 }
@@ -194,21 +295,21 @@ function CommentScreen({ value, prompt, onChange, onSubmit, onSkip }) {
         onChange={(event) => onChange(event.target.value)}
         style={{ minHeight: 100 }}
       />
-      <button className="primary-btn" type="button" onClick={onSubmit}>Submit Query</button>
+      <button className="primary-btn" type="button" onClick={onSubmit}>Submit query</button>
       <button className="secondary-btn" type="button" onClick={onSkip}>Skip and submit</button>
     </>
   )
 }
 
-function SuccessScreen({ onReset }) {
+function SuccessScreen({ onReset, onDone }) {
   return (
     <div className="success-screen">
       <div className="success-icon">✓</div>
       <h1 className="form-title" style={{ marginTop: 20 }}>Query submitted</h1>
       <p className="success-body">We'll look into this and update the question if needed.</p>
-      <div className="notify-banner">You'll be notified on the app when this is resolved.</div>
-      <button className="primary-btn" type="button" style={{ background: 'var(--navy)', marginTop: 24 }} onClick={() => {}}>
-        Continue Practice
+      <div className="notify-banner">🔔 You'll be notified on the app when this is resolved.</div>
+      <button className="primary-btn" type="button" style={{ background: 'var(--navy)', marginTop: 24 }} onClick={onDone}>
+        Continue practice
       </button>
       <button className="link-btn" type="button" style={{ marginTop: 12, fontSize: 13 }} onClick={onReset}>
         Raise another query
