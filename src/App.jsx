@@ -36,7 +36,7 @@ const EXISTING_USER_SAVES = [
 ]
 
 function NprepPrototype() {
-  const [screen, setScreen] = useState('livetest')
+  const [screen, setScreen] = useState('solve')
   const [currentLiveTest, setCurrentLiveTest] = useState(null)
   const [mode, setMode] = useState('guide')
   const [currentQ, setCurrentQ] = useState(0)
@@ -54,7 +54,6 @@ function NprepPrototype() {
   const [attemptCount, setAttemptCount] = useState(0)
   const [savedVideos, setSavedVideos] = useState([])
   const [savedResources, setSavedResources] = useState([])
-  const [liveTestVariant, setLiveTestVariant] = useState('hybrid')
   const animDirRef = useRef('forward')
 
   const goTo = (next) => {
@@ -183,12 +182,6 @@ function NprepPrototype() {
     savedVideos, unsaveVideo, savedResources, unsaveResource,
   }
 
-  const VARIANTS = [
-    { id: 'hybrid', label: 'Hybrid (v3)', desc: '2 inline cards + CTA + collapsed past', icon: '🔀' },
-    { id: 'cta', label: 'Calendar CTA', desc: 'Card link → date list view', icon: '📅' },
-    { id: 'full', label: 'Full List', desc: 'Segmented tab → card grid', icon: '📋' },
-  ]
-
   return (
     <div className="desktop-wrapper">
       <div className="phone">
@@ -203,43 +196,12 @@ function NprepPrototype() {
           {screen === 'videos' && <Videos navigate={navigate} isNewUser={isNewUser} toggleUserMode={toggleUserMode} />}
           {screen === 'videosubject' && <VideoSubject navigate={navigate} setCurrentVideo={setCurrentVideo} />}
           {screen === 'videoplayer' && <VideoPlayer navigate={navigate} currentVideo={currentVideo} savedVideos={savedVideos} saveVideo={saveVideo} unsaveVideo={unsaveVideo} savedResources={savedResources} saveResource={saveResource} unsaveResource={unsaveResource} />}
-          {screen === 'livetest' && <LiveTest navigate={navigate} onJoinNow={(test) => { setCurrentLiveTest(test); navigate('livetestpretest') }} variant={liveTestVariant} />}
+          {screen === 'livetest' && <LiveTest navigate={navigate} onJoinNow={(test) => { setCurrentLiveTest(test); navigate('livetestpretest') }} variant="full" />}
           {screen === 'livetestpretest' && <LiveTestPreTest navigate={navigate} test={currentLiveTest} />}
           {screen === 'livetestsolve' && <LiveTestSolve navigate={navigate} test={currentLiveTest} />}
         </div>
       </div>
 
-      {/* Desktop-only variant switcher — shown only on Live Test screen */}
-      {screen === 'livetest' && (
-        <div className="version-sidebar">
-          <div style={{ fontSize:10, fontWeight:700, color:'#9898b0', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>
-            Upcoming Section
-          </div>
-          {VARIANTS.map(v => {
-            const active = liveTestVariant === v.id
-            return (
-              <button key={v.id} onClick={() => setLiveTestVariant(v.id)} style={{
-                width:'100%', textAlign:'left', padding:'11px 12px', borderRadius:10, marginBottom:8,
-                background: active ? '#EEEDFE' : 'white',
-                border: `1.5px solid ${active ? '#534AB7' : '#e8e8f2'}`,
-                cursor:'pointer', display:'flex', flexDirection:'column', gap:4,
-              }}>
-                <div style={{ display:'flex', alignItems:'center', gap:7 }}>
-                  <span style={{ fontSize:15 }}>{v.icon}</span>
-                  <span style={{ fontSize:12, fontWeight:700, color: active ? '#534AB7' : '#1a1a2e' }}>{v.label}</span>
-                  {active && <span style={{ marginLeft:'auto', width:6, height:6, borderRadius:'50%', background:'#534AB7', flexShrink:0 }} />}
-                </div>
-                <div style={{ fontSize:11, color:'#9898b0', paddingLeft:22 }}>{v.desc}</div>
-              </button>
-            )
-          })}
-          <div style={{ marginTop:6, padding:'10px 12px', background:'#f5f5fb', borderRadius:8 }}>
-            <div style={{ fontSize:10, color:'#9898b0', lineHeight:1.6 }}>
-              Compare both layouts side-by-side by toggling above. Changes apply inside the mobile frame only.
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
