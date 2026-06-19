@@ -213,6 +213,11 @@ function OthersInterstitial({ onChoose, onNone }) {
 }
 
 function OthersText({ value, onChange, onSubmit }) {
+  const [voiceDuration, setVoiceDuration] = useState(0)
+  const hasText = value.trim().length >= 20
+  const hasVoice = voiceDuration >= 10
+  const canSubmit = hasText || hasVoice
+
   return (
     <>
       <h1 className="form-title small">Tell us in your own words</h1>
@@ -223,11 +228,16 @@ function OthersText({ value, onChange, onSubmit }) {
         placeholder={OTHERS_PLACEHOLDER}
         onChange={(event) => onChange(event.target.value)}
       />
-      <div className={`char-counter ${value.trim().length >= 20 ? 'complete' : ''}`}>
-        {value.trim().length} / 20 minimum{value.trim().length >= 20 ? ' ✓' : ''}
+      <div className={`char-counter ${hasText ? 'complete' : ''}`}>
+        {hasText
+          ? `${value.trim().length} chars ✓`
+          : `${value.trim().length} / 20 · or record 10s voice`}
       </div>
-      <VoiceRecorder />
-      <button className="primary-btn" type="button" disabled={value.trim().length < 20} onClick={onSubmit}>Submit query</button>
+      <VoiceRecorder onDurationChange={setVoiceDuration} />
+      {hasVoice && !hasText && (
+        <div className="char-counter complete" style={{ marginTop: -6 }}>Voice note ready ✓</div>
+      )}
+      <button className="primary-btn" type="button" disabled={!canSubmit} onClick={onSubmit}>Submit query</button>
     </>
   )
 }
@@ -312,13 +322,14 @@ function CommentScreen({ value, prompt, onChange, onSubmit, onSkip, showVoice = 
   )
 }
 
-function VoiceRecorder() {
+function VoiceRecorder({ onDurationChange }) {
   const [recState, setRecState] = useState('idle')
   const [audioURL, setAudioURL] = useState(null)
   const [duration, setDuration] = useState(0)
   const mrRef = useRef(null)
   const chunksRef = useRef([])
   const timerRef = useRef(null)
+  const finalDurationRef = useRef(0)
 
   useEffect(() => () => {
     clearInterval(timerRef.current)
@@ -336,12 +347,19 @@ function VoiceRecorder() {
         setAudioURL(URL.createObjectURL(blob))
         stream.getTracks().forEach(t => t.stop())
         setRecState('recorded')
+        onDurationChange?.(finalDurationRef.current)
       }
       mr.start()
       mrRef.current = mr
       setRecState('recording')
       setDuration(0)
-      timerRef.current = setInterval(() => setDuration(d => d + 1), 1000)
+      finalDurationRef.current = 0
+      timerRef.current = setInterval(() => {
+        setDuration(d => {
+          finalDurationRef.current = d + 1
+          return d + 1
+        })
+      }, 1000)
     } catch {
       // mic access denied — silently ignore
     }
@@ -356,7 +374,9 @@ function VoiceRecorder() {
     if (audioURL) URL.revokeObjectURL(audioURL)
     setAudioURL(null)
     setDuration(0)
+    finalDurationRef.current = 0
     setRecState('idle')
+    onDurationChange?.(0)
   }
 
   const fmt = s => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`
