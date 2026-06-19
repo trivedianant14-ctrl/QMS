@@ -37,6 +37,7 @@ const EXISTING_USER_SAVES = [
 ]
 
 function NprepPrototype() {
+  const [showTracker, setShowTracker] = useState(false)
   const [screen, setScreen] = useState('solve')
   const [currentLiveTest, setCurrentLiveTest] = useState(null)
   const [mode, setMode] = useState('guide')
@@ -185,24 +186,40 @@ function NprepPrototype() {
 
   return (
     <div className="desktop-wrapper">
-      <div className="phone">
-        <div key={screen} className={`screen-trans screen-${animDirRef.current}`}>
-          {screen === 'home' && <Home {...sharedProps} />}
-          {screen === 'subject' && <Subject {...sharedProps} />}
-          {screen === 'pretest' && <PreTest {...sharedProps} />}
-          {screen === 'solve' && <Solve {...sharedProps} />}
-          {screen === 'summary' && <Summary {...sharedProps} />}
-          {screen === 'result' && <Result {...sharedProps} />}
-          {screen === 'saved' && <Saved {...sharedProps} />}
-          {screen === 'videos' && <Videos navigate={navigate} isNewUser={isNewUser} toggleUserMode={toggleUserMode} />}
-          {screen === 'videosubject' && <VideoSubject navigate={navigate} setCurrentVideo={setCurrentVideo} />}
-          {screen === 'videoplayer' && <VideoPlayer navigate={navigate} currentVideo={currentVideo} savedVideos={savedVideos} saveVideo={saveVideo} unsaveVideo={unsaveVideo} savedResources={savedResources} saveResource={saveResource} unsaveResource={unsaveResource} />}
-          {screen === 'livetest' && <LiveTest navigate={navigate} onJoinNow={(test) => { setCurrentLiveTest(test); navigate('livetestpretest') }} variant="full" />}
-          {screen === 'livetestpretest' && <LiveTestPreTest navigate={navigate} test={currentLiveTest} />}
-          {screen === 'livetestsolve' && <LiveTestSolve navigate={navigate} test={currentLiveTest} />}
+      <div className="phone-wrapper">
+        <div className="phone">
+          <div key={screen} className={`screen-trans screen-${animDirRef.current}`}>
+            {screen === 'home' && <Home {...sharedProps} />}
+            {screen === 'subject' && <Subject {...sharedProps} />}
+            {screen === 'pretest' && <PreTest {...sharedProps} />}
+            {screen === 'solve' && <Solve {...sharedProps} />}
+            {screen === 'summary' && <Summary {...sharedProps} />}
+            {screen === 'result' && <Result {...sharedProps} />}
+            {screen === 'saved' && <Saved {...sharedProps} />}
+            {screen === 'videos' && <Videos navigate={navigate} isNewUser={isNewUser} toggleUserMode={toggleUserMode} />}
+            {screen === 'videosubject' && <VideoSubject navigate={navigate} setCurrentVideo={setCurrentVideo} />}
+            {screen === 'videoplayer' && <VideoPlayer navigate={navigate} currentVideo={currentVideo} savedVideos={savedVideos} saveVideo={saveVideo} unsaveVideo={unsaveVideo} savedResources={savedResources} saveResource={saveResource} unsaveResource={unsaveResource} />}
+            {screen === 'livetest' && <LiveTest navigate={navigate} onJoinNow={(test) => { setCurrentLiveTest(test); navigate('livetestpretest') }} variant="full" />}
+            {screen === 'livetestpretest' && <LiveTestPreTest navigate={navigate} test={currentLiveTest} />}
+            {screen === 'livetestsolve' && <LiveTestSolve navigate={navigate} test={currentLiveTest} />}
+          </div>
+          {showTracker && <QueryTracker onClose={() => setShowTracker(false)} />}
         </div>
+        <button
+          className="tracker-tab-btn"
+          onClick={() => setShowTracker(t => !t)}
+          title={showTracker ? 'Close profile' : 'My Profile'}
+        >
+          {showTracker ? (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          ) : (
+            <>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <span>Profile</span>
+            </>
+          )}
+        </button>
       </div>
-      <QueryTracker />
     </div>
   )
 }
