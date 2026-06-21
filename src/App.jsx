@@ -19,7 +19,10 @@ import Nav from './components/Nav'
 import FormShell from './components/form/FormShell'
 import Dashboard from './components/dashboard/Dashboard'
 import { QueryProvider } from './context/QueryContext'
+import { NotificationProvider } from './context/NotificationContext'
 import QueryTracker from './components/QueryTracker'
+import ResolverDashboard from './pages/ResolverDashboard'
+import ManagerDashboard from './pages/ManagerDashboard'
 
 const SCREEN_DEPTH = {
   home: 0,
@@ -202,7 +205,6 @@ function NprepPrototype() {
             {screen === 'livetest' && <LiveTest navigate={navigate} onJoinNow={(test) => { setCurrentLiveTest(test); navigate('livetestpretest') }} variant="full" />}
             {screen === 'livetestpretest' && <LiveTestPreTest navigate={navigate} test={currentLiveTest} />}
             {screen === 'livetestsolve' && <LiveTestSolve navigate={navigate} test={currentLiveTest} />}
-          </div>
           {showTracker && <QueryTracker onClose={() => setShowTracker(false)} />}
         </div>
         <button
@@ -221,6 +223,7 @@ function NprepPrototype() {
         </button>
       </div>
     </div>
+  </div>
   )
 }
 
@@ -236,14 +239,18 @@ function RaiseAQueryLayout({ children }) {
 export default function App() {
   return (
     <QueryProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Navigate to="/nprep" replace />} />
-          <Route path="/nprep" element={<NprepPrototype />} />
-          <Route path="/form" element={<RaiseAQueryLayout><FormShell /></RaiseAQueryLayout>} />
-          <Route path="/dashboard" element={<RaiseAQueryLayout><Dashboard /></RaiseAQueryLayout>} />
-        </Routes>
-      </BrowserRouter>
+      <NotificationProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Navigate to="/nprep" replace />} />
+            <Route path="/nprep" element={<NprepPrototype />} />
+            <Route path="/form" element={<RaiseAQueryLayout><FormShell /></RaiseAQueryLayout>} />
+            <Route path="/dashboard" element={<RaiseAQueryLayout><Dashboard /></RaiseAQueryLayout>} />
+            <Route path="/resolver" element={<RaiseAQueryLayout><ResolverDashboard /></RaiseAQueryLayout>} />
+            <Route path="/manager" element={<RaiseAQueryLayout><ManagerDashboard /></RaiseAQueryLayout>} />
+          </Routes>
+        </BrowserRouter>
+      </NotificationProvider>
     </QueryProvider>
   )
 }
