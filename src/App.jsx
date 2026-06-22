@@ -209,6 +209,7 @@ function NprepPrototype() {
             {screen === 'livetestpretest' && <LiveTestPreTest navigate={navigate} test={currentLiveTest} />}
             {screen === 'livetestsolve' && <LiveTestSolve navigate={navigate} test={currentLiveTest} />}
           {showTracker && <QueryTracker onClose={() => setShowTracker(false)} />}
+          </div>
         </div>
         <button
           className="tracker-tab-btn"
@@ -226,7 +227,6 @@ function NprepPrototype() {
         </button>
       </div>
     </div>
-  </div>
   )
 }
 
