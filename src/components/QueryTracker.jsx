@@ -48,17 +48,43 @@ function agentForQuery(query) {
 }
 
 // ── Thumbs Feedback ──────────────────────────────────────────────────────────
+const STAR_LABELS = ['', 'Poor', 'Fair', 'Okay', 'Good', 'Excellent']
+
+function StarRating({ rating, onRate }) {
+  const [hovered, setHovered] = useState(0)
+  const display = hovered || rating
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 6 }}>
+      {[1,2,3,4,5].map(n => (
+        <button key={n} onClick={() => onRate(n)} onMouseEnter={() => setHovered(n)} onMouseLeave={() => setHovered(0)}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 2px', lineHeight: 1 }}>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill={n <= display ? '#F59E0B' : 'none'} stroke={n <= display ? '#F59E0B' : '#D1D5DB'} strokeWidth="1.5">
+            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+          </svg>
+        </button>
+      ))}
+    </div>
+  )
+}
+
 function ThumbsFeedback({ resolvedAt }) {
-  // steps: 'prompt' | 'call_confirm' | 'call_enter' | 'call_otp' | 'call_done' | 'up'
+  // steps: 'prompt' | 'rate' | 'rate_low' | 'up_done' | 'call_confirm' | 'call_enter' | 'call_otp' | 'call_done'
   const [step, setStep] = useState('prompt')
+  const [rating, setRating] = useState(0)
+  const [rateNote, setRateNote] = useState('')
+  const [lowNote, setLowNote] = useState('')
   const [phone, setPhone] = useState('')
   const [otp, setOtp] = useState(['', '', '', ''])
   const [otpError, setOtpError] = useState(false)
   const [usedOwnNumber, setUsedOwnNumber] = useState(true)
-  const ref0 = useState(null), ref1 = useState(null), ref2 = useState(null), ref3 = useState(null)
   const otpInputRefs = [
     React.useRef(), React.useRef(), React.useRef(), React.useRef()
   ]
+
+  const submitRating = () => {
+    if (rating > 0 && rating <= 3) setStep('rate_low')
+    else setStep('up_done')
+  }
 
   const DEMO_NUMBER = '+91 98765 43210'
 
@@ -90,11 +116,69 @@ function ThumbsFeedback({ resolvedAt }) {
     </div>
   )
 
-  if (step === 'up') return (
+  if (step === 'up_done') return (
     <div style={{ textAlign: 'center', padding: '10px 0 6px' }}>
       <div style={{ fontSize: 36, marginBottom: 8 }}>🎉</div>
       <div style={{ fontSize: 14, fontWeight: 800, color: '#14532D', marginBottom: 4 }}>Great, glad it helped!</div>
       <div style={{ fontSize: 12, color: T2, lineHeight: 1.5 }}>Your ticket is now closed. Keep learning — NPrep's got your back.</div>
+    </div>
+  )
+
+  if (step === 'rate') return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+        <button onClick={() => setStep('prompt')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T3, display: 'flex', padding: 0 }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15,18 9,12 15,6"/></svg>
+        </button>
+        <div style={{ fontSize: 13, fontWeight: 700, color: T1 }}>Rate your experience</div>
+      </div>
+      <div style={{ fontSize: 12, color: T2, marginBottom: 16, textAlign: 'center' }}>How helpful was the resolution?</div>
+      <StarRating rating={rating} onRate={setRating} />
+      {rating > 0 && (
+        <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: rating <= 3 ? ORANGE : GREEN, marginBottom: 10 }}>
+          {STAR_LABELS[rating]}
+        </div>
+      )}
+      <textarea
+        value={rateNote}
+        onChange={e => setRateNote(e.target.value)}
+        placeholder="Want to leave a note for our team? (optional)"
+        rows={3}
+        style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: `1px solid ${BD}`, fontSize: 12, color: T1, resize: 'none', fontFamily: 'inherit', outline: 'none', background: BG2, boxSizing: 'border-box', marginBottom: 12 }}
+      />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+        <button onClick={() => setStep('up_done')}
+          style={{ padding: '11px', borderRadius: 10, background: 'white', color: T2, border: `1px solid ${BD}`, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+          Skip &amp; Submit
+        </button>
+        <button onClick={submitRating} disabled={!rating}
+          style={{ padding: '11px', borderRadius: 10, background: rating ? P : BG2, color: rating ? 'white' : T3, border: 'none', fontSize: 12, fontWeight: 700, cursor: rating ? 'pointer' : 'default' }}>
+          Submit
+        </button>
+      </div>
+    </div>
+  )
+
+  if (step === 'rate_low') return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+        <button onClick={() => setStep('rate')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T3, display: 'flex', padding: 0 }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15,18 9,12 15,6"/></svg>
+        </button>
+        <div style={{ fontSize: 13, fontWeight: 700, color: T1 }}>Did you not understand anything?</div>
+      </div>
+      <div style={{ fontSize: 12, color: T2, marginBottom: 14 }}>Let us know what was unclear — this helps our team improve.</div>
+      <textarea
+        value={lowNote}
+        onChange={e => setLowNote(e.target.value)}
+        placeholder="What didn't you understand? (required)"
+        rows={4}
+        style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: `1.5px solid ${lowNote.trim() ? P : BD}`, fontSize: 12, color: T1, resize: 'none', fontFamily: 'inherit', outline: 'none', background: BG2, boxSizing: 'border-box', marginBottom: 12 }}
+      />
+      <button onClick={() => setStep('up_done')} disabled={!lowNote.trim()}
+        style={{ width: '100%', padding: '12px', borderRadius: 10, background: lowNote.trim() ? P : BG2, color: lowNote.trim() ? 'white' : T3, border: 'none', fontSize: 13, fontWeight: 700, cursor: lowNote.trim() ? 'pointer' : 'default' }}>
+        Submit Feedback
+      </button>
     </div>
   )
 
@@ -215,7 +299,7 @@ function ThumbsFeedback({ resolvedAt }) {
       <div style={{ fontSize: 13, fontWeight: 700, color: T1, marginBottom: 4 }}>Did this resolve your issue?</div>
       <div style={{ fontSize: 11, color: T2, marginBottom: 12 }}>Your feedback helps us close the loop or escalate if needed.</div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
-        <button onClick={() => setStep('up')}
+        <button onClick={() => setStep('rate')}
           style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '14px 10px', borderRadius: 12, border: `1.5px solid ${GREEN_BORDER}`, background: GREEN_BG, cursor: 'pointer' }}
         >
           <span style={{ fontSize: 28 }}>👍</span>
