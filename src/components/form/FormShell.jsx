@@ -82,7 +82,7 @@ export default function FormShell({ embedded = false, onClose, onDone, questionC
           {!['1', '6'].includes(screen) ? (
             <button className="form-head-btn" type="button" onClick={goBack} aria-label="Back">‹</button>
           ) : <span className="form-head-spacer" />}
-          <div className="form-head-title">{embedded ? 'Report an Error' : 'Raise a query'}</div>
+          <div className="form-head-title">Raise a Query</div>
           {embedded && screen !== '6' ? (
             <button className="form-head-btn" type="button" onClick={onClose} aria-label="Close">×</button>
           ) : <span className="form-head-spacer" />}
