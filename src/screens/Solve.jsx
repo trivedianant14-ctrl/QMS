@@ -472,17 +472,9 @@ export default function Solve({ navigate, mode, setMode, currentQ, setCurrentQ, 
           </div>
         )}
 
-        {/* Raise a Query */}
-        <div style={{ marginTop: 10 }}>
-          <button
-            onClick={() => setShowReport(true)}
-            style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, padding: '11px 16px', borderRadius: 12, border: '1.5px solid #AFA9EC', background: '#EEEDFE', color: '#3C3489', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-            </svg>
-            Raise a Query
-          </button>
+        {/* Report */}
+        <div style={{ textAlign: 'center', marginTop: 8 }}>
+          <button onClick={() => setShowReport(true)} style={{ background: 'none', border: 'none', color: '#A32D2D', fontSize: 12, cursor: 'pointer', textDecoration: 'underline' }}>Having trouble? Report</button>
         </div>
       </div>
 
