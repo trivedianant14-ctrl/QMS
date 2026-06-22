@@ -2098,3 +2098,12 @@ textarea {
 .tq-pin-pill:hover { border-color: #534AB7; }
 .tq-pin-pill.pinned { border-color: #1264A3; background: #EFF6FF; color: #1264A3; font-weight: 700; }
 .tq-pin-icon { font-size: 12px; }
+
+/* Phone mockup inside raq-app layout */
+.raq-app .desktop-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 32px 24px;
+  min-height: calc(100vh - 74px);
+  background: #eeeef5;
+}

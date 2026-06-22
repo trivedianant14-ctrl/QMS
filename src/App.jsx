@@ -247,7 +247,7 @@ export default function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Navigate to="/nprep" replace />} />
-              <Route path="/nprep" element={<NprepPrototype />} />
+              <Route path="/nprep" element={<RaiseAQueryLayout><NprepPrototype /></RaiseAQueryLayout>} />
               <Route path="/form" element={<RaiseAQueryLayout><FormShell /></RaiseAQueryLayout>} />
               <Route path="/dashboard" element={<RaiseAQueryLayout><Dashboard /></RaiseAQueryLayout>} />
               <Route path="/resolver" element={<RaiseAQueryLayout><ResolverDashboard /></RaiseAQueryLayout>} />
