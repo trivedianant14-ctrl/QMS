@@ -44,7 +44,7 @@ const EXISTING_USER_SAVES = [
 
 function NprepPrototype() {
   const [showTracker, setShowTracker] = useState(false)
-  const [screen, setScreen] = useState('home')
+  const [screen, setScreen] = useState('solve')
   const [currentLiveTest, setCurrentLiveTest] = useState(null)
   const [mode, setMode] = useState('guide')
   const [currentQ, setCurrentQ] = useState(0)
