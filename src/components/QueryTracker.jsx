@@ -902,7 +902,7 @@ function QueryCard({ query, onClick }) {
 
   return (
     <div
-      style={{ width: '100%', textAlign: 'left', background: 'white', border: `1px solid ${BD}`, borderRadius: 11, overflow: 'hidden', transition: 'box-shadow 0.15s, border-color 0.15s' }}
+      style={{ width: '100%', textAlign: 'left', background: 'white', border: `1px solid ${BD}`, borderRadius: 11, transition: 'box-shadow 0.15s, border-color 0.15s' }}
       onMouseEnter={e => { e.currentTarget.style.borderColor = PB; e.currentTarget.style.boxShadow = `0 2px 10px rgba(83,74,183,0.08)` }}
       onMouseLeave={e => { e.currentTarget.style.borderColor = BD; e.currentTarget.style.boxShadow = 'none' }}
     >
@@ -922,10 +922,10 @@ function QueryCard({ query, onClick }) {
           </div>
         </div>
 
-        {/* Row 2: query text preview */}
+        {/* Row 2: query text preview (JS slice avoids broken webkit clamp) */}
         {query.query_text && (
-          <div style={{ fontSize: 11, color: T2, lineHeight: 1.6, fontStyle: 'italic', marginBottom: 10, padding: '8px 10px', background: BG2, borderRadius: 8, borderLeft: `3px solid ${BD}`, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-            {query.query_text}
+          <div style={{ fontSize: 11, color: T2, lineHeight: 1.6, fontStyle: 'italic', marginBottom: 10, padding: '9px 11px', background: BG2, borderRadius: 8, borderLeft: `3px solid ${PB}` }}>
+            {query.query_text.length > 130 ? query.query_text.slice(0, 127) + '…' : query.query_text}
           </div>
         )}
 
