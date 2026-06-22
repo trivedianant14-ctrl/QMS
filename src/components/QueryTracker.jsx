@@ -18,9 +18,9 @@ const CATEGORY_META = {
   'Not the Right Question':     { color: '#EA580C', bg: '#FFF7ED', abbr: '!' },
 }
 
-const STAGE_FROM_STATUS = { raised: 0, received: 1, assigned: 2, resolved: 3 }
-const STAGE_LABELS = ['Raised', 'In Review', 'Working', 'Resolved']
-const STAGE_COLORS = [P, ORANGE, '#0369A1', GREEN]
+const STAGE_FROM_STATUS = { raised: 0, received: 1, assigned: 2, resolved: 3, escalated: 4, escalation_closed: 5 }
+const STAGE_LABELS = ['Raised', 'In Review', 'Working', 'Resolved', 'Escalated', 'Call Closed']
+const STAGE_COLORS = [P, ORANGE, '#0369A1', GREEN, RED, '#7C3AED']
 
 const AGENTS = [
   { name: 'Priya S.',  team: 'Content QA',  avatar: 'P', color: '#7C3AED' },
@@ -315,6 +315,74 @@ function ThumbsFeedback({ resolvedAt }) {
           {remainingH}h left to respond · auto-closes if no action
         </span>
       </div>
+    </div>
+  )
+}
+
+// ── Escalation Rating ────────────────────────────────────────────────────────
+function EscalationRating({ query }) {
+  const { setEscalationRating } = useQueries()
+  const alreadyRated = query.escalation_rating != null
+  const [rating, setRating] = useState(alreadyRated ? query.escalation_rating : 0)
+  const [note, setNote] = useState(query.escalation_review || '')
+  const [submitted, setSubmitted] = useState(alreadyRated)
+
+  const isLow = rating > 0 && rating <= 3
+  const canSubmit = rating > 0 && (!isLow || note.trim().length > 0)
+
+  if (submitted) return (
+    <div style={{ textAlign: 'center', padding: '10px 0 6px' }}>
+      <div style={{ fontSize: 34, marginBottom: 8 }}>🎉</div>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 4, marginBottom: 8 }}>
+        {[1,2,3,4,5].map(n => (
+          <svg key={n} width="22" height="22" viewBox="0 0 24 24" fill={n <= rating ? '#F59E0B' : '#E5E7EB'} stroke={n <= rating ? '#F59E0B' : '#D1D5DB'} strokeWidth="1.5">
+            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+          </svg>
+        ))}
+      </div>
+      <div style={{ fontSize: 13, fontWeight: 800, color: '#14532D', marginBottom: 4 }}>Thanks for your feedback!</div>
+      <div style={{ fontSize: 12, color: T2, lineHeight: 1.5 }}>Your rating helps us improve our support quality.</div>
+    </div>
+  )
+
+  return (
+    <div>
+      <div style={{ fontSize: 13, fontWeight: 700, color: T1, marginBottom: 4 }}>Rate your call experience</div>
+      <div style={{ fontSize: 12, color: T2, marginBottom: 14, lineHeight: 1.5 }}>How was the call with our team? Your feedback helps us improve.</div>
+      <StarRating rating={rating} onRate={setRating} />
+      {rating > 0 && (
+        <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: rating <= 3 ? ORANGE : GREEN, marginBottom: 10 }}>
+          {STAR_LABELS[rating]}
+        </div>
+      )}
+      {rating > 0 && (() => {
+        return (
+          <>
+            {isLow && (
+              <div style={{ fontSize: 11, fontWeight: 700, color: ORANGE, marginBottom: 6 }}>
+                Please tell us what we could have done better — required for low ratings.
+              </div>
+            )}
+            <textarea
+              value={note}
+              onChange={e => setNote(e.target.value)}
+              placeholder={isLow ? "What could our team have done better? (required)" : "Any additional feedback? (optional)"}
+              rows={3}
+              style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: `1.5px solid ${isLow ? (note.trim() ? P : ORANGE) : BD}`, fontSize: 12, color: T1, resize: 'none', fontFamily: 'inherit', outline: 'none', background: BG2, boxSizing: 'border-box', marginBottom: 12 }}
+            />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <button onClick={() => { setEscalationRating(query.ticket_id, rating, ''); setSubmitted(true) }}
+                style={{ padding: '11px', borderRadius: 10, background: 'white', color: T2, border: `1px solid ${BD}`, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                Skip &amp; Submit
+              </button>
+              <button onClick={() => { setEscalationRating(query.ticket_id, rating, note.trim()); setSubmitted(true) }} disabled={!canSubmit}
+                style={{ padding: '11px', borderRadius: 10, background: canSubmit ? P : BG2, color: canSubmit ? 'white' : T3, border: 'none', fontSize: 12, fontWeight: 700, cursor: canSubmit ? 'pointer' : 'default' }}>
+                Submit
+              </button>
+            </div>
+          </>
+        )
+      })()}
     </div>
   )
 }
@@ -652,14 +720,23 @@ function QueryDetailView({ query, onBack, onClose }) {
     stage >= 1 ? timeAgo(new Date(raised + 300000).toISOString()) : null,
     stage >= 2 ? timeAgo(new Date(raised + 900000).toISOString()) : null,
     stage >= 3 ? timeAgo(new Date(raised + 3600000 * 18).toISOString()) : null,
+    stage >= 4 ? timeAgo(new Date(raised + 3600000 * 20).toISOString()) : null,
+    stage >= 5 ? timeAgo(new Date(raised + 3600000 * 22).toISOString()) : null,
   ]
 
   const TIMELINE_STEPS = [
-    { key: 'raised',   title: 'Query raised',    desc: 'Your report has been logged' },
-    { key: 'received', title: 'Received by team', desc: 'Content team has picked this up' },
-    { key: 'assigned', title: 'Agent assigned',   desc: null },
-    { key: 'resolved', title: 'Query resolved',   desc: 'Issue addressed' },
+    { key: 'raised',      title: 'Query raised',       desc: 'Your report has been logged' },
+    { key: 'received',    title: 'Received by team',    desc: 'Content team has picked this up' },
+    { key: 'assigned',    title: 'Agent assigned',      desc: null },
+    { key: 'resolved',    title: 'Query resolved',      desc: 'Issue addressed' },
+    ...(stage >= 4 ? [{ key: 'escalated',    title: 'Escalated',        desc: 'You requested a callback — our team is arranging a call' }] : []),
+    ...(stage >= 4 ? [{ key: 'call_closed',  title: 'Call completed',   desc: 'Our agent spoke with you to resolve your query' }] : []),
   ]
+
+  const badgeMeta = stage >= 5 ? { bg: '#F5F3FF', color: '#7C3AED', border: '#DDD6FE' }
+    : stage === 4 ? { bg: RED_BG, color: RED, border: RED_BORDER }
+    : stage === 3 ? { bg: GREEN_BG, color: GREEN, border: GREEN_BORDER }
+    : { bg: PL, color: P, border: PB }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -673,8 +750,8 @@ function QueryDetailView({ query, onBack, onClose }) {
             <div style={{ fontSize: 14, fontWeight: 700, color: T1 }}>{ticketId(query.id)}</div>
             <div style={{ fontSize: 10, color: T3 }}>Raised {timeAgo(query.timestamp)}</div>
           </div>
-          <div style={{ padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700, background: stage === 3 ? GREEN_BG : PL, color: stage === 3 ? GREEN : P, border: `1px solid ${stage === 3 ? GREEN_BORDER : PB}` }}>
-            {STAGE_LABELS[stage]}
+          <div style={{ padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700, background: badgeMeta.bg, color: badgeMeta.color, border: `1px solid ${badgeMeta.border}` }}>
+            {STAGE_LABELS[stage] || 'Unknown'}
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: T3, padding: 2, lineHeight: 1 }}>✕</button>
         </div>
@@ -712,6 +789,24 @@ function QueryDetailView({ query, onBack, onClose }) {
             <div>
               <div style={{ fontSize: 12, fontWeight: 700, color: '#14532D' }}>Query resolved</div>
               <div style={{ fontSize: 10, color: '#166534' }}>The question has been reviewed and updated</div>
+            </div>
+          </div>
+        )}
+        {stage === 4 && (
+          <div style={{ marginBottom: 16, padding: '10px 13px', borderRadius: 11, background: RED_BG, border: `1px solid ${RED_BORDER}`, display: 'flex', alignItems: 'center', gap: 9 }}>
+            <div style={{ width: 9, height: 9, borderRadius: '50%', background: RED, flexShrink: 0, animation: 'tl-pulse 1.5s ease-in-out infinite' }} />
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: RED }}>Call being scheduled</div>
+              <div style={{ fontSize: 10, color: '#B91C1C', marginTop: 1 }}>Our team is arranging a call — you'll be notified shortly</div>
+            </div>
+          </div>
+        )}
+        {stage === 5 && (
+          <div style={{ marginBottom: 16, padding: '10px 13px', borderRadius: 11, background: '#F5F3FF', border: `1px solid #DDD6FE`, display: 'flex', alignItems: 'center', gap: 9 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#5B21B6' }}>Escalation closed</div>
+              <div style={{ fontSize: 10, color: '#7C3AED', marginTop: 1 }}>Our agent called you — we hope your query is fully resolved!</div>
             </div>
           </div>
         )}
@@ -760,10 +855,16 @@ function QueryDetailView({ query, onBack, onClose }) {
           ))}
         </div>
 
-        {/* Thumbs feedback — only when resolved */}
+        {/* Thumbs feedback — only when resolved (not escalated) */}
         {stage === 3 && (
           <div style={{ padding: '14px', borderRadius: 12, border: `1px solid ${BD}`, background: 'white' }}>
             <ThumbsFeedback resolvedAt={query.resolved_at} />
+          </div>
+        )}
+        {/* Escalation rating — when call is closed */}
+        {stage === 5 && (
+          <div style={{ padding: '14px', borderRadius: 12, border: `1px solid #DDD6FE`, background: '#FDFCFF' }}>
+            <EscalationRating query={query} />
           </div>
         )}
 
@@ -776,30 +877,107 @@ function QueryDetailView({ query, onBack, onClose }) {
 function QueryCard({ query, onClick }) {
   const meta = CATEGORY_META[query.category] || CATEGORY_META['Others']
   const stage = STAGE_FROM_STATUS[query.timeline_status] ?? query.demo_stage ?? 0
+  const { setEscalationRating } = useQueries()
+
+  const isEscClosed = stage === 5
+  const alreadyRated = query.escalation_rating != null
+  const [hoverStar, setHoverStar] = useState(0)
+  const [pendingStar, setPendingStar] = useState(0)
+  const [pendingNote, setPendingNote] = useState('')
+  const [cardSubmitted, setCardSubmitted] = useState(false)
+
+  const displayStar = hoverStar || pendingStar || (alreadyRated ? query.escalation_rating : 0)
+  const isLowCard = pendingStar > 0 && pendingStar <= 3
+  const canSubmitCard = !isLowCard || pendingNote.trim().length > 0
+
+  const handleCardStar = (n) => {
+    if (alreadyRated || cardSubmitted) return
+    setPendingStar(n)
+    if (n >= 4) { setEscalationRating(query.ticket_id, n, ''); setCardSubmitted(true) }
+  }
+
+  const badgeColor = stage === 5 ? '#7C3AED' : stage === 4 ? RED : stage === 3 ? GREEN : stage === 2 ? P : stage === 1 ? ORANGE : T2
+  const badgeBg    = stage === 5 ? '#F5F3FF' : stage === 4 ? RED_BG : stage === 3 ? GREEN_BG : stage === 2 ? PL : stage === 1 ? ORANGE_BG : BG2
+  const badgeBdr   = stage === 5 ? '#DDD6FE' : stage === 4 ? RED_BORDER : stage === 3 ? GREEN_BORDER : stage === 2 ? PB : stage === 1 ? '#FED7AA' : BD
+
   return (
-    <button onClick={onClick}
-      style={{ width: '100%', textAlign: 'left', background: 'white', border: `1px solid ${BD}`, borderRadius: 11, padding: '11px 13px', cursor: 'pointer', display: 'block', transition: 'box-shadow 0.15s, border-color 0.15s' }}
+    <div
+      style={{ width: '100%', textAlign: 'left', background: 'white', border: `1px solid ${BD}`, borderRadius: 11, overflow: 'hidden', transition: 'box-shadow 0.15s, border-color 0.15s' }}
       onMouseEnter={e => { e.currentTarget.style.borderColor = PB; e.currentTarget.style.boxShadow = `0 2px 10px rgba(83,74,183,0.08)` }}
       onMouseLeave={e => { e.currentTarget.style.borderColor = BD; e.currentTarget.style.boxShadow = 'none' }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 5 }}>
-        <div style={{ width: 30, height: 30, borderRadius: 8, background: meta.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, color: meta.color, flexShrink: 0 }}>{meta.abbr}</div>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: meta.color }}>{query.category}</div>
-          <div style={{ fontSize: 12, color: T1, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{query.sub_option}</div>
+      {/* Main clickable area */}
+      <div onClick={onClick} style={{ padding: '11px 13px', cursor: 'pointer' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 5 }}>
+          <div style={{ width: 30, height: 30, borderRadius: 8, background: meta.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, color: meta.color, flexShrink: 0 }}>{meta.abbr}</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: meta.color }}>{query.category}</div>
+            <div style={{ fontSize: 12, color: T1, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{query.sub_option}</div>
+          </div>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={T3} strokeWidth="2" strokeLinecap="round"><polyline points="9,18 15,12 9,6"/></svg>
         </div>
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={T3} strokeWidth="2" strokeLinecap="round"><polyline points="9,18 15,12 9,6"/></svg>
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: 10, fontWeight: 600, color: T3, fontFamily: 'monospace' }}>{ticketId(query.id)}</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-          <span style={{ fontSize: 10, color: T3 }}>{timeAgo(query.timestamp)}</span>
-          <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 20, background: stage === 3 ? GREEN_BG : stage === 2 ? PL : stage === 1 ? ORANGE_BG : BG2, color: stage === 3 ? GREEN : stage === 2 ? P : stage === 1 ? ORANGE : T2, border: `1px solid ${stage === 3 ? GREEN_BORDER : stage === 2 ? PB : stage === 1 ? '#FED7AA' : BD}` }}>
-            {STAGE_LABELS[stage]}
-          </span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 10, fontWeight: 600, color: T3, fontFamily: 'monospace' }}>{ticketId(query.id)}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            <span style={{ fontSize: 10, color: T3 }}>{timeAgo(query.timestamp)}</span>
+            <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 20, background: badgeBg, color: badgeColor, border: `1px solid ${badgeBdr}` }}>
+              {STAGE_LABELS[stage] || 'Unknown'}
+            </span>
+          </div>
         </div>
       </div>
-    </button>
+
+      {/* Zomato-style inline rating — only for escalation_closed */}
+      {isEscClosed && (
+        <div onClick={e => e.stopPropagation()} style={{ padding: '9px 13px', borderTop: `1px solid ${BD}`, background: '#FAFAFA' }}>
+          {(cardSubmitted || alreadyRated) ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ display: 'flex', gap: 2 }}>
+                {[1,2,3,4,5].map(n => (
+                  <svg key={n} width="18" height="18" viewBox="0 0 24 24" fill={n <= (alreadyRated ? query.escalation_rating : pendingStar) ? '#F59E0B' : '#E5E7EB'} stroke={n <= (alreadyRated ? query.escalation_rating : pendingStar) ? '#F59E0B' : '#D1D5DB'} strokeWidth="1.5">
+                    <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                  </svg>
+                ))}
+              </div>
+              <span style={{ fontSize: 10, color: GREEN, fontWeight: 700 }}>✓ Thanks for rating!</span>
+            </div>
+          ) : (
+            <>
+              <div style={{ fontSize: 10, color: T2, fontWeight: 600, marginBottom: 6 }}>Rate your call experience</div>
+              <div style={{ display: 'flex', gap: 3 }}>
+                {[1,2,3,4,5].map(n => (
+                  <button key={n}
+                    onMouseEnter={() => setHoverStar(n)} onMouseLeave={() => setHoverStar(0)}
+                    onClick={() => handleCardStar(n)}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', lineHeight: 1 }}
+                  >
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill={n <= displayStar ? '#F59E0B' : 'none'} stroke={n <= displayStar ? '#F59E0B' : '#D1D5DB'} strokeWidth="1.5">
+                      <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                    </svg>
+                  </button>
+                ))}
+                {pendingStar > 0 && <span style={{ fontSize: 10, color: pendingStar <= 3 ? ORANGE : GREEN, fontWeight: 700, marginLeft: 4, alignSelf: 'center' }}>{STAR_LABELS[pendingStar]}</span>}
+              </div>
+              {isLowCard && pendingStar > 0 && (
+                <div style={{ marginTop: 8 }}>
+                  <textarea
+                    value={pendingNote}
+                    onChange={e => setPendingNote(e.target.value)}
+                    placeholder="What could we have done better? (required)"
+                    rows={2}
+                    style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: `1.5px solid ${pendingNote.trim() ? P : ORANGE}`, fontSize: 11, color: T1, resize: 'none', fontFamily: 'inherit', outline: 'none', background: 'white', boxSizing: 'border-box', marginBottom: 7 }}
+                  />
+                  <button onClick={() => { setEscalationRating(query.ticket_id, pendingStar, pendingNote.trim()); setCardSubmitted(true) }} disabled={!canSubmitCard}
+                    style={{ width: '100%', padding: '9px', borderRadius: 8, background: canSubmitCard ? P : BG2, color: canSubmitCard ? 'white' : T3, border: 'none', fontSize: 11, fontWeight: 700, cursor: canSubmitCard ? 'pointer' : 'default' }}>
+                    Submit Feedback
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
+    </div>
   )
 }
 
