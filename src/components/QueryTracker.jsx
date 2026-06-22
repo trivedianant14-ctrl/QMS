@@ -193,11 +193,18 @@ function ThumbsFeedback({ resolvedAt }) {
   // "Is this the correct number?"
   if (step === 'call_confirm') return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
         <button onClick={() => setStep('prompt')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T3, display: 'flex', padding: 0 }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15,18 9,12 15,6"/></svg>
         </button>
-        <div style={{ fontSize: 13, fontWeight: 700, color: T1 }}>Is this the correct number?</div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: T1 }}>We'll have someone call you</div>
+      </div>
+      <div style={{ background: PL, borderRadius: 10, padding: '10px 12px', marginBottom: 14, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+        <span style={{ fontSize: 18, lineHeight: 1.2 }}>📞</span>
+        <div style={{ fontSize: 12, color: PD, lineHeight: 1.6 }}>
+          Since you're still confused, one of our team members will connect with you personally to help clear this up.
+          <span style={{ fontWeight: 700 }}> Is this the right number to reach you?</span>
+        </div>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', borderRadius: 10, background: BG2, border: `1px solid ${BD}`, marginBottom: 16 }}>
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={P} strokeWidth="2.2" strokeLinecap="round">
