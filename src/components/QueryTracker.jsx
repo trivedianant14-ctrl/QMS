@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import React, { useState, useRef } from 'react'
 import { useQueries } from '../context/QueryContext'
 
 const P = '#534AB7', PL = '#EEEDFE', PB = '#AFA9EC', PD = '#3C3489'
@@ -48,12 +48,19 @@ function agentForQuery(query) {
 }
 
 // ── Thumbs Feedback ──────────────────────────────────────────────────────────
-function ThumbsFeedback({ agent, resolvedAt }) {
-  const [step, setStep] = useState('prompt') // 'prompt' | 'explain' | 'called' | 'up'
-  const [explainText, setExplainText] = useState('')
-  const [voiceDuration, setVoiceDuration] = useState(0)
-  const [referenceText, setReferenceText] = useState('')
-  const [callRequested, setCallRequested] = useState(false)
+function ThumbsFeedback({ resolvedAt }) {
+  // steps: 'prompt' | 'call_confirm' | 'call_enter' | 'call_otp' | 'call_done' | 'up'
+  const [step, setStep] = useState('prompt')
+  const [phone, setPhone] = useState('')
+  const [otp, setOtp] = useState(['', '', '', ''])
+  const [otpError, setOtpError] = useState(false)
+  const [usedOwnNumber, setUsedOwnNumber] = useState(true)
+  const ref0 = useState(null), ref1 = useState(null), ref2 = useState(null), ref3 = useState(null)
+  const otpInputRefs = [
+    React.useRef(), React.useRef(), React.useRef(), React.useRef()
+  ]
+
+  const DEMO_NUMBER = '+91 98765 43210'
 
   const resolvedTime = resolvedAt ? new Date(resolvedAt).getTime() : Date.now()
   const expiresAt = resolvedTime + 48 * 3600000
@@ -61,13 +68,24 @@ function ThumbsFeedback({ agent, resolvedAt }) {
   const remainingH = Math.max(0, Math.ceil(remainingMs / 3600000))
   const isExpired = remainingMs <= 0
 
+  const handleOtpChange = (idx, val) => {
+    if (!/^\d?$/.test(val)) return
+    const next = [...otp]; next[idx] = val; setOtp(next); setOtpError(false)
+    if (val && idx < 3) otpInputRefs[idx + 1].current?.focus()
+  }
+  const handleOtpKey = (idx, e) => {
+    if (e.key === 'Backspace' && !otp[idx] && idx > 0) otpInputRefs[idx - 1].current?.focus()
+  }
+  const verifyOtp = () => {
+    if (otp.join('') === '0000') { setStep('call_done') }
+    else { setOtpError(true); setOtp(['', '', '', '']); otpInputRefs[0].current?.focus() }
+  }
+
   if (isExpired) return (
     <div style={{ textAlign: 'center', padding: '10px 0 6px' }}>
       <div style={{ fontSize: 28, marginBottom: 8 }}>🔒</div>
       <div style={{ fontSize: 13, fontWeight: 800, color: T1, marginBottom: 6 }}>Ticket auto-closed</div>
-      <div style={{ fontSize: 11, color: T2, lineHeight: 1.6 }}>
-        The 48-hour response window has passed. This ticket has been automatically closed.
-      </div>
+      <div style={{ fontSize: 11, color: T2, lineHeight: 1.6 }}>The 48-hour response window has passed. This ticket has been automatically closed.</div>
       <div style={{ marginTop: 10, fontSize: 11, color: P }}>Still have a doubt? Raise a new query and our team will help.</div>
     </div>
   )
@@ -80,97 +98,118 @@ function ThumbsFeedback({ agent, resolvedAt }) {
     </div>
   )
 
-  // Step 2: Explain what's still unclear
-  if (step === 'explain') {
-    const hasText = explainText.trim().length >= 10
-    const hasVoice = voiceDuration >= 5
-    const canSubmit = hasText || hasVoice
-    return (
-      <div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-          <button onClick={() => setStep('prompt')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T3, display: 'flex', padding: 0 }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15,18 9,12 15,6"/></svg>
-          </button>
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: T1 }}>What's still unclear?</div>
-            <div style={{ fontSize: 11, color: T2 }}>Help us understand so we can explain it properly.</div>
-          </div>
-        </div>
-        <textarea
-          value={explainText}
-          onChange={e => setExplainText(e.target.value)}
-          placeholder="Describe what you still don't understand about this question or its explanation..."
-          style={{ width: '100%', minHeight: 90, borderRadius: 10, border: `1.5px solid ${explainText.trim().length >= 10 ? P : BD}`, padding: '10px 12px', fontSize: 12, color: T1, resize: 'none', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', lineHeight: 1.6, background: BG2 }}
-        />
-        <div style={{ fontSize: 10, color: hasText ? P : T3, marginBottom: 10, marginTop: 3 }}>
-          {hasText ? `${explainText.trim().length} chars ✓` : `${explainText.trim().length} / 10 min · or record 5s voice`}
-        </div>
-        <div style={{ marginBottom: 10 }}>
-          <MiniVoiceRecorder onDurationChange={setVoiceDuration} />
-        </div>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 12 }}>
-          <span style={{ fontSize: 11, color: T2, fontWeight: 600 }}>Reference <span style={{ fontWeight: 400, color: T3 }}>(optional)</span></span>
-          <input
-            value={referenceText}
-            onChange={e => setReferenceText(e.target.value)}
-            placeholder="Book, teacher, website, or class note..."
-            style={{ borderRadius: 8, border: `1px solid ${BD}`, padding: '8px 10px', fontSize: 12, color: T1, outline: 'none', fontFamily: 'inherit', background: 'white' }}
-          />
-        </label>
-        <button
-          disabled={!canSubmit}
-          onClick={() => setStep('called')}
-          style={{ width: '100%', padding: '12px', borderRadius: 10, background: canSubmit ? P : BG2, color: canSubmit ? 'white' : T3, border: 'none', fontSize: 13, fontWeight: 700, cursor: canSubmit ? 'pointer' : 'default', marginBottom: 8 }}
-        >
-          Submit &amp; Request 1-on-1 Call
-        </button>
-        <button
-          onClick={() => setStep('called')}
-          style={{ width: '100%', padding: '10px', borderRadius: 10, background: 'none', color: T2, border: `1px solid ${BD}`, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
-        >
-          Skip — just request a call
-        </button>
+  // Call confirmed — no agent details shown
+  if (step === 'call_done') return (
+    <div style={{ textAlign: 'center', padding: '8px 0 4px' }}>
+      <div style={{ fontSize: 36, marginBottom: 10 }}>📞</div>
+      <div style={{ fontSize: 14, fontWeight: 800, color: T1, marginBottom: 6 }}>
+        {usedOwnNumber ? 'Ok cool!' : 'Got it!'}
       </div>
-    )
-  }
-
-  // Step 3: Call confirmed
-  if (step === 'called') return (
-    <div style={{ padding: '6px 0 4px' }}>
-      <div style={{ textAlign: 'center', marginBottom: 14 }}>
-        <div style={{ fontSize: 32, marginBottom: 6 }}>📞</div>
-        <div style={{ fontSize: 13, fontWeight: 800, color: T1, marginBottom: 4 }}>1-on-1 call requested</div>
-        <div style={{ fontSize: 12, color: T2, lineHeight: 1.6 }}>
-          {agent.name} from <strong>{agent.team}</strong> will reach out to you within 24 hours to walk through this personally.
-        </div>
+      <div style={{ fontSize: 12, color: T2, lineHeight: 1.7, marginBottom: 14 }}>
+        {usedOwnNumber
+          ? 'One of our agents will be reviewing your query and will shortly be contacting you.'
+          : 'Someone from our team will shortly be calling you on your updated number.'}
       </div>
-      <div style={{ background: ORANGE_BG, border: `1px solid #FED7AA`, borderRadius: 10, padding: '10px 12px', marginBottom: 10 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-          <div style={{ width: 30, height: 30, borderRadius: '50%', background: agent.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <span style={{ fontSize: 11, fontWeight: 700, color: 'white' }}>{agent.avatar}</span>
-          </div>
-          <div>
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#92400E' }}>{agent.name} · {agent.team}</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: ORANGE, animation: 'tl-pulse 1.5s ease-in-out infinite' }} />
-              <span style={{ fontSize: 10, color: ORANGE }}>Will call within 24 hours</span>
-            </div>
-          </div>
+      <div style={{ background: ORANGE_BG, border: `1px solid #FED7AA`, borderRadius: 10, padding: '12px 14px', textAlign: 'left' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+          <div style={{ width: 8, height: 8, borderRadius: '50%', background: ORANGE, animation: 'tl-pulse 1.5s ease-in-out infinite', flexShrink: 0 }} />
+          <span style={{ fontSize: 12, fontWeight: 700, color: '#92400E' }}>Our team will call you within 24 hours</span>
         </div>
-        <div style={{ fontSize: 10, color: '#92400E', borderTop: `1px solid #FED7AA`, paddingTop: 7, marginTop: 2 }}>
-          Ticket status → <strong>Escalated</strong>. You'll get a notification before the call.
-        </div>
+        <div style={{ fontSize: 11, color: '#92400E', paddingLeft: 16 }}>You'll get a notification before the call.</div>
       </div>
-      {explainText.trim() && (
-        <div style={{ background: BG2, border: `1px solid ${BD}`, borderRadius: 9, padding: '9px 11px', marginBottom: 10 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: T3, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Your clarification</div>
-          <div style={{ fontSize: 11, color: T2, lineHeight: 1.5, fontStyle: 'italic' }}>"{explainText.trim()}"</div>
-        </div>
-      )}
     </div>
   )
 
-  // Step 1: Prompt
+  // "Is this the correct number?"
+  if (step === 'call_confirm') return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+        <button onClick={() => setStep('prompt')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T3, display: 'flex', padding: 0 }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15,18 9,12 15,6"/></svg>
+        </button>
+        <div style={{ fontSize: 13, fontWeight: 700, color: T1 }}>Is this the correct number?</div>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', borderRadius: 10, background: BG2, border: `1px solid ${BD}`, marginBottom: 16 }}>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={P} strokeWidth="2.2" strokeLinecap="round">
+          <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.64a19.79 19.79 0 01-2.93-8.63A2 2 0 012.11 0H5a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+        </svg>
+        <span style={{ fontSize: 15, fontWeight: 700, color: T1, letterSpacing: '0.04em' }}>{DEMO_NUMBER}</span>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+        <button onClick={() => { setUsedOwnNumber(false); setStep('call_enter') }} style={{ padding: '11px', borderRadius: 10, background: 'white', color: T2, border: `1px solid ${BD}`, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+          No, use different
+        </button>
+        <button onClick={() => { setUsedOwnNumber(true); setStep('call_done') }} style={{ padding: '11px', borderRadius: 10, background: P, color: 'white', border: 'none', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
+          Yes, call me
+        </button>
+      </div>
+    </div>
+  )
+
+  // Enter new number
+  if (step === 'call_enter') return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+        <button onClick={() => setStep('call_confirm')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T3, display: 'flex', padding: 0 }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15,18 9,12 15,6"/></svg>
+        </button>
+        <div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: T1 }}>Enter your number</div>
+          <div style={{ fontSize: 10, color: T2 }}>We'll send a one-time OTP to verify</div>
+        </div>
+      </div>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+        <div style={{ padding: '10px 11px', borderRadius: 10, border: `1px solid ${BD}`, background: BG2, fontSize: 13, fontWeight: 600, color: T2, flexShrink: 0 }}>+91</div>
+        <input
+          value={phone}
+          onChange={e => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+          placeholder="10-digit mobile number"
+          inputMode="numeric"
+          style={{ flex: 1, padding: '10px 12px', borderRadius: 10, border: `1.5px solid ${phone.length === 10 ? P : BD}`, fontSize: 13, color: T1, outline: 'none', fontFamily: 'inherit' }}
+        />
+      </div>
+      <button
+        disabled={phone.length !== 10}
+        onClick={() => setStep('call_otp')}
+        style={{ width: '100%', padding: '12px', borderRadius: 10, background: phone.length === 10 ? P : BG2, color: phone.length === 10 ? 'white' : T3, border: 'none', fontSize: 13, fontWeight: 700, cursor: phone.length === 10 ? 'pointer' : 'default' }}
+      >
+        Send OTP
+      </button>
+    </div>
+  )
+
+  // OTP verification
+  if (step === 'call_otp') return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+        <button onClick={() => { setOtp(['','','','']); setOtpError(false); setStep('call_enter') }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T3, display: 'flex', padding: 0 }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15,18 9,12 15,6"/></svg>
+        </button>
+        <div style={{ fontSize: 13, fontWeight: 700, color: T1 }}>Enter OTP</div>
+      </div>
+      <div style={{ fontSize: 11, color: T2, marginBottom: 16 }}>Sent to +91 {phone}</div>
+      <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginBottom: 10 }}>
+        {[0,1,2,3].map(idx => (
+          <input key={idx} ref={otpInputRefs[idx]}
+            value={otp[idx]} maxLength={1} inputMode="numeric"
+            onChange={e => handleOtpChange(idx, e.target.value)}
+            onKeyDown={e => handleOtpKey(idx, e)}
+            style={{ width: 50, height: 56, textAlign: 'center', fontSize: 24, fontWeight: 800, color: otpError ? RED : T1, borderRadius: 10, border: `2px solid ${otpError ? RED_BORDER : otp[idx] ? P : BD}`, outline: 'none', fontFamily: 'inherit', background: otpError ? RED_BG : 'white', transition: 'border-color 0.15s' }}
+          />
+        ))}
+      </div>
+      {otpError && <div style={{ textAlign: 'center', fontSize: 11, color: RED, marginBottom: 10 }}>Incorrect OTP. Please try again.</div>}
+      <button
+        disabled={otp.join('').length < 4}
+        onClick={verifyOtp}
+        style={{ width: '100%', padding: '12px', borderRadius: 10, background: otp.join('').length === 4 ? P : BG2, color: otp.join('').length === 4 ? 'white' : T3, border: 'none', fontSize: 13, fontWeight: 700, cursor: otp.join('').length === 4 ? 'pointer' : 'default' }}
+      >
+        Verify &amp; Confirm Call
+      </button>
+    </div>
+  )
+
+  // Step 1: Prompt (thumbs up / down)
   return (
     <div>
       <div style={{ fontSize: 13, fontWeight: 700, color: T1, marginBottom: 4 }}>Did this resolve your issue?</div>
@@ -183,7 +222,7 @@ function ThumbsFeedback({ agent, resolvedAt }) {
           <span style={{ fontSize: 12, fontWeight: 700, color: '#14532D' }}>Yes, got it!</span>
           <span style={{ fontSize: 10, color: '#166534', textAlign: 'center', lineHeight: 1.4 }}>Issue is resolved</span>
         </button>
-        <button onClick={() => setStep('explain')}
+        <button onClick={() => setStep('call_confirm')}
           style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '14px 10px', borderRadius: 12, border: `1.5px solid ${RED_BORDER}`, background: RED_BG, cursor: 'pointer' }}
         >
           <span style={{ fontSize: 28 }}>👎</span>
@@ -647,7 +686,7 @@ function QueryDetailView({ query, onBack, onClose }) {
         {/* Thumbs feedback — only when resolved */}
         {stage === 3 && (
           <div style={{ padding: '14px', borderRadius: 12, border: `1px solid ${BD}`, background: 'white' }}>
-            <ThumbsFeedback agent={agent} resolvedAt={query.resolved_at} />
+            <ThumbsFeedback resolvedAt={query.resolved_at} />
           </div>
         )}
 
