@@ -907,22 +907,49 @@ function QueryCard({ query, onClick }) {
       onMouseLeave={e => { e.currentTarget.style.borderColor = BD; e.currentTarget.style.boxShadow = 'none' }}
     >
       {/* Main clickable area */}
-      <div onClick={onClick} style={{ padding: '11px 13px', cursor: 'pointer' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 5 }}>
-          <div style={{ width: 30, height: 30, borderRadius: 8, background: meta.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, color: meta.color, flexShrink: 0 }}>{meta.abbr}</div>
+      <div onClick={onClick} style={{ padding: '13px 14px', cursor: 'pointer' }}>
+        {/* Row 1: category icon + name + status badge */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 8 }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: meta.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 800, color: meta.color, flexShrink: 0, marginTop: 1 }}>{meta.abbr}</div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: meta.color }}>{query.category}</div>
-            <div style={{ fontSize: 12, color: T1, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{query.sub_option}</div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, marginBottom: 2 }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: meta.color }}>{query.category}</span>
+              <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 20, background: badgeBg, color: badgeColor, border: `1px solid ${badgeBdr}`, flexShrink: 0 }}>
+                {STAGE_LABELS[stage] || 'Unknown'}
+              </span>
+            </div>
+            <div style={{ fontSize: 13, color: T1, fontWeight: 600, lineHeight: 1.4 }}>{query.sub_option}</div>
           </div>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={T3} strokeWidth="2" strokeLinecap="round"><polyline points="9,18 15,12 9,6"/></svg>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: 10, fontWeight: 600, color: T3, fontFamily: 'monospace' }}>{ticketId(query.id)}</span>
+
+        {/* Row 2: query text preview */}
+        {query.query_text && (
+          <div style={{ fontSize: 11, color: T2, lineHeight: 1.55, fontStyle: 'italic', marginBottom: 9, paddingLeft: 46, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+            "{query.query_text}"
+          </div>
+        )}
+
+        {/* Row 3: subject / test context */}
+        {(query.subject_name || query.test_name) && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, paddingLeft: 46, marginBottom: 9 }}>
+            {query.subject_name && (
+              <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 20, background: PL, color: P, border: `1px solid ${PB}` }}>{query.subject_name}</span>
+            )}
+            {query.test_name && (
+              <span style={{ fontSize: 10, padding: '2px 7px', borderRadius: 20, background: BG2, color: T2, border: `1px solid ${BD}` }}>{query.test_name}</span>
+            )}
+            {query.question_num && (
+              <span style={{ fontSize: 10, padding: '2px 7px', borderRadius: 20, background: BG2, color: T3, border: `1px solid ${BD}` }}>Q{query.question_num}</span>
+            )}
+          </div>
+        )}
+
+        {/* Row 4: ticket ID + timestamp + chevron */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 46 }}>
+          <span style={{ fontSize: 10, fontWeight: 700, color: T3, fontFamily: 'monospace', letterSpacing: '0.04em' }}>{ticketId(query.id)}</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <span style={{ fontSize: 10, color: T3 }}>{timeAgo(query.timestamp)}</span>
-            <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 20, background: badgeBg, color: badgeColor, border: `1px solid ${badgeBdr}` }}>
-              {STAGE_LABELS[stage] || 'Unknown'}
-            </span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={T3} strokeWidth="2" strokeLinecap="round"><polyline points="9,18 15,12 9,6"/></svg>
           </div>
         </div>
       </div>
